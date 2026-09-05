@@ -12,6 +12,8 @@
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #f1f5f9; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    .tab-active { border-bottom: 2px solid #2563eb; color: #2563eb; }
+    .tab-inactive { border-bottom: 2px solid transparent; color: #64748b; }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
@@ -22,33 +24,40 @@
       <div>
         <div class="flex items-center gap-2">
           <span class="text-xl font-bold tracking-tight text-slate-900">OptoCode Pro</span>
-          <span class="text-[11px] bg-emerald-50 text-emerald-700 font-semibold px-2.5 py-0.5 rounded-full border border-emerald-200">Encounter Builder Mode</span>
+          <span class="text-[11px] bg-emerald-50 text-emerald-700 font-semibold px-2.5 py-0.5 rounded-full border border-emerald-200">Clinical Edition</span>
           <span class="text-[11px] bg-indigo-50 text-indigo-700 font-semibold px-2.5 py-0.5 rounded-full border border-indigo-200">155+ Diagnoses</span>
         </div>
-        <p class="text-xs text-slate-500 mt-0.5">Multi-Diagnosis Cart, CPT Pointers, MDM Leveling & NCCI Audits</p>
+        <p class="text-xs text-slate-500 mt-0.5">Multi-Diagnosis Cart, CPT Pointers, MDM Leveling & Reimbursement Pearls</p>
       </div>
 
       <div class="flex items-center gap-3">
-        <select id="macSelect" onchange="renderCart()" class="text-xs font-medium bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-700 outline-none">
+        <select id="macSelect" onchange="triggerUpdate()" class="text-xs font-medium bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-700 outline-none">
           <option value="NGS" selected>MAC: NGS (NY/NE/CT)</option>
           <option value="Novitas">MAC: Novitas (PA/NJ/MD)</option>
           <option value="Noridian">MAC: Noridian (CA/NV/FL)</option>
           <option value="WPS">MAC: WPS (IL/MI/MN)</option>
         </select>
-        <select id="payerSelect" onchange="renderCart()" class="text-xs font-medium bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-700 outline-none">
+        <select id="payerSelect" onchange="triggerUpdate()" class="text-xs font-medium bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-700 outline-none">
           <option value="medicare">Medicare Part B</option>
           <option value="commercial">Commercial Medical (+15%)</option>
           <option value="vision">Vision Plan (Routine)</option>
         </select>
-        <select id="settingSelect" onchange="renderCart()" class="text-xs font-medium bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-700 outline-none">
+        <select id="settingSelect" onchange="triggerUpdate()" class="text-xs font-medium bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-700 outline-none">
           <option value="private">Private Practice (POS 11)</option>
           <option value="hospital">Hospital Outpatient (POS 22)</option>
         </select>
-        <button onclick="copyEhrMacro()" class="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3.5 py-2 rounded-lg shadow-sm transition">
-          <i data-lucide="clipboard-check" class="w-3.5 h-3.5"></i>
-          <span id="copyBtnText">Copy Note & Superbill</span>
-        </button>
       </div>
+    </div>
+    
+    <!-- TABS -->
+    <div class="max-w-7xl mx-auto flex gap-6 mt-4">
+      <button id="btnTabDb" onclick="switchTab('db')" class="tab-active pb-2 text-sm font-bold flex items-center gap-1.5 transition">
+        <i data-lucide="book-open" class="w-4 h-4"></i> Reference Database
+      </button>
+      <button id="btnTabCart" onclick="switchTab('cart')" class="tab-inactive pb-2 text-sm font-bold flex items-center gap-1.5 transition">
+        <i data-lucide="shopping-cart" class="w-4 h-4"></i> Encounter Cart 
+        <span id="cartCountBadge" class="bg-blue-100 text-blue-800 text-[10px] px-1.5 py-0.5 rounded-full ml-1">0</span>
+      </button>
     </div>
   </header>
 
@@ -59,7 +68,7 @@
     <aside class="lg:col-span-4 flex flex-col gap-3.5">
       <div class="relative">
         <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
-        <input type="text" id="searchInput" oninput="filterDiagnoses()" placeholder="Search to add to encounter..." class="w-full pl-9 pr-4 py-2 text-xs bg-white border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <input type="text" id="searchInput" oninput="filterDiagnoses()" placeholder="Search ICD-10 or name..." class="w-full pl-9 pr-4 py-2 text-xs bg-white border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
       </div>
 
       <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm grid grid-cols-2 gap-2">
@@ -85,90 +94,132 @@
 
       <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm flex-1 flex flex-col">
         <div class="px-4 py-2.5 bg-slate-50/90 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase flex justify-between">
-          <span>Database</span><span id="countBadge" class="bg-slate-200 text-slate-700 rounded-full px-2 py-0.5 text-[10px]">0</span>
+          <span>Database</span><span id="dbCountBadge" class="bg-slate-200 text-slate-700 rounded-full px-2 py-0.5 text-[10px]">0</span>
         </div>
         <div id="diagnosisList" class="divide-y divide-slate-100 overflow-y-auto max-h-[600px]"></div>
       </div>
     </aside>
 
-    <!-- Content Area: Encounter Cart & Billing -->
-    <section class="lg:col-span-8 flex flex-col gap-5">
+    <!-- Content Area -->
+    <section class="lg:col-span-8 flex flex-col gap-5 relative">
       
-      <!-- Financial Top Bar -->
-      <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex items-center justify-between">
-        <div>
-          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Encounter Total Allowable</span>
-          <div id="totalFeeDisplay" class="text-3xl font-extrabold text-emerald-600">$0.00</div>
-        </div>
-        <div class="text-right">
-          <div id="ccWarning" class="hidden text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 px-2 py-1 rounded mb-1">
-            <i data-lucide="alert-triangle" class="w-3 h-3 inline"></i> Chief Complaint mismatch risk! Ensure CC is medical.
+      <!-- TAB 1: DB INSPECTOR -->
+      <div id="viewDb" class="flex flex-col gap-5">
+        
+        <!-- Reimbursement Pearl Callout -->
+        <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-5 shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <h4 class="text-xs font-bold text-indigo-800 uppercase flex items-center gap-1.5 mb-1.5">
+                <i data-lucide="lightbulb" class="w-4 h-4 text-indigo-600"></i> Clinical & Reimbursement Pearl
+              </h4>
+              <p id="reimbursementPearl" class="text-xs text-indigo-900 font-medium leading-relaxed"></p>
+            </div>
+            <button onclick="addToCart(activeCondition)" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm flex items-center gap-2 transition whitespace-nowrap">
+              <i data-lucide="plus" class="w-4 h-4"></i> Add to Encounter
+            </button>
           </div>
-          <span class="text-[11px] font-bold text-blue-600 uppercase tracking-wider block">Max RTC</span>
-          <div id="rtcDisplay" class="text-xl font-bold text-slate-800">—</div>
         </div>
+
+        <!-- Details Card -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col gap-4">
+          <div>
+            <span id="ogIcdBadge" class="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200">ICD-10</span>
+            <h2 id="ogDiagName" class="text-lg font-bold text-slate-900 mt-2">Select a condition</h2>
+          </div>
+          <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-start gap-3.5">
+            <div class="bg-blue-600 text-white font-mono font-bold text-xs px-2.5 py-1 rounded-lg">RTC</div>
+            <div>
+              <div class="text-xs font-bold text-slate-800" id="ogRtc"></div>
+              <p class="text-[10px] text-slate-500 mt-0.5">Recommended standard of care cadence.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Procedures List -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col gap-3">
+          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Eligible Testing & Procedures</h3>
+          <div id="ogProceduresList" class="space-y-2"></div>
+        </div>
+
       </div>
 
-      <!-- Active Patient Cart -->
-      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-        <h3 class="text-xs font-bold text-slate-700 uppercase mb-3 flex items-center gap-1.5">
-          <i data-lucide="users" class="w-4 h-4 text-blue-600"></i> Active Patient Encounter (Cart)
-        </h3>
-        <div id="cartList" class="flex flex-col gap-3">
-          <p class="text-xs text-slate-400 italic" id="emptyCartMsg">Search and click a condition to add it to the encounter.</p>
+      <!-- TAB 2: ENCOUNTER CART -->
+      <div id="viewCart" class="hidden flex-col gap-5">
+        
+        <!-- Financial Top Bar -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex items-center justify-between">
+          <div>
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Encounter Total Allowable</span>
+            <div id="totalFeeDisplay" class="text-3xl font-extrabold text-emerald-600 mt-1">$0.00</div>
+          </div>
+          <div class="text-right flex flex-col items-end">
+            <button onclick="copyEhrMacro()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm flex items-center gap-2 transition mb-2">
+              <i data-lucide="clipboard-check" class="w-4 h-4"></i> Copy Note & Superbill
+            </button>
+            <div id="ccWarning" class="hidden text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 px-2 py-1 rounded">
+              <i data-lucide="alert-triangle" class="w-3 h-3 inline"></i> CC Mismatch Risk!
+            </div>
+          </div>
         </div>
-      </div>
 
-      <!-- MDM Exam Leveler -->
-      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-        <h3 class="text-xs font-bold text-slate-700 uppercase mb-3 flex items-center gap-1.5">
-          <i data-lucide="stethoscope" class="w-4 h-4 text-emerald-600"></i> Medical Decision Making (MDM) Leveler
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-          <label class="flex items-center gap-2 text-xs font-medium"><input type="radio" name="codeType" value="99" checked onchange="renderCart()"> E/M Codes (992XX)</label>
-          <label class="flex items-center gap-2 text-xs font-medium"><input type="radio" name="codeType" value="92" onchange="renderCart()"> Eye Codes (920XX)</label>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <button onclick="setExamLevel('stable')" id="btnStable" class="p-3 border rounded-xl text-left hover:bg-slate-50 transition">
-            <span class="block text-xs font-bold text-slate-800" id="lblStable">Stable (99213 / 92012)</span>
-            <span class="block text-[10px] text-slate-500 mt-1">1 stable chronic illness, low complexity.</span>
-          </button>
-          <button onclick="setExamLevel('moderate')" id="btnMod" class="p-3 border rounded-xl text-left hover:bg-slate-50 transition border-blue-500 bg-blue-50">
-            <span class="block text-xs font-bold text-blue-800" id="lblMod">Progressing / Rx (99214 / 92014)</span>
-            <span class="block text-[10px] text-blue-600 mt-1">1 progressing illness or Rx drug management.</span>
-          </button>
-          <button onclick="setExamLevel('severe')" id="btnSev" class="p-3 border rounded-xl text-left hover:bg-slate-50 transition">
-            <span class="block text-xs font-bold text-slate-800" id="lblSev">Severe / ER (99215)</span>
-            <span class="block text-[10px] text-slate-500 mt-1">Severe exacerbation, threat to life/vision.</span>
-          </button>
-        </div>
-        <div class="mt-3 flex items-center gap-3">
-          <span class="text-xs font-bold bg-emerald-100 text-emerald-800 px-2 py-1 rounded" id="examOutputBadge">99214 ($132.00)</span>
-          <span class="text-[10px] text-slate-500">Based on standard Medicare non-facility.</span>
-        </div>
-      </div>
-
-      <!-- Procedures & Pointers -->
-      <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-        <div class="flex justify-between items-center mb-3">
-          <h3 class="text-xs font-bold text-slate-700 uppercase flex items-center gap-1.5">
-            <i data-lucide="check-square" class="w-4 h-4 text-purple-600"></i> Procedures & Diagnosis Pointers
+        <!-- Active Patient Cart -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <h3 class="text-xs font-bold text-slate-700 uppercase mb-3 flex items-center gap-1.5">
+            <i data-lucide="users" class="w-4 h-4 text-blue-600"></i> Active Patient Encounter (Cart)
           </h3>
-          <input type="date" id="dosCheck" onchange="renderCart()" class="text-[10px] p-1 border rounded" title="Last Date of Service Check" />
+          <div id="cartList" class="flex flex-col gap-3">
+            <p class="text-xs text-slate-400 italic" id="emptyCartMsg">Search and click "Add to Encounter" to build a chart.</p>
+          </div>
         </div>
-        <div id="dosAlert" class="hidden p-2 mb-3 bg-red-50 text-red-700 text-[10px] border border-red-200 rounded font-bold">⚠️ Warning: Selected DOS is < 6 months. High risk of frequency cap denial for OCT/VF.</div>
-        <div id="ncciAlert" class="hidden p-2 mb-3 bg-amber-50 text-amber-800 text-[10px] border border-amber-200 rounded font-bold">⚠️ NCCI Edit: Mutually exclusive procedures selected. Append -59/-XU.</div>
-        <div id="procCartList" class="space-y-2">
-          <p class="text-xs text-slate-400 italic">Add conditions to cart to reveal available procedures.</p>
-        </div>
-      </div>
 
-      <!-- EHR Macro Output -->
-      <div class="bg-slate-900 border border-slate-700 rounded-2xl p-5 shadow-sm flex flex-col gap-2">
-        <h3 class="text-xs font-bold text-slate-300 uppercase flex items-center gap-1.5">
-          <i data-lucide="terminal" class="w-4 h-4 text-emerald-400"></i> Generated EHR Macro / I&R
-        </h3>
-        <pre id="ehrOutput" class="text-[10px] text-emerald-400 font-mono whitespace-pre-wrap leading-relaxed select-all"></pre>
+        <!-- MDM Exam Leveler -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <h3 class="text-xs font-bold text-slate-700 uppercase mb-3 flex items-center gap-1.5">
+            <i data-lucide="stethoscope" class="w-4 h-4 text-emerald-600"></i> Medical Decision Making (MDM) Leveler
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+            <label class="flex items-center gap-2 text-xs font-medium"><input type="radio" name="codeType" value="99" checked onchange="triggerUpdate()"> E/M Codes (992XX)</label>
+            <label class="flex items-center gap-2 text-xs font-medium"><input type="radio" name="codeType" value="92" onchange="triggerUpdate()"> Eye Codes (920XX)</label>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <button onclick="setExamLevel('stable')" id="btnStable" class="p-3 border rounded-xl text-left hover:bg-slate-50 transition">
+              <span class="block text-xs font-bold text-slate-800">Stable (99213 / 92012)</span>
+            </button>
+            <button onclick="setExamLevel('moderate')" id="btnMod" class="p-3 border rounded-xl text-left hover:bg-slate-50 transition border-blue-500 bg-blue-50">
+              <span class="block text-xs font-bold text-blue-800">Progressing / Rx (99214 / 92014)</span>
+            </button>
+            <button onclick="setExamLevel('severe')" id="btnSev" class="p-3 border rounded-xl text-left hover:bg-slate-50 transition">
+              <span class="block text-xs font-bold text-slate-800">Severe / ER (99215)</span>
+            </button>
+          </div>
+          <div class="mt-3 flex items-center gap-3">
+            <span class="text-xs font-bold bg-emerald-100 text-emerald-800 px-2 py-1 rounded" id="examOutputBadge">99214 ($132.00)</span>
+          </div>
+        </div>
+
+        <!-- Procedures & Pointers -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-xs font-bold text-slate-700 uppercase flex items-center gap-1.5">
+              <i data-lucide="check-square" class="w-4 h-4 text-purple-600"></i> Procedures & Pointers
+            </h3>
+            <input type="date" id="dosCheck" onchange="triggerUpdate()" class="text-[10px] p-1 border rounded" title="Last Date of Service" />
+          </div>
+          <div id="dosAlert" class="hidden p-2 mb-3 bg-red-50 text-red-700 text-[10px] border border-red-200 rounded font-bold">⚠️ Warning: Selected DOS is < 6 months. High risk of frequency cap denial for OCT/VF.</div>
+          <div id="ncciAlert" class="hidden p-2 mb-3 bg-amber-50 text-amber-800 text-[10px] border border-amber-200 rounded font-bold">⚠️ NCCI Edit: Mutually exclusive procedures selected. Append -59/-XU.</div>
+          <div id="cartProceduresList" class="space-y-2">
+            <p class="text-xs text-slate-400 italic">Add conditions to cart to reveal procedures.</p>
+          </div>
+        </div>
+
+        <!-- EHR Macro Output -->
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl p-5 shadow-sm">
+          <h3 class="text-xs font-bold text-slate-300 uppercase flex items-center gap-1.5 mb-2">
+            <i data-lucide="terminal" class="w-4 h-4 text-emerald-400"></i> Generated EHR Macro
+          </h3>
+          <pre id="ehrOutput" class="text-[10px] text-emerald-400 font-mono whitespace-pre-wrap leading-relaxed select-all">Add conditions to cart.</pre>
+        </div>
       </div>
 
     </section>
@@ -176,7 +227,6 @@
 
   <script>
     // MASSIVE COMPREHENSIVE DATABASE: 155+ Optometric Conditions
-    // Condensed JSON format to satisfy output constraints while retaining full clinical depth.
     const DB_RAW = [
       { icd: "H40.11", n: "Primary open-angle glaucoma", cat: "Glaucoma", rtc: "3 - 4 Months", p: [{c: "92133", n: "OCT ON", f: 42}, {c: "92083", n: "VF 24-2", f: 65}, {c: "65855", n: "SLT", f: 245, g: 10}] },
       { icd: "H40.12", n: "Low-tension glaucoma (NTG)", cat: "Glaucoma", rtc: "3 - 4 Months", p: [{c: "92133", n: "OCT ON", f: 42}, {c: "92083", n: "VF 24-2", f: 65}] },
@@ -355,10 +405,43 @@
       { icd: "H52.31", n: "Anisometropia", cat: "Refractive", rtc: "12 Months", p: [] }
     ];
 
+    function getReimbursementPearl(cat, icd) {
+      if (icd.includes("H40.21") || icd.includes("H34.1") || icd.includes("H47.02")) return "STAT referral or ophthalmic emergency warrants a 99215. Document high MDM threat to life/vision.";
+      if (cat === "Glaucoma") return "Stagger OCT (92133) and VF (92083) across different visits to optimize cash flow and avoid NCCI modifier -59 scrutiny.";
+      if (cat === "Retina") return "Fundus photo (92250) is inherently bilateral. Never append -RT/-LT or bill 2 units. Bill 99214 if actively managing edema/exudation.";
+      if (cat === "Cornea & OSD" && icd.includes("T15")) return "Append Modifier -25 to E/M code if a significant, separate evaluation was performed before FB removal.";
+      if (cat === "Cornea & OSD") return "For dry eye procedures (punctal plugs), ensure conservative treatment failure (artificial tears) is documented to support medical necessity.";
+      if (cat === "Neuro") return "Prioritize E/M (99XXX) over eye codes (92XXX) as neuro cases inherently meet moderate/high MDM criteria.";
+      if (cat === "Cataract") return "Medicare denies OCT/VF for routine cataracts. Only bill if comorbid pathology exists. Append -55 if co-managing post-op.";
+      if (cat === "Peds") return "Refraction (92015) is statutorily non-covered by Medicare. Bill directly to patient or vision plan.";
+      if (cat === "High-Risk Rx") return "Standard 24-2 VF is not accepted for Plaquenil screening. Must use 10-2. Do not bill 92134 and 92250 on same day without distinct pathology.";
+      return "Align E/M level with documented Medical Decision Making (MDM) rather than defaulting to generic routine eye codes.";
+    }
+
     let cart = [];
+    let cartProcedures = [];
     let filteredList = [...DB_RAW];
-    let examLevel = 'moderate'; // stable, moderate, severe
-    let codeType = '99'; // 99 or 92
+    let activeCondition = DATABASE[0];
+    let examLevel = 'moderate'; 
+    let currentTab = 'db';
+
+    function switchTab(tabId) {
+      currentTab = tabId;
+      if (tabId === 'db') {
+        document.getElementById('viewDb').classList.remove('hidden');
+        document.getElementById('viewCart').classList.add('hidden');
+        document.getElementById('viewCart').classList.remove('flex');
+        document.getElementById('btnTabDb').className = 'tab-active pb-2 text-sm font-bold flex items-center gap-1.5 transition';
+        document.getElementById('btnTabCart').className = 'tab-inactive pb-2 text-sm font-bold flex items-center gap-1.5 transition';
+      } else {
+        document.getElementById('viewDb').classList.add('hidden');
+        document.getElementById('viewCart').classList.remove('hidden');
+        document.getElementById('viewCart').classList.add('flex');
+        document.getElementById('btnTabDb').className = 'tab-inactive pb-2 text-sm font-bold flex items-center gap-1.5 transition';
+        document.getElementById('btnTabCart').className = 'tab-active pb-2 text-sm font-bold flex items-center gap-1.5 transition';
+        renderCart();
+      }
+    }
 
     function filterDiagnoses() {
       const search = document.getElementById("searchInput").value.toLowerCase();
@@ -368,7 +451,7 @@
       filteredList = DB_RAW.filter(c => {
         const mS = c.icd.toLowerCase().includes(search) || c.n.toLowerCase().includes(search);
         const mC = cat === "all" || c.cat.includes(cat);
-        const mP = !procOnly || (c.p && c.p.length > 0 && c.p.some(pr => pr.g !== undefined)); // Has a surgical/laser procedure
+        const mP = !procOnly || (c.p && c.p.length > 0 && c.p.some(pr => pr.g !== undefined)); 
         return mS && mC && mP;
       });
       renderDatabase();
@@ -377,45 +460,71 @@
     function renderDatabase() {
       const listEl = document.getElementById("diagnosisList");
       listEl.innerHTML = "";
-      document.getElementById("countBadge").innerText = filteredList.length;
+      document.getElementById("dbCountBadge").innerText = filteredList.length;
 
       filteredList.forEach(c => {
         const btn = document.createElement("button");
-        btn.onclick = () => addToCart(c);
+        btn.onclick = () => { activeCondition = c; loadDbCondition(); };
         btn.className = `w-full text-left p-3 transition flex flex-col gap-1 border-l-4 hover:bg-slate-50 border-transparent`;
         btn.innerHTML = `
           <div class="flex items-center justify-between">
-            <span class="font-mono text-xs font-bold text-blue-700 bg-blue-100/60 px-1.5 py-0.5 rounded">${c.icd} <i data-lucide="plus-circle" class="w-3 h-3 inline"></i></span>
+            <span class="font-mono text-xs font-bold text-blue-700 bg-blue-100/60 px-1.5 py-0.5 rounded">${c.icd}</span>
             <span class="text-[9px] uppercase text-slate-400 font-bold">${c.cat}</span>
           </div>
           <span class="text-xs text-slate-800 line-clamp-2 font-medium mt-0.5">${c.n}</span>
         `;
         listEl.appendChild(btn);
       });
+      if (filteredList.length > 0) {
+        activeCondition = filteredList[0];
+        loadDbCondition();
+      }
       lucide.createIcons();
     }
 
+    function loadDbCondition() {
+      if(currentTab !== 'db') switchTab('db');
+      document.getElementById("ogIcdBadge").innerText = activeCondition.icd;
+      document.getElementById("ogDiagName").innerText = activeCondition.n;
+      document.getElementById("ogRtc").innerText = activeCondition.rtc;
+      document.getElementById("reimbursementPearl").innerText = getReimbursementPearl(activeCondition.cat, activeCondition.icd);
+
+      const procEl = document.getElementById("ogProceduresList");
+      procEl.innerHTML = "";
+      if (!activeCondition.p || activeCondition.p.length === 0) {
+        procEl.innerHTML = `<p class="text-xs text-slate-400 italic">No specialized procedures indicated.</p>`;
+      } else {
+        activeCondition.p.forEach(p => {
+          procEl.innerHTML += `
+            <div class="p-3 border rounded-xl bg-slate-50 flex items-center justify-between">
+              <div>
+                <span class="font-mono text-xs font-bold text-slate-800">${p.c}</span> <span class="text-xs text-slate-600">${p.n}</span>
+                ${p.g !== undefined ? `<span class="text-[9px] bg-purple-100 text-purple-700 px-1 rounded ml-2">${p.g}-Day Global</span>` : ''}
+              </div>
+              <span class="text-xs font-mono font-bold text-emerald-600">+$${p.f}</span>
+            </div>
+          `;
+        });
+      }
+    }
+
     function addToCart(condition) {
-      // Don't add duplicates
-      if (cart.some(item => item.base.icd === condition.icd)) return;
+      if (cart.some(item => item.base.icd === condition.icd)) {
+        switchTab('cart');
+        return;
+      }
       cart.push({
         base: condition,
-        lat: "3", // default bilateral
-        stage: condition.cat === 'Glaucoma' ? "2" : "", // default moderate if glauc
+        lat: "3", 
+        stage: condition.cat === 'Glaucoma' ? "2" : "", 
         isPrimary: cart.length === 0
       });
-      document.getElementById("emptyCartMsg").style.display = "none";
-      renderCart();
+      switchTab('cart');
     }
 
     function removeFromCart(index) {
       cart.splice(index, 1);
-      if (cart.length > 0 && !cart.some(c => c.isPrimary)) {
-        cart[0].isPrimary = true;
-      }
-      if (cart.length === 0) {
-        document.getElementById("emptyCartMsg").style.display = "block";
-      }
+      if (cart.length > 0 && !cart.some(c => c.isPrimary)) cart[0].isPrimary = true;
       renderCart();
     }
 
@@ -426,7 +535,7 @@
 
     function updateCartItem(index, field, value) {
       cart[index][field] = value;
-      renderCart();
+      triggerUpdate();
     }
 
     function setExamLevel(level) {
@@ -434,11 +543,10 @@
       document.getElementById("btnStable").classList.remove("border-blue-500", "bg-blue-50");
       document.getElementById("btnMod").classList.remove("border-blue-500", "bg-blue-50");
       document.getElementById("btnSev").classList.remove("border-blue-500", "bg-blue-50");
-
       if (level === 'stable') document.getElementById("btnStable").classList.add("border-blue-500", "bg-blue-50");
       if (level === 'moderate') document.getElementById("btnMod").classList.add("border-blue-500", "bg-blue-50");
       if (level === 'severe') document.getElementById("btnSev").classList.add("border-blue-500", "bg-blue-50");
-      renderCart();
+      triggerUpdate();
     }
 
     function getExamFeeAndCode() {
@@ -450,46 +558,34 @@
       } else {
         if (examLevel === 'stable') return {c: "92012", f: 90.00};
         if (examLevel === 'moderate') return {c: "92014", f: 130.00};
-        if (examLevel === 'severe') return {c: "92014", f: 130.00}; // 92 codes max at 92014
+        if (examLevel === 'severe') return {c: "92014", f: 130.00}; 
       }
     }
 
-    let cartProcedures = [];
-
     function renderCart() {
+      document.getElementById("cartCountBadge").innerText = cart.length;
       const cartEl = document.getElementById("cartList");
       cartEl.innerHTML = "";
+      
       if (cart.length === 0) {
-        cartEl.innerHTML = `<p class="text-xs text-slate-400 italic" id="emptyCartMsg">Search and click a condition to add it to the encounter.</p>`;
-      }
-
-      // Check for CC mismatch
-      const payer = document.getElementById("payerSelect").value;
-      const ccWarning = document.getElementById("ccWarning");
-      if (payer === 'medicare' && cart.some(c => c.base.cat === 'Refractive' && c.isPrimary)) {
-        ccWarning.classList.remove("hidden");
-      } else {
-        ccWarning.classList.add("hidden");
+        cartEl.innerHTML = `<p class="text-xs text-slate-400 italic" id="emptyCartMsg">Search and click "Add to Encounter" to build a chart.</p>`;
+        document.getElementById("cartProceduresList").innerHTML = `<p class="text-xs text-slate-400 italic">Add conditions to cart to reveal procedures.</p>`;
+        cartProcedures = [];
+        triggerUpdate();
+        return;
       }
 
       cart.forEach((item, idx) => {
         let fullIcd = item.base.icd;
-        if (item.base.cat === "Glaucoma" && fullIcd.startsWith("H40.1")) {
-          fullIcd = `${fullIcd.slice(0,6)}${item.lat}${item.stage}`;
-        } else if (item.base.cat === "Glaucoma" || item.base.cat === "Retina" || item.base.cat === "Cornea & OSD") {
-          fullIcd = `${fullIcd}.${item.lat}`;
-        }
+        if (item.base.cat === "Glaucoma" && fullIcd.startsWith("H40.1")) fullIcd = `${fullIcd.slice(0,6)}${item.lat}${item.stage}`;
+        else if (["Glaucoma", "Retina", "Cornea & OSD"].includes(item.base.cat)) fullIcd = `${fullIcd}.${item.lat}`;
 
         const div = document.createElement("div");
         div.className = `p-3 border rounded-xl flex flex-col gap-2 ${item.isPrimary ? 'bg-blue-50/50 border-blue-300' : 'bg-white border-slate-200'}`;
-        
         let stagingHtml = item.base.cat === 'Glaucoma' ? `
           <select onchange="updateCartItem(${idx}, 'stage', this.value)" class="text-[10px] p-1 border rounded">
-            <option value="1" ${item.stage==='1'?'selected':''}>Mild</option>
-            <option value="2" ${item.stage==='2'?'selected':''}>Moderate</option>
-            <option value="3" ${item.stage==='3'?'selected':''}>Severe</option>
-          </select>
-        ` : '';
+            <option value="1" ${item.stage==='1'?'selected':''}>Mild</option><option value="2" ${item.stage==='2'?'selected':''}>Mod</option><option value="3" ${item.stage==='3'?'selected':''}>Sev</option>
+          </select>` : '';
 
         div.innerHTML = `
           <div class="flex justify-between items-start">
@@ -502,9 +598,7 @@
           </div>
           <div class="flex items-center gap-2 mt-1">
             <select onchange="updateCartItem(${idx}, 'lat', this.value)" class="text-[10px] p-1 border rounded">
-              <option value="3" ${item.lat==='3'?'selected':''}>OU</option>
-              <option value="1" ${item.lat==='1'?'selected':''}>OD</option>
-              <option value="2" ${item.lat==='2'?'selected':''}>OS</option>
+              <option value="3" ${item.lat==='3'?'selected':''}>OU</option><option value="1" ${item.lat==='1'?'selected':''}>OD</option><option value="2" ${item.lat==='2'?'selected':''}>OS</option>
             </select>
             ${stagingHtml}
             ${item.isPrimary ? '<span class="text-[9px] bg-blue-600 text-white px-1.5 py-0.5 rounded">PRIMARY</span>' : ''}
@@ -513,142 +607,115 @@
         cartEl.appendChild(div);
       });
 
-      // Update Exam Badge
-      const examData = getExamFeeAndCode();
-      document.getElementById("examOutputBadge").innerText = `${examData.c} ($${examData.f.toFixed(2)})`;
-
-      // Render Procedures
-      renderProcedures();
-      updateCalculation();
-      generateMacro();
-      lucide.createIcons();
-    }
-
-    function renderProcedures() {
-      const procEl = document.getElementById("proceduresList");
-      procEl.innerHTML = "";
+      // Generate Procedures Array
       cartProcedures = [];
-
-      // Collect and deduplicate procedures
       cart.forEach((item, cartIdx) => {
         if (!item.base.p) return;
         item.base.p.forEach(proc => {
-          let existing = cartProcedures.find(cp => cp.cpt === proc.c);
-          if (!existing) {
+          if (!cartProcedures.find(cp => cp.cpt === proc.c)) {
             cartProcedures.push({ cpt: proc.c, name: proc.n, fee: proc.f, global: proc.g, checked: false, pointer: cartIdx });
           }
         });
       });
 
-      if (cartProcedures.length === 0) {
-        procEl.innerHTML = `<p class="text-xs text-slate-400 italic">No special procedures indicated for current cart.</p>`;
-      } else {
-        cartProcedures.forEach((p, idx) => {
-          const div = document.createElement("div");
-          div.className = "p-2.5 border rounded-lg bg-slate-50 flex items-center justify-between";
-          
-          let pointerOptions = cart.map((c, i) => `<option value="${i}" ${p.pointer === i ? 'selected' : ''}>Pt. ${i+1} (${c.base.icd})</option>`).join("");
+      renderProcedures();
+      triggerUpdate();
+    }
 
-          div.innerHTML = `
-            <div class="flex items-center gap-3">
-              <input type="checkbox" id="cbProc${idx}" onchange="toggleProc(${idx}, this.checked)" class="rounded w-4 h-4 text-blue-600">
-              <div>
-                <span class="font-mono text-xs font-bold text-slate-800">${p.cpt}</span> <span class="text-xs text-slate-600">${p.name}</span>
-                ${p.global !== undefined ? `<span class="text-[9px] bg-purple-100 text-purple-700 px-1 rounded ml-2">${p.global}-Day Global</span>` : ''}
-              </div>
-            </div>
-            <div class="flex items-center gap-2">
-              <select onchange="updateProcPointer(${idx}, this.value)" class="text-[10px] p-1 border rounded bg-white" title="Diagnosis Pointer">
-                ${pointerOptions}
-              </select>
-              <span class="text-xs font-mono font-bold text-emerald-600">+$${p.fee}</span>
-            </div>
-          `;
-          procEl.appendChild(div);
-        });
+    function renderProcedures() {
+      const procEl = document.getElementById("cartProceduresList");
+      procEl.innerHTML = "";
+      if (cartProcedures.length === 0 && cart.length > 0) {
+        procEl.innerHTML = `<p class="text-xs text-slate-400 italic">No special procedures indicated for current cart.</p>`;
+        return;
       }
 
-      // Check NCCI
+      cartProcedures.forEach((p, idx) => {
+        const div = document.createElement("div");
+        div.className = "p-2.5 border rounded-lg bg-slate-50 flex items-center justify-between";
+        let pointerOptions = cart.map((c, i) => `<option value="${i}" ${p.pointer === i ? 'selected' : ''}>Pt. ${i+1} (${c.base.icd})</option>`).join("");
+        div.innerHTML = `
+          <div class="flex items-center gap-3">
+            <input type="checkbox" onchange="toggleProc(${idx}, this.checked)" ${p.checked?'checked':''} class="rounded w-4 h-4 text-blue-600">
+            <div>
+              <span class="font-mono text-xs font-bold text-slate-800">${p.cpt}</span> <span class="text-xs text-slate-600">${p.name}</span>
+              ${p.global !== undefined ? `<span class="text-[9px] bg-purple-100 text-purple-700 px-1 rounded ml-2">${p.global}-Day Global</span>` : ''}
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <select onchange="updateProcPointer(${idx}, this.value)" class="text-[10px] p-1 border rounded bg-white">${pointerOptions}</select>
+            <span class="text-xs font-bold text-emerald-600">+$${p.fee}</span>
+          </div>
+        `;
+        procEl.appendChild(div);
+      });
+      lucide.createIcons();
+    }
+
+    function toggleProc(idx, isChecked) {
+      cartProcedures[idx].checked = isChecked;
+      triggerUpdate();
+    }
+
+    function updateProcPointer(idx, pointerVal) {
+      cartProcedures[idx].pointer = parseInt(pointerVal);
+      triggerUpdate();
+    }
+
+    function triggerUpdate() {
+      if(currentTab !== 'cart') return; // Only process calculation if in cart
+      
+      const payer = document.getElementById("payerSelect").value;
+      const setting = document.getElementById("settingSelect").value;
+      const multiplier = payer === "commercial" ? 1.15 : 1.0;
+      const settingAdj = setting === "hospital" ? 0.75 : 1.0;
+
+      // CC Warning
+      if (payer === 'medicare' && cart.some(c => c.base.cat === 'Refractive' && c.isPrimary)) document.getElementById("ccWarning").classList.remove("hidden");
+      else document.getElementById("ccWarning").classList.add("hidden");
+
+      // Exam calculations
+      const examData = getExamFeeAndCode();
+      document.getElementById("examOutputBadge").innerText = `${examData.c} ($${(examData.f * multiplier * settingAdj).toFixed(2)})`;
+      
+      let total = 0;
+      if (payer === "vision") total = 55.00;
+      else {
+        total += examData.f * multiplier * settingAdj;
+        cartProcedures.forEach(p => { if (p.checked) total += p.fee * multiplier; });
+      }
+      document.getElementById("totalFeeDisplay").innerText = `$${total.toFixed(2)}`;
+      document.getElementById("rtcDisplay").innerText = cart.length > 0 ? cart[0].base.rtc : "—";
+
+      // NCCI & DOS Alerts
       const hasOCT = cartProcedures.some(p => p.checked && (p.cpt === '92133' || p.cpt === '92134'));
       const hasPhoto = cartProcedures.some(p => p.checked && p.cpt === '92250');
-      if (hasOCT && hasPhoto) document.getElementById("ncciAlert").classList.remove("hidden");
-      else document.getElementById("ncciAlert").classList.add("hidden");
+      document.getElementById("ncciAlert").classList.toggle("hidden", !(hasOCT && hasPhoto));
 
-      // Check DOS Guardrail
       const dosCheck = document.getElementById("dosCheck").value;
       if (dosCheck && (hasOCT || cartProcedures.some(p => p.checked && p.cpt === '92083'))) {
         const lastDate = new Date(dosCheck);
         const today = new Date();
         const diffMonths = (today.getFullYear() - lastDate.getFullYear()) * 12 + (today.getMonth() - lastDate.getMonth());
-        if (diffMonths < 6) document.getElementById("dosAlert").classList.remove("hidden");
-        else document.getElementById("dosAlert").classList.add("hidden");
-      } else {
-        document.getElementById("dosAlert").classList.add("hidden");
-      }
-    }
+        document.getElementById("dosAlert").classList.toggle("hidden", diffMonths >= 6);
+      } else document.getElementById("dosAlert").classList.add("hidden");
 
-    function toggleProc(idx, isChecked) {
-      cartProcedures[idx].checked = isChecked;
-      renderProcedures();
-      updateCalculation();
       generateMacro();
-    }
-
-    function updateProcPointer(idx, pointerVal) {
-      cartProcedures[idx].pointer = parseInt(pointerVal);
-      generateMacro();
-    }
-
-    function updateCalculation() {
-      const payer = document.getElementById("payerSelect").value;
-      const setting = document.getElementById("settingSelect").value;
-      const visionWarning = document.getElementById("visionWarning");
-      
-      const multiplier = payer === "commercial" ? 1.15 : 1.0;
-      const settingAdj = setting === "hospital" ? 0.75 : 1.0;
-
-      if (payer === "vision") {
-        visionWarning.classList.remove("hidden");
-        document.getElementById("totalFeeDisplay").innerText = "$55.00";
-        return;
-      } else {
-        visionWarning.classList.add("hidden");
-      }
-
-      const examData = getExamFeeAndCode();
-      let total = examData.f * multiplier * settingAdj;
-
-      cartProcedures.forEach(p => {
-        if (p.checked) total += p.fee * multiplier;
-      });
-
-      document.getElementById("totalFeeDisplay").innerText = `$${total.toFixed(2)}`;
-
-      // Update RTC
-      if (cart.length > 0) {
-        document.getElementById("rtcDisplay").innerText = cart[0].base.rtc; // Take primary RTC
-      } else {
-        document.getElementById("rtcDisplay").innerText = "—";
-      }
     }
 
     function generateMacro() {
+      const ehrOut = document.getElementById("ehrOutput");
       if (cart.length === 0) {
-        document.getElementById("ehrOutput").innerText = "Add conditions to cart to generate macro.";
+        ehrOut.innerText = "Add conditions to cart to generate macro.";
         return;
       }
 
-      let text = `=========================================\n`;
-      text += `EHR AUDIT-DEFENSE & SUPERBILL MACRO\n`;
-      text += `=========================================\n\n`;
-
-      text += `ASSESSMENT & PLAN:\n`;
+      let text = `=========================================\nEHR AUDIT-DEFENSE & SUPERBILL MACRO\n=========================================\n\nASSESSMENT & PLAN:\n`;
       cart.forEach((c, idx) => {
         let fullIcd = c.base.icd;
         if (c.base.cat === "Glaucoma" && fullIcd.startsWith("H40.1")) fullIcd = `${fullIcd.slice(0,6)}${c.lat}${c.stage}`;
-        else if (c.base.cat === "Glaucoma" || c.base.cat === "Retina" || c.base.cat === "Cornea & OSD") fullIcd = `${fullIcd}.${c.lat}`;
-        text += `${idx + 1}. ${fullIcd} - ${c.base.n} ${c.isPrimary ? '[PRIMARY]' : ''}\n`;
-        text += `   - RTC: ${c.base.rtc}\n`;
+        else if (["Glaucoma", "Retina", "Cornea & OSD"].includes(c.base.cat)) fullIcd = `${fullIcd}.${c.lat}`;
+        text += `${idx + 1}. ${fullIcd} - ${c.base.n} ${c.isPrimary ? '[PRIMARY]' : ''}\n   - RTC: ${c.base.rtc}\n`;
       });
 
       const exam = getExamFeeAndCode();
@@ -659,18 +726,15 @@
       if (checkedProcs.length > 0) {
         text += `\nPROCEDURES & INTERPRETATION:\n`;
         checkedProcs.forEach(p => {
-          text += `- CPT ${p.cpt} (${p.name})\n`;
-          text += `  * Pointer: Line ${p.pointer + 1} (${cart[p.pointer].base.icd})\n`;
-          text += `  * I&R: Test performed for medical necessity to track structural/functional progression. Results reviewed with patient. Continue current management.\n`;
+          let ptIcd = cart[p.pointer].base.icd;
+          text += `- CPT ${p.cpt} (${p.name})\n  * Pointer: Line ${p.pointer + 1} (${ptIcd})\n  * I&R: Performed for medical necessity tracking. Results reviewed. Continue management.\n`;
         });
       }
-
-      document.getElementById("ehrOutput").innerText = text;
+      ehrOut.innerText = text;
     }
 
     function copyEhrMacro() {
-      const text = document.getElementById("ehrOutput").innerText;
-      navigator.clipboard.writeText(text);
+      navigator.clipboard.writeText(document.getElementById("ehrOutput").innerText);
       const btn = document.getElementById("copyBtnText");
       btn.innerText = "Copied to Clipboard!";
       setTimeout(() => btn.innerText = "Copy Note & Superbill", 2000);
