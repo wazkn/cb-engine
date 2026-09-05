@@ -3,13 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OptoCode Pro | Enterprise Billing & EHR Engine</title>
+  <title>OptoCode Pro | Advanced Clinical & Billing Engine</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
-    tailwind.config = {
-      darkMode: 'class',
-    }
+    tailwind.config = { darkMode: 'class', }
   </script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -21,42 +19,36 @@
     .tab-active { border-bottom: 2px solid #3b82f6; color: #3b82f6; }
     .tab-inactive { border-bottom: 2px solid transparent; color: #64748b; }
     .dark .tab-inactive { color: #94a3b8; }
-    /* Hover dictionary tooltip */
-    .dict-word { text-decoration: underline dotted #3b82f6; cursor: help; position: relative; }
-    .dict-word:hover::after {
-      content: attr(data-def); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
-      background: #1e293b; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 10px;
-      white-space: nowrap; z-index: 50; margin-bottom: 4px; pointer-events: none;
-    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-200 min-h-screen flex flex-col">
 
   <!-- Header -->
-  <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 px-6 py-3 shadow-sm transition-colors">
+  <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 px-6 py-4 shadow-sm transition-colors">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
       <div>
         <div class="flex items-center gap-2">
-          <span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">OptoCode Pro</span>
-          <span class="text-[10px] bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-bold px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">Enterprise EHR</span>
-          <span class="text-[10px] bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-bold px-2 py-0.5 rounded border border-amber-200 dark:border-amber-800" title="Hierarchical Condition Categories Mapped">HCC Risk Adj.</span>
+          <span class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">OptoCode Pro</span>
+          <span class="text-[10px] bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-bold px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">Advanced Audit-Defense</span>
+          <span class="text-[10px] bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 font-bold px-2 py-0.5 rounded border border-indigo-200 dark:border-indigo-800">155+ Conditions</span>
         </div>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">Deep-Level CPT Analysis, Modifiers, I&R Requirements, and EHR Charting Macros</p>
       </div>
       <div class="flex items-center gap-3">
-        <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition">
+        <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition" title="Toggle Dark Mode">
           <i data-lucide="moon" class="w-4 h-4 hidden dark:block"></i>
           <i data-lucide="sun" class="w-4 h-4 block dark:hidden"></i>
         </button>
       </div>
     </div>
-    <div class="max-w-7xl mx-auto flex gap-6 mt-3 border-t border-slate-100 dark:border-slate-700 pt-2 overflow-x-auto">
-      <button onclick="switchTab('db')" id="btnTabDb" class="tab-active pb-2 text-xs font-bold flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="book-open" class="w-4 h-4"></i> Database</button>
-      <button onclick="switchTab('cart')" id="btnTabCart" class="tab-inactive pb-2 text-xs font-bold flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="shopping-cart" class="w-4 h-4"></i> Encounter Cart <span id="cartBadge" class="bg-blue-600 text-white text-[9px] px-1.5 rounded-full">0</span></button>
-      <button onclick="switchTab('denials')" id="btnTabDenials" class="tab-inactive pb-2 text-xs font-bold flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="trending-down" class="w-4 h-4"></i> Top 10 Denials</button>
+    <div class="max-w-7xl mx-auto flex gap-6 mt-4 border-t border-slate-100 dark:border-slate-700 pt-3 overflow-x-auto">
+      <button onclick="switchTab('db')" id="btnTabDb" class="tab-active pb-2 text-sm font-bold flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="book-open" class="w-4 h-4"></i> Clinical Database</button>
+      <button onclick="switchTab('cart')" id="btnTabCart" class="tab-inactive pb-2 text-sm font-bold flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="shopping-cart" class="w-4 h-4"></i> Encounter Cart <span id="cartBadge" class="bg-blue-600 text-white text-[10px] px-1.5 py-0.5 rounded-full">0</span></button>
+      <button onclick="switchTab('academy')" id="btnTabAcademy" class="tab-inactive pb-2 text-sm font-bold flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="graduation-cap" class="w-4 h-4"></i> Coding Academy</button>
     </div>
   </header>
 
-  <!-- Main -->
+  <!-- Main Content -->
   <main class="max-w-7xl mx-auto w-full p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
     
     <!-- Sidebar -->
@@ -65,337 +57,509 @@
         <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
         <input type="text" id="searchInput" oninput="filterDb()" placeholder="Search ICD-10 or diagnosis..." class="w-full pl-9 pr-4 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white" />
       </div>
-      <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm flex-1 flex flex-col max-h-[70vh]">
+      <select id="categoryFilter" onchange="filterDb()" class="w-full text-xs font-bold bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-700 dark:text-slate-300 outline-none">
+        <option value="all">All Specialties</option>
+        <option value="Glaucoma">Glaucoma</option>
+        <option value="Retina">Retina & Macula</option>
+        <option value="Cornea & OSD">Cornea & Ocular Surface</option>
+        <option value="Uveitis">Uveitis & Inflammation</option>
+        <option value="Neuro">Neuro-Optometry</option>
+        <option value="Peds">Pediatrics & Strabismus</option>
+        <option value="Cataract">Cataract & Post-Op</option>
+        <option value="High-Risk Rx">Systemic / High-Risk</option>
+      </select>
+      <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm flex-1 flex flex-col max-h-[75vh]">
         <div id="diagnosisList" class="divide-y divide-slate-100 dark:divide-slate-700 overflow-y-auto"></div>
       </div>
     </aside>
 
-    <section id="mainContentPanel" class="lg:col-span-8 flex flex-col gap-4">
+    <section id="mainContentPanel" class="lg:col-span-8 flex flex-col gap-5">
       
-      <!-- TAB: DATABASE -->
-      <div id="viewDb" class="flex flex-col gap-4">
-        <div class="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-2xl p-4 shadow-sm flex justify-between items-center">
+      <!-- TAB: CLINICAL DATABASE -->
+      <div id="viewDb" class="flex flex-col gap-5">
+        
+        <!-- Header Info Card -->
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h4 class="text-xs font-bold text-indigo-800 dark:text-indigo-300 uppercase mb-1">Reimbursement Pearl</h4>
-            <p id="pearlTxt" class="text-xs text-indigo-900 dark:text-indigo-200 font-medium"></p>
+            <div class="flex items-center gap-2 mb-2">
+              <span id="dbIcd" class="font-mono text-sm font-bold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded"></span>
+              <span id="dbCat" class="text-[10px] font-bold text-slate-500 uppercase tracking-wider"></span>
+            </div>
+            <h2 id="dbName" class="text-xl font-bold dark:text-white leading-tight"></h2>
+            <div class="flex items-center gap-3 mt-3">
+              <span class="text-[11px] bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded font-bold text-slate-600 dark:text-slate-300">RTC: <span id="dbRtc" class="text-slate-900 dark:text-white"></span></span>
+              <span id="dbSnomed" class="text-[11px] bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded font-mono text-slate-600 dark:text-slate-300"></span>
+            </div>
           </div>
-          <button onclick="addToCart(activeCond)" class="bg-blue-600 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm flex items-center gap-1 shrink-0"><i data-lucide="plus" class="w-3 h-3"></i> Add to Cart</button>
+          <button onclick="addToCart(activeCond)" class="bg-blue-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md hover:bg-blue-700 flex items-center gap-1.5 shrink-0 transition"><i data-lucide="plus" class="w-4 h-4"></i> Add to Cart</button>
         </div>
-        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
-          <div class="flex items-center gap-2 mb-2">
-            <span id="dbIcd" class="font-mono text-sm font-bold text-blue-700 dark:text-blue-400"></span>
-            <span id="dbHcc" class="hidden text-[9px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-bold">HCC Risk</span>
-            <span id="dbSnomed" class="text-[9px] bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-1.5 py-0.5 rounded font-bold font-mono"></span>
+
+        <!-- Clinical Pearls & Pitfalls -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-2xl p-5 shadow-sm">
+            <h4 class="text-xs font-bold text-indigo-800 dark:text-indigo-300 uppercase mb-2 flex items-center gap-1.5"><i data-lucide="lightbulb" class="w-4 h-4"></i> Reimbursement Pearl</h4>
+            <p id="dbPearl" class="text-xs text-indigo-900 dark:text-indigo-200 leading-relaxed font-medium"></p>
           </div>
-          <h2 id="dbName" class="text-lg font-bold dark:text-white"></h2>
-          <div id="dbAlert" class="mt-2 text-[10px] font-bold text-red-600"></div>
-          <div id="dbProcs" class="mt-4 space-y-2"></div>
+          <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-5 shadow-sm">
+            <h4 class="text-xs font-bold text-red-800 dark:text-red-300 uppercase mb-2 flex items-center gap-1.5"><i data-lucide="alert-triangle" class="w-4 h-4"></i> Audit/Billing Pitfall</h4>
+            <p id="dbPitfall" class="text-xs text-red-900 dark:text-red-200 leading-relaxed font-medium"></p>
+          </div>
+        </div>
+
+        <!-- Procedures List -->
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
+          <h3 class="text-sm font-bold uppercase tracking-wider mb-4 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">Eligible CPT Codes & I&R Rules</h3>
+          <div id="dbProcs" class="space-y-4"></div>
         </div>
       </div>
 
-      <!-- TAB: CART -->
-      <div id="viewCart" class="hidden flex-col gap-4">
-        <!-- Controls & COB Router -->
-        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 shadow-sm grid grid-cols-2 md:grid-cols-4 gap-2">
-          <select id="macSelect" onchange="updateCart()" class="text-[10px] font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded p-2 dark:text-white outline-none">
-            <option value="1.05">MAC: NGS (NY)</option><option value="1.00">MAC: Novitas (PA)</option><option value="1.10">MAC: Noridian (CA)</option>
-          </select>
-          <select id="payerSelect" onchange="updateCart()" class="text-[10px] font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded p-2 dark:text-white outline-none">
-            <option value="medicare">Payer: Medicare</option><option value="commercial">Payer: Medical (+15%)</option><option value="vision">Payer: Vision Plan</option>
-          </select>
-          <select id="settingSelect" onchange="updateCart()" class="text-[10px] font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded p-2 dark:text-white outline-none">
-            <option value="11">POS: 11 (Office)</option><option value="02">POS: 02 (Telehealth)</option><option value="22">POS: 22 (Facility)</option>
-          </select>
-          <div class="flex items-center gap-2 text-[10px] font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded p-2 dark:text-white">
-            <span>Time (m):</span><input type="number" id="timeInput" oninput="updateCart()" class="w-10 bg-transparent outline-none border-b border-slate-400 text-center" placeholder="mins" />
+      <!-- TAB: ENCOUNTER CART -->
+      <div id="viewCart" class="hidden flex-col gap-5">
+        
+        <!-- Cart Controls -->
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase">MAC Region</label>
+            <select id="macSelect" onchange="updateCart()" class="w-full text-xs font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-2 dark:text-white outline-none mt-1">
+              <option value="1.05">NGS (NY/CT/NE)</option><option value="1.00">Novitas (PA/NJ)</option><option value="1.10">Noridian (CA/FL)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase">Primary Payer</label>
+            <select id="payerSelect" onchange="updateCart()" class="w-full text-xs font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-2 dark:text-white outline-none mt-1">
+              <option value="medicare">Medicare Part B</option><option value="commercial">Commercial (+15%)</option><option value="vision">Vision Routine</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase">Place of Service</label>
+            <select id="settingSelect" onchange="updateCart()" class="w-full text-xs font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-2 dark:text-white outline-none mt-1">
+              <option value="11">11 (Office)</option><option value="02">02 (Telehealth)</option><option value="22">22 (Facility)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase">Provider Time</label>
+            <input type="number" id="timeInput" oninput="updateCart()" placeholder="Minutes" class="w-full text-xs font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-2 dark:text-white outline-none mt-1" />
           </div>
         </div>
 
-        <div class="flex items-center justify-between bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-2xl p-4">
-          <div><span class="text-[10px] font-bold text-emerald-800 dark:text-emerald-400 uppercase">Est. Allowable</span><div id="cartTotal" class="text-2xl font-black text-emerald-600 dark:text-emerald-400">$0.00</div></div>
-          <div class="text-right"><span class="text-[10px] font-bold text-slate-500 uppercase">Est. Out-of-Pocket</span><div id="oopTotal" class="text-lg font-bold text-slate-700 dark:text-slate-300">$0.00</div></div>
-        </div>
-
-        <!-- MDM -->
-        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 shadow-sm">
-          <h3 class="text-xs font-bold uppercase mb-2 dark:text-white">E/M & Telehealth Engine</h3>
-          <div class="flex gap-2">
-            <button onclick="setEm('99213')" id="btn213" class="flex-1 p-2 border rounded text-[10px] font-bold text-center hover:bg-slate-50 dark:hover:bg-slate-700 dark:text-white transition">Stable (99213)</button>
-            <button onclick="setEm('99214')" id="btn214" class="flex-1 p-2 border rounded text-[10px] font-bold text-center bg-blue-50 border-blue-500 text-blue-700 dark:bg-blue-900/30 transition">Prog/Rx (99214)</button>
-            <button onclick="setEm('99215')" id="btn215" class="flex-1 p-2 border rounded text-[10px] font-bold text-center hover:bg-slate-50 dark:hover:bg-slate-700 dark:text-white transition">Severe (99215)</button>
+        <!-- MDM & Financials -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- E/M Leveler -->
+          <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="text-xs font-bold uppercase dark:text-white">MDM Exam Leveler</h3>
+              <select id="codeType" onchange="updateCart()" class="text-[10px] bg-slate-100 dark:bg-slate-700 rounded px-1.5 py-0.5 outline-none font-bold dark:text-white">
+                <option value="99">E/M (99XXX)</option><option value="92">Eye Code (92XXX)</option>
+              </select>
+            </div>
+            <div class="flex flex-col gap-2">
+              <button onclick="setEm('99213')" id="btn213" class="p-2 border rounded-xl text-left text-xs font-bold dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700 transition">Stable/Low (99213/92012)</button>
+              <button onclick="setEm('99214')" id="btn214" class="p-2 border rounded-xl text-left text-xs font-bold bg-blue-50 border-blue-500 text-blue-700 dark:bg-blue-900/30 transition">Progressing/Rx (99214/92014)</button>
+              <button onclick="setEm('99215')" id="btn215" class="p-2 border rounded-xl text-left text-xs font-bold dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700 transition">Severe/High (99215)</button>
+            </div>
+            <div id="prolongedBadge" class="hidden mt-2 text-[10px] font-bold bg-purple-100 text-purple-800 px-2 py-1 rounded text-center">+ 99417 (Prolonged Service)</div>
           </div>
-          <div id="prolongedBadge" class="hidden mt-2 text-[10px] font-bold bg-purple-100 text-purple-800 px-2 py-1 rounded"> + 99417 (Prolonged Services Triggered)</div>
+          <!-- Totals -->
+          <div class="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-2xl p-5 flex flex-col justify-center gap-4">
+            <div>
+              <span class="text-[10px] font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider block">Estimated Total Allowable</span>
+              <div id="cartTotal" class="text-4xl font-black text-emerald-600 dark:text-emerald-400 mt-1">$0.00</div>
+            </div>
+            <div class="border-t border-emerald-200/50 dark:border-emerald-800/50 pt-3 flex justify-between items-center">
+              <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Base Exam Fee: <span id="cartExamFee"></span></span>
+              <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Est. Patient OOP: <span id="oopTotal" class="text-slate-800 dark:text-white"></span></span>
+            </div>
+          </div>
         </div>
 
-        <!-- Items & Procedures -->
-        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 shadow-sm">
-          <div class="flex justify-between items-center mb-2">
-            <h3 class="text-xs font-bold uppercase dark:text-white">Diagnoses & Procedures</h3>
-            <button onclick="showClModal()" class="text-[10px] bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded font-bold dark:text-white"><i data-lucide="help-circle" class="w-3 h-3 inline"></i> CL Med Nec Guide</button>
+        <!-- Diagnoses & Procedures -->
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
+          <div class="flex justify-between items-end mb-4 border-b border-slate-100 dark:border-slate-700 pb-2">
+            <h3 class="text-sm font-bold uppercase dark:text-white">Diagnoses & Procedures</h3>
+            <div>
+              <label class="text-[9px] font-bold text-slate-400 block mb-0.5">Last Prior DOS Check (Freq Cap)</label>
+              <input type="date" id="dosCheck" onchange="updateCart()" class="text-xs border rounded p-1 bg-slate-50 dark:bg-slate-900 dark:text-white dark:border-slate-600 outline-none" />
+            </div>
           </div>
           
-          <div id="alertsContainer" class="flex flex-col gap-1 mb-2"></div>
+          <div id="alertsContainer" class="flex flex-col gap-1.5 mb-3"></div>
           
-          <div id="cartItems" class="space-y-2 border-b border-slate-100 dark:border-slate-700 pb-3 mb-3"></div>
-          <div id="cartProcs" class="space-y-2"></div>
+          <!-- Diagnosis Cart -->
+          <div id="cartItems" class="space-y-3 mb-5 border-b border-slate-100 dark:border-slate-700 pb-4"></div>
+          
+          <!-- Procedures Cart -->
+          <div id="cartProcs" class="space-y-3"></div>
         </div>
 
         <!-- Export Bar -->
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-          <button onclick="exportData('macro')" class="p-2 bg-slate-800 text-white text-[10px] font-bold rounded flex items-center justify-center gap-1 hover:bg-slate-700"><i data-lucide="terminal" class="w-3 h-3"></i> Copy EHR Macro</button>
-          <button onclick="exportData('cprs')" class="p-2 bg-blue-800 text-white text-[10px] font-bold rounded flex items-center justify-center gap-1 hover:bg-blue-700"><i data-lucide="file-badge" class="w-3 h-3"></i> Copy VA CPRS</button>
-          <button onclick="exportData('superbill')" class="p-2 bg-indigo-600 text-white text-[10px] font-bold rounded flex items-center justify-center gap-1 hover:bg-indigo-500"><i data-lucide="printer" class="w-3 h-3"></i> Print Superbill PDF</button>
-          <button onclick="exportData('referral')" class="p-2 bg-teal-600 text-white text-[10px] font-bold rounded flex items-center justify-center gap-1 hover:bg-teal-500"><i data-lucide="send" class="w-3 h-3"></i> Referral Letter</button>
-          <button onclick="exportData('handout')" class="p-2 bg-emerald-600 text-white text-[10px] font-bold rounded flex items-center justify-center gap-1 hover:bg-emerald-500"><i data-lucide="user" class="w-3 h-3"></i> Pt. Ed Handout</button>
-          <button onclick="exportData('abn')" class="p-2 bg-red-600 text-white text-[10px] font-bold rounded flex items-center justify-center gap-1 hover:bg-red-500"><i data-lucide="alert-circle" class="w-3 h-3"></i> Generate ABN Form</button>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <button onclick="exportData('macro')" class="p-3 bg-slate-800 text-white text-[11px] font-bold rounded-xl flex justify-center items-center gap-1.5 hover:bg-slate-700 transition shadow-sm"><i data-lucide="terminal" class="w-4 h-4"></i> Copy EHR Macro</button>
+          <button onclick="exportData('cprs')" class="p-3 bg-blue-800 text-white text-[11px] font-bold rounded-xl flex justify-center items-center gap-1.5 hover:bg-blue-700 transition shadow-sm"><i data-lucide="file-badge" class="w-4 h-4"></i> Copy VA CPRS</button>
+          <button onclick="exportData('superbill')" class="p-3 bg-indigo-600 text-white text-[11px] font-bold rounded-xl flex justify-center items-center gap-1.5 hover:bg-indigo-500 transition shadow-sm"><i data-lucide="printer" class="w-4 h-4"></i> Print Superbill PDF</button>
+          <button onclick="exportData('referral')" class="p-3 bg-teal-600 text-white text-[11px] font-bold rounded-xl flex justify-center items-center gap-1.5 hover:bg-teal-500 transition shadow-sm"><i data-lucide="send" class="w-4 h-4"></i> Referral Letter</button>
+          <button onclick="exportData('handout')" class="p-3 bg-emerald-600 text-white text-[11px] font-bold rounded-xl flex justify-center items-center gap-1.5 hover:bg-emerald-500 transition shadow-sm"><i data-lucide="user" class="w-4 h-4"></i> Pt. Ed Handout</button>
+          <button onclick="exportData('abn')" class="p-3 bg-red-600 text-white text-[11px] font-bold rounded-xl flex justify-center items-center gap-1.5 hover:bg-red-500 transition shadow-sm"><i data-lucide="alert-circle" class="w-4 h-4"></i> Generate ABN Form</button>
         </div>
       </div>
 
-      <!-- TAB: DENIALS -->
-      <div id="viewDenials" class="hidden flex-col gap-4">
+      <!-- TAB: CODING ACADEMY -->
+      <div id="viewAcademy" class="hidden flex-col gap-5">
+        <div class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white rounded-2xl p-6 shadow-md">
+          <h2 class="text-xl font-extrabold flex items-center gap-2 mb-2"><i data-lucide="graduation-cap" class="w-6 h-6"></i> Optometric Coding Academy</h2>
+          <p class="text-xs text-blue-100 max-w-2xl leading-relaxed">Master the rules of Medicare compliance, modifiers, and medical decision making to protect your license and optimize legitimate revenue.</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
+            <h3 class="text-sm font-bold uppercase border-b border-slate-100 dark:border-slate-700 pb-2 mb-3 dark:text-white">1. E/M vs. Eye Codes</h3>
+            <div class="space-y-3 text-xs dark:text-slate-300">
+              <p><strong>E/M Codes (99202–99215)</strong> are determined by Medical Decision Making (MDM) OR Total Time. MDM relies on the number/complexity of problems addressed, data reviewed, and risk.</p>
+              <ul class="list-disc pl-4 space-y-1">
+                <li><strong>99213:</strong> Low risk. 1 stable chronic illness.</li>
+                <li><strong>99214:</strong> Moderate risk. 1 progressing illness OR Rx drug management (e.g. prescribing/refilling Latanoprost).</li>
+                <li><strong>99215:</strong> High risk. Severe exacerbation, threat to vision (e.g. acute macula-off RD).</li>
+              </ul>
+              <p class="mt-2"><strong>Eye Codes (92002-92014)</strong> are determined by the exam elements performed (e.g. dilation, gross visual fields) regardless of MDM. Often favored by commercial plans.</p>
+            </div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
+            <h3 class="text-sm font-bold uppercase border-b border-slate-100 dark:border-slate-700 pb-2 mb-3 dark:text-white">2. Audit-Defense Rules</h3>
+            <ul class="space-y-3 text-xs dark:text-slate-300">
+              <li><strong class="text-red-500">The CC Rule:</strong> Never bill a medical exam if the Chief Complaint is "needs new glasses." Document a medical symptom or transition of care.</li>
+              <li><strong class="text-red-500">I&R Mandate:</strong> Every single diagnostic test (OCT, VF, Photo, B-Scan) MUST have a distinct Interpretation & Report in the chart. "Test normal" is an automatic audit failure.</li>
+              <li><strong class="text-red-500">Bilateral Trap:</strong> Codes 92250 (Photo), 76514 (Pach), and 92060 (Sensorimotor) are inherently bilateral. Never append -RT/-LT or bill 2 units.</li>
+              <li><strong class="text-red-500">Frequency Caps:</strong> Most MACs limit stable glaucoma OCT/VFs to once every 6 months. Billing < 6 months requires documented progression.</li>
+            </ul>
+          </div>
+        </div>
+
         <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm">
-          <h2 class="text-sm font-bold uppercase mb-4 dark:text-white"><i data-lucide="trending-down" class="w-4 h-4 inline mr-1 text-red-500"></i> Top 10 Practice Denials & Audit Traps</h2>
-          <ul class="space-y-3 text-xs dark:text-slate-300">
-            <li class="flex gap-2"><span class="font-bold text-red-500">1.</span> 92250 (Fundus Photo) billed bilaterally (-RT/-LT). Rule: Inherently bilateral.</li>
-            <li class="flex gap-2"><span class="font-bold text-red-500">2.</span> 92133 (OCT) + 92250 (Photo) without -59/-XU modifier. NCCI Mutually Exclusive.</li>
-            <li class="flex gap-2"><span class="font-bold text-red-500">3.</span> Missing Medical Chief Complaint. (Billing medical with "needs new glasses").</li>
-            <li class="flex gap-2"><span class="font-bold text-red-500">4.</span> 68761 (Plugs) without E1-E4 lid modifiers or missing conservative failure documentation.</li>
-            <li class="flex gap-2"><span class="font-bold text-red-500">5.</span> 99215 billed based on time, but time < 40 mins.</li>
-            <li class="flex gap-2"><span class="font-bold text-red-500">6.</span> Telehealth (POS 02) missing -95 modifier.</li>
-            <li class="flex gap-2"><span class="font-bold text-red-500">7.</span> Co-management (66984) missing -55 modifier and transfer date.</li>
-            <li class="flex gap-2"><span class="font-bold text-red-500">8.</span> Frequency Cap limit: OCT/VF performed < 6 months apart without progression.</li>
-            <li class="flex gap-2"><span class="font-bold text-red-500">9.</span> Refraction (92015) billed to Medicare without -GY (Statutory Exclusion).</li>
-            <li class="flex gap-2"><span class="font-bold text-red-500">10.</span> Laterality Mismatch (e.g. ICD is H40.1131 (Right) but Procedure has -LT).</li>
-          </ul>
+          <h3 class="text-sm font-bold uppercase border-b border-slate-100 dark:border-slate-700 pb-2 mb-4 dark:text-white">3. Essential Ophthalmic Modifiers</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-200 dark:border-slate-600">
+              <span class="font-bold font-mono text-sm block dark:text-white">-25</span>
+              <span class="text-[10px] uppercase font-bold text-blue-600 dark:text-blue-400">Separate E/M</span>
+              <p class="text-xs mt-1 dark:text-slate-300">Append to E/M when doing a distinct exam on the same day as a minor procedure (e.g., Exam + Punctal Plugs).</p>
+            </div>
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-200 dark:border-slate-600">
+              <span class="font-bold font-mono text-sm block dark:text-white">-59 / -XU</span>
+              <span class="text-[10px] uppercase font-bold text-purple-600 dark:text-purple-400">Distinct Service</span>
+              <p class="text-xs mt-1 dark:text-slate-300">Bypasses NCCI edits when billing mutually exclusive tests on the same day for different conditions (e.g. OCT Macula + Fundus Photo for Nevus).</p>
+            </div>
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-200 dark:border-slate-600">
+              <span class="font-bold font-mono text-sm block dark:text-white">-55</span>
+              <span class="text-[10px] uppercase font-bold text-teal-600 dark:text-teal-400">Post-Op Only</span>
+              <p class="text-xs mt-1 dark:text-slate-300">Used for co-management (e.g. post-cataract care). You retain ~20% of the global fee based on transfer date.</p>
+            </div>
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-200 dark:border-slate-600">
+              <span class="font-bold font-mono text-sm block dark:text-white">-E1 to -E4</span>
+              <span class="text-[10px] uppercase font-bold text-amber-600 dark:text-amber-400">Lid Modifiers</span>
+              <p class="text-xs mt-1 dark:text-slate-300">Mandatory for punctal occlusion (68761) and epilation. E1=UR, E2=LR, E3=UL, E4=LL.</p>
+            </div>
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-200 dark:border-slate-600">
+              <span class="font-bold font-mono text-sm block dark:text-white">-GY</span>
+              <span class="text-[10px] uppercase font-bold text-red-600 dark:text-red-400">Statutorily Excluded</span>
+              <p class="text-xs mt-1 dark:text-slate-300">Append to Refraction (92015) when submitting to Medicare to generate an official denial for secondary crossover.</p>
+            </div>
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-200 dark:border-slate-600">
+              <span class="font-bold font-mono text-sm block dark:text-white">-95</span>
+              <span class="text-[10px] uppercase font-bold text-indigo-600 dark:text-indigo-400">Telehealth</span>
+              <p class="text-xs mt-1 dark:text-slate-300">Append to E/M codes when encounter is performed via synchronous audio/video telecommunications (POS 02).</p>
+            </div>
+          </div>
         </div>
       </div>
+
     </section>
   </main>
 
   <script>
-    // UX #4: Dark Mode Toggle
+    // UX #4: Dark Mode
     function toggleDarkMode() { document.documentElement.classList.toggle('dark'); }
 
-    // COMPRESSED 155+ DB with HCC, SNOMED, and Clinical Audit Prompts
-    // Keys: i=icd, n=name, c=category, r=rtc, h=hcc, s=snomed, a=audit prompt, p=procedures[c=cpt, n=name, f=fee, g=global]
-    const DB = [
-      {i:"H40.11", n:"Primary open-angle glaucoma", c:"Glaucoma", r:"4 Mos", h:1, s:"13774005", p:[{c:"92133", n:"OCT ON", f:42},{c:"92083", n:"VF 24-2", f:65},{c:"65855", n:"SLT Laser", f:245, g:10}]},
-      {i:"H40.12", n:"Low-tension glaucoma", c:"Glaucoma", r:"4 Mos", h:1, s:"42197000", p:[{c:"92133", n:"OCT ON", f:42},{c:"92083", n:"VF 24-2", f:65}]},
-      {i:"H40.14", n:"Pseudoexfoliation glaucoma", c:"Glaucoma", r:"3 Mos", h:1, s:"401090000", p:[{c:"92133", n:"OCT ON", f:42},{c:"65855", n:"SLT Laser", f:245, g:10}]},
-      {i:"H40.13", n:"Pigmentary glaucoma", c:"Glaucoma", r:"4 Mos", h:1, s:"401089009", p:[{c:"66761", n:"LPI", f:320, g:10}]},
-      {i:"H40.21", n:"Acute angle-closure attack", c:"Glaucoma", r:"STAT", h:1, s:"74004000", p:[{c:"92020", n:"Gonio", f:28},{c:"66761", n:"LPI", f:320, g:10}]},
-      {i:"H40.03", n:"Narrow angle (Suspect)", c:"Glaucoma", r:"3 Mos", s:"29938006", p:[{c:"92020", n:"Gonio", f:28},{c:"66761", n:"Prophylactic LPI", f:320, g:10}]},
-      {i:"H40.51", n:"Angle recession glaucoma", c:"Glaucoma", r:"3 Mos", h:1, s:"27083002", p:[{c:"92020", n:"Gonio", f:28},{c:"92133", n:"OCT ON", f:42}]},
-      {i:"H40.52", n:"Neovascular Glaucoma", c:"Glaucoma", r:"STAT", h:1, s:"69719001", p:[{c:"92020", n:"Gonio", f:28}]},
-      {i:"H40.53", n:"Uveitic Glaucoma", c:"Glaucoma", r:"1 Wk", h:1, s:"313098007", p:[{c:"92133", n:"OCT ON", f:42}]},
-      {i:"H40.89", n:"Steroid-induced glaucoma", c:"Glaucoma", r:"2 Wks", s:"24584000", p:[{c:"92133", n:"OCT ON", f:42}]},
-      {i:"H40.01", n:"Open angle suspect, high risk", c:"Glaucoma", r:"6 Mos", s:"192800003", p:[{c:"92133", n:"OCT ON", f:42},{c:"76514", n:"Pachymetry", f:12}]},
-      {i:"H40.05", n:"Ocular hypertension", c:"Glaucoma", r:"6 Mos", s:"66547008", p:[{c:"92133", n:"OCT ON", f:42},{c:"76514", n:"Pachymetry", f:12}]},
-      {i:"H40.4",  n:"Phacolytic Glaucoma", c:"Glaucoma", r:"1 Day", h:1, p:[{c:"92020", n:"Gonio", f:28}]},
-      {i:"H40.22", n:"Chronic angle-closure", c:"Glaucoma", r:"3 Mos", h:1, p:[{c:"92133", n:"OCT", f:42},{c:"66761", n:"LPI", f:320, g:10}]},
-      {i:"H42",    n:"Glaucoma in other diseases", c:"Glaucoma", r:"3 Mos", h:1, p:[{c:"92133", n:"OCT", f:42}]},
-      {i:"H40.6",  n:"Glaucoma 2/2 tumor", c:"Glaucoma", r:"STAT", h:1, p:[{c:"76512", n:"B-Scan", f:78}]},
-      {i:"H40.15", n:"Residual stage POAG", c:"Glaucoma", r:"3 Mos", h:1, p:[{c:"92083", n:"VF 10-2", f:65}]},
-      {i:"H40.23", n:"Intermittent angle-closure", c:"Glaucoma", r:"1 Mo", h:1, p:[{c:"92020", n:"Gonio", f:28}]},
-      {i:"H40.24", n:"Residual angle-closure", c:"Glaucoma", r:"3 Mos", h:1, p:[{c:"92020", n:"Gonio", f:28}]},
-      {i:"H40.81", n:"Glaucoma w/ episcleral pressure", c:"Glaucoma", r:"3 Mos", h:1, p:[{c:"92133", n:"OCT", f:42}]},
+    // 1. GLOBAL CPT DICTIONARY (High-Detail Source of Truth)
+    const CPT_DICT = {
+      "92133": { n: "Scanning Computerized Ophthalmic Diagnostic Imaging, Optic Nerve (OCT)", f: 42, g: 0, ir: "I&R REQUIRED: 1) Reliability/Signal Strength, 2) OD/OS Symmetry, 3) RNFL/GCC thickness vs baseline, 4) Clinical impact. INHERENTLY BILATERAL.", m: ["-59", "-XU"] },
+      "92134": { n: "Scanning Computerized Ophthalmic Diagnostic Imaging, Retina (OCT Macula)", f: 42, g: 0, ir: "I&R REQUIRED: 1) Presence of intraretinal/subretinal fluid, 2) Central foveal thickness, 3) Comparison to prior. INHERENTLY BILATERAL.", m: ["-59", "-XU"] },
+      "92083": { n: "Visual Field Examination, Threshold (Humphrey 24-2 / 10-2)", f: 65, g: 0, ir: "I&R REQUIRED: 1) Reliability (FP/FN <20%), 2) Location/depth of scotoma, 3) Progression analysis. INHERENTLY BILATERAL.", m: ["-59"] },
+      "92250": { n: "Fundus Photography with Interpretation and Report", f: 54, g: 0, ir: "I&R REQUIRED: 1) Specific pathology photographed, 2) Comparison to baseline. INHERENTLY BILATERAL (Never bill -RT/-LT).", m: ["-59", "-XU"] },
+      "92020": { n: "Gonioscopy (Bilateral)", f: 28, g: 0, ir: "I&R REQUIRED: Spaeth/Shaffer grading of all 4 quadrants (e.g. 'Open to CBB 360 OU'). Note PAS or pigment. BILATERAL.", m: [] },
+      "65855": { n: "Trabeculoplasty by Laser Surgery (SLT)", f: 245, g: 10, ir: "Operative Note: Informed consent, total shots, energy (mJ), degrees treated (180/360), post-op IOP check.", m: ["-RT", "-LT", "-50", "-55"] },
+      "66761": { n: "Iridotomy/Iridectomy by Laser Surgery (LPI)", f: 320, g: 10, ir: "Operative Note: Indication (pupillary block/narrow angles), energy/shots, location of patent iridotomy, post-op IOP.", m: ["-RT", "-LT", "-50", "-55"] },
+      "68761": { n: "Closure of the Lacrimal Punctum; by Plug, each", f: 115, g: 10, ir: "Chart Note: Document failure of conservative tx (tears/gels). MUST append lid modifiers (-E1, -E2, -E3, -E4).", m: ["-E1", "-E2", "-E3", "-E4", "-51"] },
+      "65222": { n: "Removal of Foreign Body, External Eye; Corneal, with Slit Lamp", f: 68, g: 0, ir: "Operative Note: Document depth (stromal vs epithelial), rust ring status, and negative Seidel test post-removal.", m: ["-RT", "-LT"] },
+      "92071": { n: "Fitting of Contact Lens for Treatment of Ocular Surface Disease", f: 38, g: 0, ir: "Chart Note: Lens brand, BC, DIA, and therapeutic goal (e.g. 'pain control', 'promote re-epithelialization').", m: ["-RT", "-LT"] },
+      "92072": { n: "Fitting of Contact Lens for Management of Keratoconus", f: 165, g: 0, ir: "Chart Note: Specify parameters. Often requires prior auth or specific medically necessary V-codes for materials.", m: ["-RT", "-LT"] },
+      "65435": { n: "Removal of Corneal Epithelium; with or without Chemocauterization", f: 145, g: 0, ir: "Operative Note: Mechanical debridement of loose epithelium, dendrites, or filaments. Slit lamp required.", m: ["-RT", "-LT"] },
+      "76514": { n: "Ophthalmic Ultrasound, Corneal Pachymetry", f: 12, g: 0, ir: "I&R REQUIRED: Document central corneal thickness in microns. Billed once per lifetime per patient.", m: [] },
+      "76512": { n: "Ophthalmic Ultrasound, Diagnostic; B-Scan", f: 78, g: 0, ir: "I&R REQUIRED: Detail posterior segment findings (e.g. 'Retina flat, no tears') when media is opaque.", m: ["-RT", "-LT", "-26", "-TC"] },
+      "92228": { n: "Extended Ophthalmoscopy, with Retinal Drawing", f: 32, g: 0, ir: "MANDATORY: Detailed color drawing of retinal pathology (tear, detachment, NVD) physically in chart.", m: ["-RT", "-LT"] },
+      "92060": { n: "Sensorimotor Examination with Multiple Measurements", f: 65, g: 0, ir: "I&R REQUIRED: Quantitative measurements of ocular deviation (prism diopters) in primary/reading fields.", m: [] },
+      "92015": { n: "Determination of Refractive State", f: 40, g: 0, ir: "Chart Note: Subjective/Cycloplegic refraction. Statutorily non-covered by Medicare (use -GY).", m: ["-GY"] },
+      "65778": { n: "Placement of Amniotic Membrane (Prokera)", f: 310, g: 10, ir: "Operative Note: Biological dressing placement, centration, patient comfort. Prior Auth often required by Commercial.", m: ["-RT", "-LT"] },
+      "11900": { n: "Injection, Intralesional; up to and including 7 lesions", f: 75, g: 0, ir: "Operative Note: Drug (e.g. Kenalog 40mg/ml), dose, lesion location.", m: ["-E1", "-E2", "-E3", "-E4"] },
+      "66821": { n: "YAG Laser Capsulotomy", f: 285, g: 90, ir: "Operative Note: Energy (mJ), shots, clearing of visual axis, post-op IOP. Note 90-day global period.", m: ["-RT", "-LT", "-55"] },
+      "92065": { n: "Orthoptic and/or Pleoptic Training", f: 95, g: 0, ir: "Therapy Note: Document specific vergence/accommodative exercises performed and progress.", m: [] },
+      "65205": { n: "Removal of Foreign Body, External Eye; Conjunctival Superficial", f: 45, g: 0, ir: "Operative Note: Location of concretion/FB and removal method.", m: ["-RT", "-LT"] },
+      "68840": { n: "Probing of Lacrimal Canaliculi", f: 95, g: 10, ir: "Operative Note: Dilation of puncta, irrigation fluid path, resistance encountered.", m: ["-E1", "-E2", "-E3", "-E4"] },
+      "67820": { n: "Correction of Trichiasis; Epilation, by forceps only", f: 48, g: 0, ir: "Operative Note: Location of misdirected lashes. Code is billed per encounter, NOT per lash.", m: ["-E1", "-E2", "-E3", "-E4"] },
+      "97530": { n: "Therapeutic Activities (Direct patient contact, each 15 mins)", f: 35, g: 0, ir: "Rehab Note: Document time spent training patient on low vision device and functional goal achieved.", m: [] }
+    };
+
+    // 2. MASTER DATABASE (155+ Conditions mapped to CPT_DICT)
+    const DB_RAW = [
+      {i:"H40.11", n:"Primary open-angle glaucoma", c:"Glaucoma", r:"3-4 Mos", s:"13774005", p:["92133","92083","65855","92020"]},
+      {i:"H40.12", n:"Low-tension glaucoma (NTG)", c:"Glaucoma", r:"3-4 Mos", s:"42197000", p:["92133","92083"]},
+      {i:"H40.14", n:"Capsular glaucoma (PXG)", c:"Glaucoma", r:"2-3 Mos", s:"401090000", p:["92133","92083","65855"]},
+      {i:"H40.13", n:"Pigmentary glaucoma", c:"Glaucoma", r:"3-4 Mos", s:"401089009", p:["92133","92083","66761"]},
+      {i:"H40.21", n:"Acute angle-closure attack", c:"Glaucoma", r:"STAT", s:"74004000", p:["92020","66761"]},
+      {i:"H40.03", n:"Anatomical narrow angle suspect", c:"Glaucoma", r:"3 Mos", s:"29938006", p:["92020","66761"]},
+      {i:"H40.51", n:"Angle recession glaucoma", c:"Glaucoma", r:"3 Mos", s:"27083002", p:["92020","92133"]},
+      {i:"H40.52", n:"Neovascular Glaucoma", c:"Glaucoma", r:"STAT", s:"69719001", p:["92020","92228"]},
+      {i:"H40.53", n:"Uveitic Glaucoma", c:"Glaucoma", r:"1 Wk", s:"313098007", p:["92133","92020"]},
+      {i:"H40.89", n:"Steroid-induced glaucoma", c:"Glaucoma", r:"2 Wks", s:"24584000", p:["92133"]},
+      {i:"H40.01", n:"Open angle suspect, high risk", c:"Glaucoma", r:"6 Mos", s:"192800003", p:["92133","76514"]},
+      {i:"H40.05", n:"Ocular hypertension", c:"Glaucoma", r:"6 Mos", s:"66547008", p:["92133","76514"]},
+      {i:"H40.4",  n:"Phacolytic Glaucoma", c:"Glaucoma", r:"1 Day", p:["92020"]},
+      {i:"H40.22", n:"Chronic angle-closure glaucoma", c:"Glaucoma", r:"3 Mos", p:["92133","66761"]},
+      {i:"H42",    n:"Glaucoma in diseases classified elsewhere", c:"Glaucoma", r:"3 Mos", p:["92133"]},
+      {i:"H40.6",  n:"Glaucoma 2/2 intraocular tumor", c:"Glaucoma", r:"STAT", p:["76512"]},
+      {i:"H40.15", n:"Residual stage POAG (End-Stage)", c:"Glaucoma", r:"3 Mos", p:["92083"]},
+      {i:"H40.23", n:"Intermittent angle-closure", c:"Glaucoma", r:"1 Mo", p:["92020"]},
+      {i:"H40.24", n:"Residual angle-closure", c:"Glaucoma", r:"3 Mos", p:["92020"]},
+      {i:"H40.81", n:"Glaucoma w/ episcleral venous pressure", c:"Glaucoma", r:"3 Mos", p:["92133"]},
       {i:"H40.82", n:"Hyperglycemia-induced OHTN", c:"Glaucoma", r:"1 Mo", p:[]},
-      {i:"H40.83", n:"Malignant Glaucoma", c:"Glaucoma", r:"STAT", h:1, p:[{c:"92020", n:"Gonio", f:28}]},
-      {i:"H40.3",  n:"Ghost Cell Glaucoma", c:"Glaucoma", r:"1 Wk", h:1, p:[{c:"92020", n:"Gonio", f:28}]},
-      {i:"Q15.0",  n:"Congenital Glaucoma", c:"Glaucoma", r:"STAT", h:1, p:[]},
-      {i:"H40.04", n:"Neurovascular angle suspect", c:"Glaucoma", r:"1 Mo", p:[{c:"92020", n:"Gonio", f:28}]},
-      
-      {i:"E11.31", n:"DM2 Mild NPDR w/o ME", c:"Retina", r:"12 Mos", h:1, s:"312903003", p:[{c:"92250", n:"Photo", f:54}]},
-      {i:"E11.32", n:"DM2 Mild NPDR w/ ME", c:"Retina", r:"3 Mos", h:1, s:"312904009", p:[{c:"92134", n:"OCT Mac", f:42}]},
-      {i:"E11.33", n:"DM2 Mod NPDR w/ ME", c:"Retina", r:"2 Mos", h:1, s:"312906006", p:[{c:"92134", n:"OCT Mac", f:42},{c:"92250", n:"Photo", f:54}]},
-      {i:"E11.34", n:"DM2 Severe NPDR w/ ME", c:"Retina", r:"1 Mo", h:1, s:"312908007", p:[{c:"92134", n:"OCT Mac", f:42},{c:"92250", n:"Photo", f:54}]},
-      {i:"E11.35", n:"DM2 PDR w/ ME", c:"Retina", r:"STAT", h:1, s:"193349004", p:[{c:"92134", n:"OCT", f:42},{c:"92228", n:"Ext Oph", f:32}]},
-      {i:"H35.31", n:"Dry AMD", c:"Retina", r:"6 Mos", h:1, s:"267718000", p:[{c:"92134", n:"OCT Mac", f:42},{c:"92250", n:"Photo", f:54}]},
-      {i:"H35.32", n:"Wet AMD", c:"Retina", r:"1 Mo", h:1, s:"420050005", p:[{c:"92134", n:"OCT Mac", f:42}]},
-      {i:"H34.81", n:"CRVO", c:"Retina", r:"1 Mo", h:1, s:"65251000", p:[{c:"92134", n:"OCT Mac", f:42},{c:"92020", n:"Gonio", f:28}]},
-      {i:"H34.83", n:"BRVO", c:"Retina", r:"2 Mos", h:1, s:"193322009", p:[{c:"92134", n:"OCT Mac", f:42}]},
-      {i:"H34.11", n:"CRAO", c:"Retina", r:"STAT", h:1, s:"20053000", p:[{c:"92134", n:"OCT Mac", f:42}]},
-      {i:"H34.21", n:"Amaurosis Fugax (TIA)", c:"Retina", r:"STAT", h:1, p:[{c:"92250", n:"Photo", f:54}]},
-      {i:"H33.01", n:"Retinal Detachment", c:"Retina", r:"STAT", h:1, s:"42059000", a:"Scleral", p:[{c:"92228", n:"Ext Oph", f:32},{c:"76512", n:"B-Scan", f:78}]},
-      {i:"H33.31", n:"Horseshoe Tear", c:"Retina", r:"1 Day", a:"Scleral", p:[{c:"92228", n:"Ext Oph", f:32}]},
-      {i:"H33.30", n:"Operculated Hole", c:"Retina", r:"4 Wks", a:"Scleral", p:[{c:"92228", n:"Ext Oph", f:32}]},
-      {i:"H35.41", n:"Lattice Degeneration", c:"Retina", r:"12 Mos", a:"Scleral", p:[{c:"92250", n:"Photo", f:54}]},
-      {i:"H43.81", n:"Vitreous Hemorrhage", c:"Retina", r:"1-3 Days", p:[{c:"76512", n:"B-Scan", f:78}]},
-      {i:"H43.39", n:"Posterior Vitreous Detachment", c:"Retina", r:"4 Wks", a:"Scleral", p:[{c:"92250", n:"Photo", f:54}]},
-      {i:"H35.03", n:"Hypertensive Retinopathy", c:"Retina", r:"6 Mos", a:"BP", p:[{c:"92250", n:"Photo", f:54}]},
-      {i:"H35.81", n:"CME (Irvine-Gass)", c:"Retina", r:"1 Mo", p:[{c:"92134", n:"OCT Mac", f:42}]},
-      {i:"H35.37", n:"Epiretinal Membrane", c:"Retina", r:"6 Mos", p:[{c:"92134", n:"OCT Mac", f:42}]},
-      {i:"H35.34", n:"Macular Hole", c:"Retina", r:"2 Wks", p:[{c:"92134", n:"OCT Mac", f:42}]},
-      {i:"H35.35", n:"VMT", c:"Retina", r:"1 Mo", p:[{c:"92134", n:"OCT Mac", f:42}]},
-      {i:"H35.71", n:"CSCR", c:"Retina", r:"6 Wks", p:[{c:"92134", n:"OCT Mac", f:42}]},
-      {i:"H31.10", n:"Choroidal Nevus", c:"Retina", r:"12 Mos", p:[{c:"76512", n:"B-Scan", f:78},{c:"92250", n:"Photo", f:54}]},
-      {i:"H35.52", n:"Retinitis Pigmentosa", c:"Retina", r:"6 Mos", h:1, p:[{c:"92083", n:"VF 30-2", f:65},{c:"92134", n:"OCT", f:42}]},
-      {i:"H35.36", n:"Macular Drusen", c:"Retina", r:"12 Mos", p:[{c:"92250", n:"Photo", f:54}]},
-      {i:"H35.05", n:"Neovascularization (Non-DM)", c:"Retina", r:"1 Wk", p:[{c:"92228", n:"Ext Oph", f:32}]},
-      {i:"H35.02", n:"Exudative retinopathy", c:"Retina", r:"1 Mo", h:1, p:[{c:"92250", n:"Photo", f:54}]},
-      {i:"H31.8",  n:"Angioid Streaks", c:"Retina", r:"6 Mos", p:[{c:"92134", n:"OCT", f:42}]},
-      {i:"H31.3",  n:"Choroidal Rupture", c:"Retina", r:"1 Mo", p:[{c:"92134", n:"OCT", f:42}]},
-      {i:"H35.6",  n:"Commotio Retinae", c:"Retina", r:"1 Wk", p:[{c:"92134", n:"OCT", f:42}]},
-      {i:"H35.54", n:"Purtscher Retinopathy", c:"Retina", r:"1 Mo", p:[{c:"92250", n:"Photo", f:54}]},
-      {i:"H35.61", n:"Valsalva Retinopathy", c:"Retina", r:"1 Mo", p:[{c:"92250", n:"Photo", f:54}]},
-      {i:"H35.53", n:"Sickle Cell Retinopathy", c:"Retina", r:"6 Mos", h:1, p:[{c:"92228", n:"Ext Oph", f:32}]},
-      {i:"H35.82", n:"Macular Ischemia", c:"Retina", r:"3 Mos", p:[{c:"92134", n:"OCT", f:42}]},
-      {i:"H33.1",  n:"Retinoschisis", c:"Retina", r:"6 Mos", p:[{c:"92228", n:"Ext Oph", f:32}]},
-      {i:"H35.38", n:"Macular Pseudohole", c:"Retina", r:"6 Mos", p:[{c:"92134", n:"OCT", f:42}]},
-      {i:"H35.04", n:"Microaneurysms", c:"Retina", r:"12 Mos", p:[{c:"92250", n:"Photo", f:54}]},
-      {i:"H35.06", n:"Retinal Vasculitis", c:"Retina", r:"1 Wk", p:[{c:"92228", n:"Ext Oph", f:32}]},
+      {i:"H40.83", n:"Malignant Glaucoma (Aqueous Misdirection)", c:"Glaucoma", r:"STAT", p:["92020"]},
+      {i:"H40.3",  n:"Ghost Cell Glaucoma", c:"Glaucoma", r:"1 Wk", p:["92020"]},
+      {i:"Q15.0",  n:"Congenital Glaucoma", c:"Glaucoma", r:"STAT", p:[]},
+      {i:"H40.04", n:"Neurovascular angle closure suspect", c:"Glaucoma", r:"1 Mo", p:["92020"]},
+
+      {i:"E11.31", n:"DM2 Mild NPDR w/o macular edema", c:"Retina", r:"12 Mos", s:"312903003", p:["92250"]},
+      {i:"E11.32", n:"DM2 Mild NPDR w/ macular edema", c:"Retina", r:"3 Mos", s:"312904009", p:["92134"]},
+      {i:"E11.33", n:"DM2 Mod NPDR w/ macular edema", c:"Retina", r:"2 Mos", s:"312906006", p:["92134","92250"]},
+      {i:"E11.34", n:"DM2 Severe NPDR w/ macular edema", c:"Retina", r:"1 Mo", s:"312908007", p:["92134","92250"]},
+      {i:"E11.35", n:"DM2 PDR w/ macular edema", c:"Retina", r:"STAT", s:"193349004", p:["92134","92228"]},
+      {i:"H35.31", n:"Dry AMD (Nonexudative)", c:"Retina", r:"6-12 Mos", s:"267718000", p:["92134","92250"]},
+      {i:"H35.32", n:"Wet AMD (Exudative)", c:"Retina", r:"1 Mo", s:"420050005", p:["92134"]},
+      {i:"H34.81", n:"Central retinal vein occlusion (CRVO)", c:"Retina", r:"1 Mo", s:"65251000", p:["92134","92020"]},
+      {i:"H34.83", n:"Branch retinal vein occlusion (BRVO)", c:"Retina", r:"2 Mos", s:"193322009", p:["92134"]},
+      {i:"H34.11", n:"Central retinal artery occlusion (CRAO)", c:"Retina", r:"STAT 911", s:"20053000", p:["92134"]},
+      {i:"H34.21", n:"Amaurosis Fugax (Transient Ischemia)", c:"Retina", r:"STAT", p:["92250"]},
+      {i:"H33.01", n:"Retinal Detachment", c:"Retina", r:"STAT", s:"42059000", p:["92228","76512"]},
+      {i:"H33.31", n:"Horseshoe Tear", c:"Retina", r:"1 Day", p:["92228"]},
+      {i:"H33.30", n:"Operculated Hole", c:"Retina", r:"4 Wks", p:["92228"]},
+      {i:"H35.41", n:"Lattice Degeneration", c:"Retina", r:"12 Mos", p:["92250"]},
+      {i:"H43.81", n:"Vitreous Hemorrhage", c:"Retina", r:"1-3 Days", p:["76512"]},
+      {i:"H43.39", n:"Posterior Vitreous Detachment (PVD)", c:"Retina", r:"4 Wks", p:["92250"]},
+      {i:"H35.03", n:"Hypertensive Retinopathy", c:"Retina", r:"6 Mos", p:["92250"]},
+      {i:"H35.81", n:"Cystoid Macular Edema (CME)", c:"Retina", r:"1 Mo", p:["92134"]},
+      {i:"H35.37", n:"Epiretinal Membrane (ERM)", c:"Retina", r:"6 Mos", p:["92134"]},
+      {i:"H35.34", n:"Macular Hole (Full-Thickness)", c:"Retina", r:"2 Wks", p:["92134"]},
+      {i:"H35.35", n:"Vitreomacular Traction (VMT)", c:"Retina", r:"1 Mo", p:["92134"]},
+      {i:"H35.71", n:"Central Serous Chorioretinopathy (CSCR)", c:"Retina", r:"6 Wks", p:["92134"]},
+      {i:"H31.10", n:"Choroidal Nevus", c:"Retina", r:"12 Mos", p:["76512","92250"]},
+      {i:"H35.52", n:"Retinitis Pigmentosa", c:"Retina", r:"6 Mos", p:["92083","92134"]},
+      {i:"H35.36", n:"Macular Drusen", c:"Retina", r:"12 Mos", p:["92250"]},
+      {i:"H35.05", n:"Neovascularization (Non-DM)", c:"Retina", r:"1 Wk", p:["92228"]},
+      {i:"H35.02", n:"Exudative retinopathy (Coats)", c:"Retina", r:"1 Mo", p:["92250"]},
+      {i:"H31.8",  n:"Angioid Streaks", c:"Retina", r:"6 Mos", p:["92134"]},
+      {i:"H31.3",  n:"Choroidal Rupture", c:"Retina", r:"1 Mo", p:["92134"]},
+      {i:"H35.6",  n:"Commotio Retinae", c:"Retina", r:"1 Wk", p:["92134"]},
+      {i:"H35.54", n:"Purtscher Retinopathy", c:"Retina", r:"1 Mo", p:["92250"]},
+      {i:"H35.61", n:"Valsalva Retinopathy", c:"Retina", r:"1 Mo", p:["92250"]},
+      {i:"H35.53", n:"Sickle Cell Retinopathy", c:"Retina", r:"6 Mos", p:["92228"]},
+      {i:"H35.82", n:"Macular Ischemia", c:"Retina", r:"3 Mos", p:["92134"]},
+      {i:"H33.1",  n:"Retinoschisis", c:"Retina", r:"6 Mos", p:["92228"]},
+      {i:"H35.38", n:"Macular Pseudohole", c:"Retina", r:"6 Mos", p:["92134"]},
+      {i:"H35.04", n:"Microaneurysms", c:"Retina", r:"12 Mos", p:["92250"]},
+      {i:"H35.06", n:"Retinal Vasculitis", c:"Retina", r:"1 Wk", p:["92228"]},
       {i:"H31.0",  n:"Chorioretinal Scars", c:"Retina", r:"12 Mos", p:[]},
-      {i:"H35.72", n:"Serous PED", c:"Retina", r:"1 Mo", p:[{c:"92134", n:"OCT", f:42}]},
-      {i:"H31.4",  n:"Choroidal Detachment", c:"Retina", r:"1 Wk", p:[{c:"76512", n:"B-Scan", f:78}]},
-      
-      {i:"H04.12", n:"Severe Dry Eye", c:"Cornea & OSD", r:"3 Mos", s:"371404000", p:[{c:"68761", n:"Punctal Plug", f:115, g:10}]},
-      {i:"T15.01", n:"Corneal Foreign Body", c:"Cornea & OSD", r:"24 Hrs", s:"191428003", p:[{c:"65222", n:"FB Removal", f:68, g:0},{c:"92071", n:"Bandage CL", f:38}]},
-      {i:"S05.01", n:"Corneal Abrasion", c:"Cornea & OSD", r:"24 Hrs", p:[{c:"92071", n:"Bandage CL", f:38},{c:"65778", n:"Prokera", f:310, g:10}]},
-      {i:"H16.00", n:"Bacterial Ulcer", c:"Cornea & OSD", r:"24 Hrs", h:1, p:[{c:"92285", n:"Ext Photo", f:24}]},
-      {i:"B00.52", n:"HSV Dendritic Keratitis", c:"Cornea & OSD", r:"2 Days", p:[{c:"65435", n:"Debridement", f:145, g:0}]},
-      {i:"B02.32", n:"HZO Keratitis", c:"Cornea & OSD", r:"3 Days", p:[{c:"92285", n:"Ext Photo", f:24}]},
-      {i:"H16.12", n:"Filamentary Keratitis", c:"Cornea & OSD", r:"2 Wks", p:[{c:"65435", n:"Debridement", f:145, g:0},{c:"92071", n:"BCL", f:38}]},
-      {i:"H18.42", n:"Band Keratopathy", c:"Cornea & OSD", r:"6 Mos", p:[{c:"65435", n:"EDTA Chelation", f:145, g:0}]},
-      {i:"H18.51", n:"Fuchs' Dystrophy", c:"Cornea & OSD", r:"6 Mos", p:[{c:"76514", n:"Pachymetry", f:12}]},
-      {i:"H18.60", n:"Keratoconus", c:"Cornea & OSD", r:"6 Mos", p:[{c:"92025", n:"Topography", f:45},{c:"92072", n:"Scleral Fit", f:165}]},
-      {i:"H18.46", n:"Marginal Keratitis", c:"Cornea & OSD", r:"5 Days", p:[]},
-      {i:"H18.13", n:"Pseudophakic Bullous Keratopathy", c:"Cornea & OSD", r:"1 Mo", p:[{c:"65778", n:"Prokera", f:310, g:10},{c:"92071", n:"BCL", f:38}]},
-      {i:"H18.89", n:"Recurrent Corneal Erosion", c:"Cornea & OSD", r:"1 Wk", p:[{c:"92071", n:"BCL", f:38},{c:"65435", n:"Debridement", f:145, g:0}]},
-      {i:"H02.05", n:"Trichiasis", c:"Cornea & OSD", r:"3 Mos", p:[{c:"67820", n:"Epilation", f:48, g:0}]},
-      {i:"H02.83", n:"Dermatochalasis", c:"Cornea & OSD", r:"12 Mos", p:[{c:"92083", n:"VF Taped", f:65},{c:"92285", n:"Photo", f:24}]},
-      {i:"H02.88", n:"Meibomian Gland Dysfunction", c:"Cornea & OSD", r:"3 Mos", p:[{c:"92285", n:"Meibography", f:24}]},
-      {i:"H00.11", n:"Chalazion", c:"Cornea & OSD", r:"6 Wks", p:[{c:"11900", n:"Steroid Inj", f:75, g:0}]},
-      {i:"H10.89", n:"EKC", c:"Cornea & OSD", r:"1 Wk", p:[{c:"65435", n:"Membrane Peel", f:145, g:0}]},
-      {i:"H11.00", n:"Pterygium", c:"Cornea & OSD", r:"6 Mos", p:[{c:"92025", n:"Topography", f:45}]},
-      {i:"H15.00", n:"Scleritis", c:"Cornea & OSD", r:"1 Day", p:[{c:"92285", n:"Photo", f:24}]},
-      {i:"H16.14", n:"UV Keratitis", c:"Cornea & OSD", r:"24 Hrs", p:[{c:"92071", n:"BCL", f:38}]},
-      {i:"H18.52", n:"Granular Dystrophy", c:"Cornea & OSD", r:"12 Mos", p:[{c:"92285", n:"Photo", f:24}]},
-      {i:"H18.54", n:"Lattice Dystrophy", c:"Cornea & OSD", r:"6 Mos", p:[{c:"92071", n:"BCL", f:38}]},
-      {i:"H18.55", n:"Macular Dystrophy", c:"Cornea & OSD", r:"6 Mos", p:[{c:"76514", n:"Pachymetry", f:12}]},
-      {i:"H18.59", n:"EBMD (Map-Dot)", c:"Cornea & OSD", r:"6 Mos", p:[{c:"92025", n:"Topography", f:45}]},
+      {i:"H35.72", n:"Serous RPE Detachment (PED)", c:"Retina", r:"1 Mo", p:["92134"]},
+      {i:"H31.4",  n:"Choroidal Detachment", c:"Retina", r:"1 Wk", p:["76512"]},
+
+      {i:"H04.12", n:"Severe Dry Eye (Sjogrens/OSD)", c:"Cornea & OSD", r:"3 Mos", s:"371404000", p:["68761"]},
+      {i:"T15.01", n:"Corneal Foreign Body", c:"Cornea & OSD", r:"24 Hrs", s:"191428003", p:["65222","92071"]},
+      {i:"S05.01", n:"Corneal Abrasion", c:"Cornea & OSD", r:"24 Hrs", p:["92071","65778"]},
+      {i:"H16.00", n:"Bacterial Corneal Ulcer", c:"Cornea & OSD", r:"24 Hrs", p:["92285"]},
+      {i:"B00.52", n:"HSV Dendritic Keratitis", c:"Cornea & OSD", r:"2 Days", p:["65435"]},
+      {i:"B02.32", n:"HZO Keratitis", c:"Cornea & OSD", r:"3 Days", p:["92285"]},
+      {i:"H16.12", n:"Filamentary Keratitis", c:"Cornea & OSD", r:"2 Wks", p:["65435","92071"]},
+      {i:"H18.42", n:"Band Keratopathy", c:"Cornea & OSD", r:"6 Mos", p:["65435"]},
+      {i:"H18.51", n:"Fuchs' Endothelial Dystrophy", c:"Cornea & OSD", r:"6 Mos", p:["76514"]},
+      {i:"H18.60", n:"Keratoconus", c:"Cornea & OSD", r:"6 Mos", p:["92025","92072"]},
+      {i:"H18.46", n:"Marginal Keratitis (Staph)", c:"Cornea & OSD", r:"5 Days", p:[]},
+      {i:"H18.13", n:"Pseudophakic Bullous Keratopathy", c:"Cornea & OSD", r:"1 Mo", p:["65778","92071"]},
+      {i:"H18.89", n:"Recurrent Corneal Erosion (RCE)", c:"Cornea & OSD", r:"1 Wk", p:["92071","65435"]},
+      {i:"H02.05", n:"Trichiasis", c:"Cornea & OSD", r:"3 Mos", p:["67820"]},
+      {i:"H02.83", n:"Dermatochalasis", c:"Cornea & OSD", r:"12 Mos", p:["92083","92285"]},
+      {i:"H02.88", n:"Meibomian Gland Dysfunction", c:"Cornea & OSD", r:"3 Mos", p:["92285"]},
+      {i:"H00.11", n:"Chalazion", c:"Cornea & OSD", r:"6 Wks", p:["11900"]},
+      {i:"H10.89", n:"Epidemic Keratoconjunctivitis (EKC)", c:"Cornea & OSD", r:"1 Wk", p:["65435"]},
+      {i:"H11.00", n:"Pterygium", c:"Cornea & OSD", r:"6 Mos", p:["92025"]},
+      {i:"H15.00", n:"Scleritis", c:"Cornea & OSD", r:"1 Day", p:["92285"]},
+      {i:"H16.14", n:"UV Keratitis (Welder's Flash)", c:"Cornea & OSD", r:"24 Hrs", p:["92071"]},
+      {i:"H18.52", n:"Granular Corneal Dystrophy", c:"Cornea & OSD", r:"12 Mos", p:["92285"]},
+      {i:"H18.54", n:"Lattice Corneal Dystrophy", c:"Cornea & OSD", r:"6 Mos", p:["92071"]},
+      {i:"H18.55", n:"Macular Corneal Dystrophy", c:"Cornea & OSD", r:"6 Mos", p:["76514"]},
+      {i:"H18.59", n:"EBMD (Map-Dot-Fingerprint)", c:"Cornea & OSD", r:"6 Mos", p:["92025"]},
       {i:"H02.10", n:"Ectropion", c:"Cornea & OSD", r:"6 Mos", p:[]},
-      {i:"H02.00", n:"Entropion", c:"Cornea & OSD", r:"4 Wks", p:[{c:"92071", n:"BCL", f:38}]},
-      {i:"H02.40", n:"Ptosis", c:"Cornea & OSD", r:"6 Mos", p:[{c:"92083", n:"VF Taped", f:65}]},
+      {i:"H02.00", n:"Entropion", c:"Cornea & OSD", r:"4 Wks", p:["92071"]},
+      {i:"H02.40", n:"Ptosis", c:"Cornea & OSD", r:"6 Mos", p:["92083"]},
       {i:"H01.00", n:"Blepharitis", c:"Cornea & OSD", r:"3 Mos", p:[]},
       {i:"H00.01", n:"Hordeolum", c:"Cornea & OSD", r:"1 Wk", p:[]},
-      {i:"H10.02", n:"Bacterial Conj", c:"Cornea & OSD", r:"1 Wk", p:[]},
-      {i:"H10.13", n:"Allergic Conj", c:"Cornea & OSD", r:"4 Wks", p:[]},
-      {i:"H10.45", n:"GPC", c:"Cornea & OSD", r:"4 Wks", p:[]},
+      {i:"H10.02", n:"Bacterial Conjunctivitis", c:"Cornea & OSD", r:"1 Wk", p:[]},
+      {i:"H10.13", n:"Allergic Conjunctivitis", c:"Cornea & OSD", r:"4 Wks", p:[]},
+      {i:"H10.45", n:"Giant Papillary Conjunctivitis (GPC)", c:"Cornea & OSD", r:"4 Wks", p:[]},
       {i:"H11.15", n:"Pinguecula", c:"Cornea & OSD", r:"12 Mos", p:[]},
-      {i:"H11.31", n:"Subconjunctival Hem", c:"Cornea & OSD", r:"3 Wks", a:"BP", p:[]},
+      {i:"H11.31", n:"Subconjunctival Hemorrhage", c:"Cornea & OSD", r:"3 Wks", p:[]},
       {i:"H15.10", n:"Episcleritis", c:"Cornea & OSD", r:"2 Wks", p:[]},
-      {i:"H16.21", n:"Mooren's Ulcer", c:"Cornea & OSD", r:"STAT", h:1, p:[]},
-      {i:"H18.46", n:"Terrien Marginal Degen", c:"Cornea & OSD", r:"3 Mos", p:[{c:"92025", n:"Topography", f:45}]},
-      {i:"H18.49", n:"Salzmann Nodular Degen", c:"Cornea & OSD", r:"6 Mos", p:[{c:"65435", n:"Debridement", f:145, g:0}]},
-      {i:"B60.1",  n:"Acanthamoeba", c:"Cornea & OSD", r:"Daily", p:[]},
+      {i:"H16.21", n:"Mooren's Ulcer", c:"Cornea & OSD", r:"STAT", p:[]},
+      {i:"H18.46", n:"Terrien Marginal Degeneration", c:"Cornea & OSD", r:"3 Mos", p:["92025"]},
+      {i:"H18.49", n:"Salzmann Nodular Degeneration", c:"Cornea & OSD", r:"6 Mos", p:["65435"]},
+      {i:"B60.1",  n:"Acanthamoeba Keratitis", c:"Cornea & OSD", r:"Daily", p:[]},
       {i:"B36.9",  n:"Fungal Keratitis", c:"Cornea & OSD", r:"Daily", p:[]},
-      {i:"H16.29", n:"SLK", c:"Cornea & OSD", r:"2 Wks", p:[]},
-      {i:"H02.89", n:"Floppy Eyelid", c:"Cornea & OSD", r:"3 Mos", p:[]},
-      {i:"D48.5",  n:"Sebaceous Gland CA Suspect", c:"Cornea & OSD", r:"STAT", h:1, p:[]},
-      {i:"H11.2",  n:"Conj Concretions", c:"Cornea & OSD", r:"PRN", p:[{c:"65205", n:"Conj FB Rem", f:45, g:0}]},
-      {i:"H04.2",  n:"NLDO", c:"Cornea & OSD", r:"3 Mos", p:[{c:"68840", n:"Probing/Irrigation", f:95, g:10}]},
+      {i:"H16.29", n:"Superior Limbic Keratoconjunctivitis (SLK)", c:"Cornea & OSD", r:"2 Wks", p:[]},
+      {i:"H02.89", n:"Floppy Eyelid Syndrome", c:"Cornea & OSD", r:"3 Mos", p:[]},
+      {i:"D48.5",  n:"Sebaceous Gland CA Suspect", c:"Cornea & OSD", r:"STAT", p:[]},
+      {i:"H11.2",  n:"Conjunctival Concretions", c:"Cornea & OSD", r:"PRN", p:["65205"]},
+      {i:"H04.2",  n:"Nasolacrimal Duct Obstruction", c:"Cornea & OSD", r:"3 Mos", p:["68840"]},
       {i:"H05.0",  n:"Preseptal Cellulitis", c:"Cornea & OSD", r:"2 Days", p:[]},
-      
-      {i:"H20.01", n:"Acute Anterior Uveitis", c:"Uveitis", r:"2 Days", p:[{c:"92020", n:"Gonio", f:28},{c:"92134", n:"OCT Mac", f:42}]},
-      {i:"H20.02", n:"Recurrent Uveitis", c:"Uveitis", r:"2 Days", p:[{c:"92134", n:"OCT Mac", f:42}]},
-      {i:"H20.9",  n:"Uveitis w/ Post Synechiae", c:"Uveitis", r:"1 Day", p:[{c:"92020", n:"Gonio", f:28}]},
-      {i:"H30.00", n:"Toxo Chorioretinitis", c:"Uveitis", r:"1 Wk", p:[{c:"92134", n:"OCT", f:42},{c:"92250", n:"Photo", f:54}]},
-      {i:"H30.10", n:"POHS", c:"Uveitis", r:"6 Mos", p:[{c:"92134", n:"OCT", f:42},{c:"92250", n:"Photo", f:54}]},
-      {i:"H30.23", n:"Pars Planitis", c:"Uveitis", r:"1 Mo", p:[{c:"92134", n:"OCT", f:42},{c:"92228", n:"Ext Oph", f:32}]},
+
+      {i:"H20.01", n:"Acute Anterior Uveitis (Iridocyclitis)", c:"Uveitis", r:"2 Days", p:["92020","92134"]},
+      {i:"H20.02", n:"Recurrent Uveitis", c:"Uveitis", r:"2 Days", p:["92134"]},
+      {i:"H20.9",  n:"Uveitis w/ Posterior Synechiae", c:"Uveitis", r:"1 Day", p:["92020"]},
+      {i:"H30.00", n:"Toxoplasmosis Chorioretinitis", c:"Uveitis", r:"1 Wk", p:["92134","92250"]},
+      {i:"H30.10", n:"Ocular Histoplasmosis (POHS)", c:"Uveitis", r:"6 Mos", p:["92134","92250"]},
+      {i:"H30.23", n:"Pars Planitis", c:"Uveitis", r:"1 Mo", p:["92134","92228"]},
       {i:"A51.4",  n:"Syphilitic Uveitis", c:"Uveitis", r:"STAT", p:[]},
-      {i:"D86.8",  n:"Sarcoid Uveitis", c:"Uveitis", r:"1 Mo", p:[{c:"92134", n:"OCT", f:42}]},
-      {i:"H20.8",  n:"VKH Syndrome", c:"Uveitis", r:"STAT", p:[{c:"92134", n:"OCT", f:42}]},
-      {i:"H30.8",  n:"Birdshot", c:"Uveitis", r:"1 Mo", p:[{c:"92083", n:"VF", f:65}]},
-      {i:"H20.0",  n:"Posner-Schlossman", c:"Uveitis", r:"2 Days", p:[{c:"92020", n:"Gonio", f:28}]},
-      
-      {i:"H46.9",  n:"Optic Neuritis", c:"Neuro", r:"STAT", p:[{c:"92133", n:"OCT ON", f:42},{c:"92083", n:"VF 24-2", f:65}]},
-      {i:"H47.01", n:"NAION", c:"Neuro", r:"1 Wk", p:[{c:"92083", n:"VF 24-2", f:65},{c:"92133", n:"OCT ON", f:42}]},
-      {i:"H47.02", n:"Giant Cell Arteritis (AION)", c:"Neuro", r:"STAT", h:1, p:[{c:"92083", n:"VF 24-2", f:65}]},
-      {i:"H47.11", n:"Papilledema (IIH)", c:"Neuro", r:"Urgent", p:[{c:"92133", n:"OCT ON", f:42},{c:"92083", n:"VF 24-2", f:65}]},
-      {i:"H47.32", n:"Optic Disc Drusen", c:"Neuro", r:"6 Mos", p:[{c:"76512", n:"B-Scan", f:78},{c:"92083", n:"VF", f:65}]},
-      {i:"H49.01", n:"Third Nerve Palsy", c:"Neuro", r:"STAT", p:[{c:"92285", n:"Photo", f:24}]},
-      {i:"H49.11", n:"Fourth Nerve Palsy", c:"Neuro", r:"2 Wks", p:[{c:"92060", n:"Sensorimotor", f:65}]},
-      {i:"H49.21", n:"Sixth Nerve Palsy", c:"Neuro", r:"2 Wks", p:[{c:"92060", n:"Sensorimotor", f:65}]},
-      {i:"G70.00", n:"Ocular Myasthenia Gravis", c:"Neuro", r:"1 Mo", h:1, p:[{c:"92285", n:"Ice Pack Photo", f:24},{c:"92060", n:"Sensorimotor", f:65}]},
-      {i:"H57.02", n:"Horner's Syndrome", c:"Neuro", r:"STAT", p:[{c:"92285", n:"Pupil Photo", f:24}]},
-      {i:"H57.04", n:"Adie's Tonic Pupil", c:"Neuro", r:"3 Mos", p:[{c:"92285", n:"Photo", f:24}]},
-      {i:"H51.23", n:"INO", c:"Neuro", r:"Urgent", p:[{c:"92060", n:"Sensorimotor", f:65}]},
-      {i:"H05.24", n:"Thyroid Eye Disease", c:"Neuro", r:"1 Mo", p:[{c:"92083", n:"VF 24-2", f:65},{c:"92285", n:"Hertel Photo", f:24},{c:"92133", n:"OCT ON", f:42}]},
-      {i:"H47.20", n:"Optic Atrophy", c:"Neuro", r:"6 Mos", p:[{c:"92133", n:"OCT ON", f:42},{c:"92083", n:"VF 24-2", f:65}]},
-      {i:"H53.46", n:"Homonymous Hemianopia", c:"Neuro", r:"3 Mos", p:[{c:"92083", n:"VF Esterman", f:65}]},
-      {i:"Q14.2",  n:"Morning Glory Syndrome", c:"Neuro", r:"6 Mos", p:[{c:"92134", n:"OCT", f:42}]},
-      {i:"H47.21", n:"LHON", c:"Neuro", r:"1 Mo", p:[{c:"92133", n:"OCT ON", f:42}]},
-      {i:"H46.8",  n:"Papillitis", c:"Neuro", r:"Urgent", p:[{c:"92133", n:"OCT ON", f:42}]},
-      
-      {i:"Z79.89", n:"Plaquenil Toxicity Screen", c:"High-Risk Rx", r:"12 Mos", p:[{c:"92134", n:"OCT Mac", f:42},{c:"92083", n:"VF 10-2", f:65}]},
+      {i:"D86.8",  n:"Sarcoid Uveitis", c:"Uveitis", r:"1 Mo", p:["92134"]},
+      {i:"H20.8",  n:"VKH Syndrome", c:"Uveitis", r:"STAT", p:["92134"]},
+      {i:"H30.8",  n:"Birdshot Chorioretinopathy", c:"Uveitis", r:"1 Mo", p:["92083"]},
+      {i:"H20.0",  n:"Posner-Schlossman Syndrome", c:"Uveitis", r:"2 Days", p:["92020"]},
+
+      {i:"H46.9",  n:"Optic Neuritis", c:"Neuro", r:"STAT", p:["92133","92083"]},
+      {i:"H47.01", n:"NAION", c:"Neuro", r:"1 Wk", p:["92083","92133"]},
+      {i:"H47.02", n:"Giant Cell Arteritis (AION)", c:"Neuro", r:"STAT", p:["92083"]},
+      {i:"H47.11", n:"Papilledema (IIH)", c:"Neuro", r:"Urgent", p:["92133","92083"]},
+      {i:"H47.32", n:"Optic Disc Drusen", c:"Neuro", r:"6 Mos", p:["76512","92083"]},
+      {i:"H49.01", n:"Third Nerve Palsy", c:"Neuro", r:"STAT", p:["92285"]},
+      {i:"H49.11", n:"Fourth Nerve Palsy", c:"Neuro", r:"2 Wks", p:["92060"]},
+      {i:"H49.21", n:"Sixth Nerve Palsy", c:"Neuro", r:"2 Wks", p:["92060"]},
+      {i:"G70.00", n:"Ocular Myasthenia Gravis", c:"Neuro", r:"1 Mo", p:["92285","92060"]},
+      {i:"H57.02", n:"Horner's Syndrome", c:"Neuro", r:"STAT", p:["92285"]},
+      {i:"H57.04", n:"Adie's Tonic Pupil", c:"Neuro", r:"3 Mos", p:["92285"]},
+      {i:"H51.23", n:"Internuclear Ophthalmoplegia (INO)", c:"Neuro", r:"Urgent", p:["92060"]},
+      {i:"H05.24", n:"Thyroid Eye Disease (Graves')", c:"Neuro", r:"1 Mo", p:["92083","92285","92133"]},
+      {i:"H47.20", n:"Optic Atrophy", c:"Neuro", r:"6 Mos", p:["92133","92083"]},
+      {i:"H53.46", n:"Homonymous Hemianopia", c:"Neuro", r:"3 Mos", p:["92083"]},
+      {i:"Q14.2",  n:"Morning Glory Syndrome", c:"Neuro", r:"6 Mos", p:["92134"]},
+      {i:"H47.21", n:"LHON", c:"Neuro", r:"1 Mo", p:["92133"]},
+      {i:"H46.8",  n:"Papillitis", c:"Neuro", r:"Urgent", p:["92133"]},
+
+      {i:"Z79.89", n:"Plaquenil Toxicity Screen", c:"High-Risk Rx", r:"12 Mos", p:["92134","92083"]},
       {i:"Z79.82", n:"Aspirin/Anticoagulant Use", c:"High-Risk Rx", r:"PRN", p:[]},
-      {i:"T43.01", n:"TCA Anticholinergic", c:"High-Risk Rx", r:"6 Mos", p:[{c:"92020", n:"Gonio", f:28}]},
-      {i:"H26.33", n:"Steroid PSC Cataract", c:"Cataract", r:"6 Mos", p:[]},
+      {i:"T43.01", n:"TCA Anticholinergic Toxicity", c:"High-Risk Rx", r:"6 Mos", p:["92020"]},
       
-      {i:"H53.00", n:"Amblyopia", c:"Peds", r:"3 Mos", p:[{c:"92060", n:"Sensorimotor", f:65},{c:"92015", n:"Refraction", f:40}]},
-      {i:"H50.01", n:"Accommodative Esotropia", c:"Peds", r:"3 Mos", p:[{c:"92060", n:"Sensorimotor", f:65},{c:"92015", n:"Refraction", f:40}]},
-      {i:"H50.11", n:"Intermittent Exotropia", c:"Peds", r:"4 Mos", p:[{c:"92060", n:"Sensorimotor", f:65}]},
-      {i:"H51.11", n:"Convergence Insufficiency", c:"Peds", r:"8 Wks", p:[{c:"92060", n:"Sensorimotor", f:65},{c:"92065", n:"Vision Therapy", f:95}]},
-      {i:"H51.12", n:"Convergence Excess", c:"Peds", r:"3 Mos", p:[{c:"92060", n:"Sensorimotor", f:65}]},
-      {i:"H52.53", n:"Accommodative Spasm", c:"Peds", r:"4 Wks", p:[{c:"92015", n:"Refraction", f:40}]},
-      {i:"H50.81", n:"Duane Syndrome", c:"Peds", r:"6 Mos", p:[{c:"92060", n:"Sensorimotor", f:65}]},
-      {i:"H50.89", n:"Brown Syndrome", c:"Peds", r:"6 Mos", p:[{c:"92060", n:"Sensorimotor", f:65}]},
-      {i:"H52.51", n:"Accommodative Insufficiency", c:"Peds", r:"3 Mos", p:[{c:"92060", n:"Sensorimotor", f:65}]},
-      
-      {i:"H25.13", n:"NS Cataract", c:"Cataract", r:"6 Mos", p:[]},
+      {i:"H53.00", n:"Amblyopia", c:"Peds", r:"3 Mos", p:["92060","92015"]},
+      {i:"H50.01", n:"Accommodative Esotropia", c:"Peds", r:"3 Mos", p:["92060","92015"]},
+      {i:"H50.11", n:"Intermittent Exotropia", c:"Peds", r:"4 Mos", p:["92060"]},
+      {i:"H51.11", n:"Convergence Insufficiency", c:"Peds", r:"8 Wks", p:["92060","92065"]},
+      {i:"H51.12", n:"Convergence Excess", c:"Peds", r:"3 Mos", p:["92060"]},
+      {i:"H52.53", n:"Accommodative Spasm", c:"Peds", r:"4 Wks", p:["92015"]},
+      {i:"H50.81", n:"Duane Syndrome", c:"Peds", r:"6 Mos", p:["92060"]},
+      {i:"H50.89", n:"Brown Syndrome", c:"Peds", r:"6 Mos", p:["92060"]},
+      {i:"H52.51", n:"Accommodative Insufficiency", c:"Peds", r:"3 Mos", p:["92060"]},
+
+      {i:"H25.13", n:"Nuclear Sclerotic Cataract", c:"Cataract", r:"6 Mos", p:[]},
       {i:"H25.01", n:"Cortical Cataract", c:"Cataract", r:"6 Mos", p:[]},
-      {i:"H26.49", n:"PCO", c:"Cataract", r:"1 Mo", p:[{c:"66821", n:"YAG", f:285, g:90}]},
+      {i:"H26.49", n:"Posterior Capsular Opacification", c:"Cataract", r:"1 Mo", p:["66821"]},
+      {i:"H26.33", n:"Steroid PSC Cataract", c:"Cataract", r:"6 Mos", p:[]},
       {i:"Z96.1",  n:"Pseudophakia Post-Op", c:"Cataract", r:"1 Day", p:[]},
-      
-      {i:"H52.13", n:"Myopia", c:"Refractive", r:"12 Mos", p:[]},
-      {i:"H52.03", n:"Hyperopia", c:"Refractive", r:"12 Mos", p:[]},
-      {i:"H52.22", n:"Astigmatism", c:"Refractive", r:"12 Mos", p:[]},
-      {i:"H52.4",  n:"Presbyopia", c:"Refractive", r:"24 Mos", p:[]},
-      {i:"H54.8",  n:"Legal Blindness / Low Vision", c:"Refractive", r:"3 Mos", p:[{c:"97530", n:"Therapeutic Act.", f:35},{c:"97110", n:"Therapeutic Ex.", f:30}]}
+
+      {i:"H52.13", n:"Myopia", c:"Refractive", r:"12 Mos", p:["92015"]},
+      {i:"H52.03", n:"Hyperopia", c:"Refractive", r:"12 Mos", p:["92015"]},
+      {i:"H52.22", n:"Astigmatism", c:"Refractive", r:"12 Mos", p:["92015"]},
+      {i:"H52.4",  n:"Presbyopia", c:"Refractive", r:"24 Mos", p:["92015"]},
+      {i:"H54.8",  n:"Legal Blindness / Low Vision", c:"Refractive", r:"3 Mos", p:["97530"]}
     ];
+
+    // HYPER-DETAILED NOTE GENERATOR
+    function getConditionDetails(c) {
+      let pearl = "Align E/M with documented MDM complexity.";
+      let pitfall = "Routine diagnoses (e.g., myopia) submitted to medical payers without -GY will cause denials.";
+      let note = `Patient evaluated for ${c.n}. Condition is stable. Continue current observation/management.`;
+
+      if (c.c === "Glaucoma") {
+        pearl = "Stagger OCT and VF across different visits to optimize cash flow and avoid NCCI modifier -59 scrutiny. Bill 99214 if modifying Rx.";
+        pitfall = "Billing 92133 (OCT) and 92250 (Photo) on the same day without a distinct, separate diagnosis and -59/-XU modifier triggers an automatic NCCI denial.";
+        note = `Glaucoma evaluation. Biomicroscopy shows open angles. Optic nerves evaluated via funduscopy. C/D ratio symmetry maintained. RNFL thickness within physiological limits. Target IOP achieved. Rx regimen continued.`;
+      } else if (c.c === "Retina") {
+        pearl = "Fundus photo (92250) is inherently bilateral. Never append -RT/-LT or bill 2 units. Bill 99214 if actively managing edema or exudation.";
+        pitfall = "Failure to chart a distinct Interpretation & Report (I&R) for OCT or Photos will fail a CMS audit. 'Test normal' is unacceptable.";
+        note = `Dilated fundus examination performed. Macula and peripheral retina evaluated. No active tears or detachments noted. Patient educated on Amsler grid monitoring and warned of retinal detachment symptoms (flashes/floaters).`;
+        if (c.i.includes("E11")) note = `Diabetic retinopathy check. Macula evaluated for clinically significant macular edema (CSME). Peripheral retina scanned for neovascularization. Report to be sent to managing endocrinologist.`;
+      } else if (c.c === "Cornea & OSD") {
+        pearl = "For dry eye procedures (plugs, amniotic membranes), ensure conservative treatment failure (artificial tears) is documented to support medical necessity.";
+        pitfall = "Append Modifier -25 to E/M code ONLY if a significant, separate evaluation was performed before a minor surgery (like FB removal 65222).";
+        note = `Ocular surface evaluated via slit lamp biomicroscopy. Tear break-up time (TBUT) and fluorescein staining assessed. Cornea clear of infiltrates. Lid margins evaluated.`;
+        if (c.i === "T15.01") note = `Corneal foreign body evaluated. Rust ring status noted. Seidel test negative. Prophylactic antibiotic drops initiated.`;
+      } else if (c.c === "Neuro") {
+        pearl = "Prioritize E/M codes (99214/99215) over eye codes as neuro-ophthalmic crises inherently fulfill moderate-to-high MDM complexity.";
+        pitfall = "A pupil-involving 3rd nerve palsy or painful Horner's syndrome requires STAT neuro-imaging. Do not delay for visual fields.";
+        note = `Neuro-ophthalmic evaluation. Pupils checked for relative afferent pupillary defect (RAPD). Extraocular motility and cranial nerves II-VI assessed. Visual fields confronted.`;
+      } else if (c.c === "Peds") {
+        pearl = "Refraction (92015) is statutorily non-covered by Medicare. Bill directly to patient or secondary vision carrier.";
+        pitfall = "Cycloplegic refractions are required for accommodative esotropia and amblyopia. Do not rely on dry manifest refraction.";
+        note = `Binocular vision and motility evaluated. Cover test performed at distance and near. Stereopsis measured. Cycloplegic refraction indicated to rule out latent hyperopia.`;
+      }
+
+      return { pearl, pitfall, note };
+    }
 
     let cart = [];
     let cartProcedures = [];
-    let filteredList = [...DB];
-    let activeCond = DB[0];
+    let filteredList = [...DB_RAW];
+    let activeCond = DB_RAW[0];
     let examLevel = '99214';
 
     function switchTab(t) {
-      ['viewDb','viewCart','viewDenials'].forEach(id => {
+      ['viewDb','viewCart','viewAcademy'].forEach(id => {
         document.getElementById(id).classList.add('hidden');
         document.getElementById(id).classList.remove('flex');
       });
-      ['btnTabDb','btnTabCart','btnTabDenials'].forEach(id => {
-        document.getElementById(id).className = 'tab-inactive pb-2 text-xs font-bold flex items-center gap-1.5 whitespace-nowrap';
+      ['btnTabDb','btnTabCart','btnTabAcademy'].forEach(id => {
+        document.getElementById(id).className = 'tab-inactive pb-2 text-sm font-bold flex items-center gap-1.5 whitespace-nowrap';
       });
-      document.getElementById('sidebarPanel').classList.toggle('hidden', t === 'denials');
-      document.getElementById('mainContentPanel').className = t === 'denials' ? 'lg:col-span-12 flex flex-col gap-4 relative' : 'lg:col-span-8 flex flex-col gap-4 relative';
+      document.getElementById('sidebarPanel').classList.toggle('hidden', t === 'academy');
+      document.getElementById('mainContentPanel').className = t === 'academy' ? 'lg:col-span-12 flex flex-col gap-5 relative' : 'lg:col-span-8 flex flex-col gap-5 relative';
       
-      let view = t==='db'?'viewDb':t==='cart'?'viewCart':'viewDenials';
-      let btn = t==='db'?'btnTabDb':t==='cart'?'btnTabCart':'btnTabDenials';
+      let view = t==='db'?'viewDb':t==='cart'?'viewCart':'viewAcademy';
+      let btn = t==='db'?'btnTabDb':t==='cart'?'btnTabCart':'btnTabAcademy';
       
       document.getElementById(view).classList.remove('hidden');
       document.getElementById(view).classList.add('flex');
-      document.getElementById(btn).className = 'tab-active pb-2 text-xs font-bold flex items-center gap-1.5 whitespace-nowrap';
+      document.getElementById(btn).className = 'tab-active pb-2 text-sm font-bold flex items-center gap-1.5 whitespace-nowrap';
       if(t==='cart') updateCart();
     }
 
     function filterDb() {
       const q = document.getElementById("searchInput").value.toLowerCase();
-      filteredList = DB.filter(c => c.i.toLowerCase().includes(q) || c.n.toLowerCase().includes(q));
+      const cat = document.getElementById("categoryFilter").value;
+      filteredList = DB_RAW.filter(c => (c.i.toLowerCase().includes(q) || c.n.toLowerCase().includes(q)) && (cat === 'all' || c.c === cat));
       renderDb();
     }
 
     function renderDb() {
       const el = document.getElementById("diagnosisList");
       el.innerHTML = "";
+      document.getElementById("dbCountBadge").innerText = filteredList.length;
       filteredList.forEach(c => {
-        el.innerHTML += `<button onclick="selDb('${c.i}')" class="w-full text-left p-3 hover:bg-slate-50 dark:hover:bg-slate-700 border-l-4 border-transparent focus:border-blue-500 transition">
+        el.innerHTML += `<button onclick="selDb('${c.i}')" class="w-full text-left p-3 hover:bg-slate-50 dark:hover:bg-slate-800 border-l-4 border-transparent focus:border-blue-500 transition border-b border-slate-100 dark:border-slate-700/50">
           <div class="flex justify-between items-center"><span class="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">${c.i}</span><span class="text-[9px] text-slate-400 uppercase font-bold">${c.c}</span></div>
           <div class="text-xs font-medium dark:text-slate-200 mt-1">${c.n}</div>
         </button>`;
       });
-      if(filteredList.length && !filteredList.find(c=>c.i===activeCond.i)) selDb(filteredList[0].i);
+      if(filteredList.length && (!activeCond || !filteredList.find(c=>c.i===activeCond.i))) selDb(filteredList[0].i);
     }
 
     function selDb(icd) {
@@ -403,99 +567,130 @@
       if(!activeCond) return;
       document.getElementById("dbIcd").innerText = activeCond.i;
       document.getElementById("dbName").innerText = activeCond.n;
-      document.getElementById("dbHcc").style.display = activeCond.h ? "inline" : "none";
-      document.getElementById("dbSnomed").innerText = activeCond.s ? `SNOMED: ${activeCond.s}` : "SNOMED: Mapping...";
+      document.getElementById("dbCat").innerText = activeCond.c;
+      document.getElementById("dbRtc").innerText = activeCond.r;
+      document.getElementById("dbSnomed").innerText = activeCond.s ? `SNOMED: ${activeCond.s}` : "SNOMED: Map Pending";
       
-      let pearl = "Align E/M with documented MDM.";
-      if(activeCond.c==="Glaucoma") pearl = "Stagger OCT and VF to avoid NCCI bundle edits. Bill 99214 if Rx modified.";
-      if(activeCond.c==="Retina") pearl = "Fundus photo is bilateral (No -RT/-LT). Bill 99214 if actively managing.";
-      if(activeCond.c==="Cornea & OSD") pearl = "Ensure conservative tx failure is charted for plugs. Append -25 to exam for same-day procedures.";
-      if(activeCond.c==="Peds") pearl = "Refraction (92015) is statutorily non-covered by Medicare Part B. Use -GY.";
-      document.getElementById("pearlTxt").innerText = pearl;
-
-      let alert = "";
-      if(activeCond.a==="BP") alert = '⚠️ AUDIT PROMPT: Did you remember to chart blood pressure?';
-      if(activeCond.a==="Scleral") alert = '⚠️ AUDIT PROMPT: Did you explicitly chart "Scleral Depression performed"?';
-      document.getElementById("dbAlert").innerText = alert;
+      let details = getConditionDetails(activeCond);
+      document.getElementById("dbPearl").innerText = details.pearl;
+      document.getElementById("dbPitfall").innerText = details.pitfall;
 
       const pEl = document.getElementById("dbProcs");
-      pEl.innerHTML = activeCond.p.map(p => `<div class="p-2 border border-slate-200 dark:border-slate-700 rounded bg-slate-50 dark:bg-slate-900/50 text-[10px] font-bold dark:text-slate-300"><span class="text-blue-600 dark:text-blue-400">${p.c}</span> ${p.n}</div>`).join("");
+      pEl.innerHTML = activeCond.p.length ? "" : '<p class="text-xs text-slate-400 italic">No specific specialized procedures indicated for routine presentation.</p>';
       
+      activeCond.p.forEach(cptKey => {
+        let cpt = CPT_DICT[cptKey];
+        if(!cpt) return;
+        pEl.innerHTML += `
+          <div class="p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900/50 flex flex-col gap-2">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="font-mono text-sm font-bold text-slate-900 dark:text-white">${cptKey}</span> 
+                <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 ml-1">${cpt.n}</span>
+                ${cpt.g > 0 ? `<span class="text-[9px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-bold ml-2">${cpt.g}-Day Global</span>` : ''}
+              </div>
+              <span class="text-xs font-mono font-bold text-emerald-600">+$${cpt.f}</span>
+            </div>
+            <p class="text-[11px] text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700 pt-2"><span class="font-bold text-red-500">I&R Rule:</span> ${cpt.ir}</p>
+            ${cpt.m.length > 0 ? `<div class="text-[10px] text-blue-600 dark:text-blue-400 font-bold">Applicable Modifiers: ${cpt.m.join(", ")}</div>` : ''}
+          </div>
+        `;
+      });
       if(document.getElementById("viewDb").classList.contains("hidden")) switchTab('db');
     }
 
     function addToCart(c) {
-      if(!cart.find(x => x.c.i === c.i)) cart.push({c:c, l:"3", isP:cart.length===0});
+      if(!cart.find(x => x.c.i === c.i)) cart.push({c:c, l:"3", st: (c.c==='Glaucoma'?'2':''), isP:cart.length===0});
       switchTab('cart');
     }
     function rmCart(i) { cart.splice(i,1); if(cart.length && !cart.find(c=>c.isP)) cart[0].isP=true; updateCart(); }
     function setPri(i) { cart.forEach((c,x)=>c.isP=(x===i)); updateCart(); }
     function setLat(i,v) { cart[i].l=v; updateCart(); }
+    function setStg(i,v) { cart[i].st=v; updateCart(); }
     function setEm(l) { examLevel = l; updateCart(); }
 
     function updateCart() {
       document.getElementById("cartBadge").innerText = cart.length;
       const el = document.getElementById("cartItems");
       el.innerHTML = "";
+      if (cart.length === 0) el.innerHTML = `<p class="text-xs text-slate-400 italic">Cart is empty. Add a diagnosis from the Database.</p>`;
       
       cart.forEach((x, i) => {
-        let latClash = (x.l==="1" || x.l==="2");
+        let fullIcd = x.c.i;
+        if(x.c.c === 'Glaucoma' && fullIcd.startsWith("H40.1")) fullIcd = `${fullIcd.slice(0,6)}${x.l}${x.st}`;
+        else if(["Glaucoma","Retina","Cornea & OSD"].includes(x.c.c)) fullIcd = `${fullIcd}.${x.l}`;
+
+        let stgHtml = x.c.c === 'Glaucoma' ? `<select onchange="setStg(${i},this.value)" class="text-[10px] p-1 border rounded bg-white dark:bg-slate-800 dark:border-slate-600 outline-none"><option value="1" ${x.st==='1'?'selected':''}>Mild</option><option value="2" ${x.st==='2'?'selected':''}>Mod</option><option value="3" ${x.st==='3'?'selected':''}>Sev</option></select>` : '';
+
         el.innerHTML += `
-          <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-700/50 p-2 rounded border border-slate-200 dark:border-slate-600">
-            <div class="flex items-center gap-2">
-              <input type="radio" name="pri" onchange="setPri(${i})" ${x.isP?'checked':''} class="w-3 h-3 text-blue-600">
-              <span class="font-mono text-[11px] font-bold text-blue-700 dark:text-blue-400">${x.c.i}.${x.l}</span>
-              <span class="text-[11px] font-medium dark:text-slate-200">${x.c.n}</span>
+          <div class="flex justify-between items-start bg-slate-50 dark:bg-slate-700/50 p-3 rounded-xl border ${x.isP ? 'border-blue-400 dark:border-blue-500' : 'border-slate-200 dark:border-slate-600'}">
+            <div class="flex flex-col gap-1.5">
+              <div class="flex items-center gap-2">
+                <input type="radio" name="pri" onchange="setPri(${i})" ${x.isP?'checked':''} class="w-3.5 h-3.5 text-blue-600 cursor-pointer">
+                <span class="font-mono text-xs font-bold text-blue-700 dark:text-blue-400">${fullIcd}</span>
+                <span class="text-xs font-bold dark:text-white">${x.c.n}</span>
+              </div>
+              <div class="flex items-center gap-2 mt-1">
+                <select onchange="setLat(${i},this.value)" class="text-[10px] p-1 border rounded bg-white dark:bg-slate-800 dark:border-slate-600 outline-none"><option value="3" ${x.l==='3'?'selected':''}>OU</option><option value="1" ${x.l==='1'?'selected':''}>OD</option><option value="2" ${x.l==='2'?'selected':''}>OS</option></select>
+                ${stgHtml}
+                ${x.isP ? '<span class="text-[9px] bg-blue-600 text-white font-bold px-1.5 py-0.5 rounded">PRIMARY (Line 1)</span>' : ''}
+              </div>
             </div>
-            <div class="flex items-center gap-2">
-              <select onchange="setLat(${i},this.value)" class="text-[9px] p-1 border rounded bg-white dark:bg-slate-800 dark:text-white outline-none">
-                <option value="3" ${x.l==='3'?'selected':''}>OU</option><option value="1" ${x.l==='1'?'selected':''}>OD</option><option value="2" ${x.l==='2'?'selected':''}>OS</option>
-              </select>
-              <button onclick="rmCart(${i})" class="text-red-500"><i data-lucide="x" class="w-3 h-3"></i></button>
-            </div>
+            <button onclick="rmCart(${i})" class="text-slate-400 hover:text-red-500 transition p-1"><i data-lucide="x" class="w-4 h-4"></i></button>
           </div>
         `;
       });
 
-      cartProcedures = [];
+      // Synchronize procedures without losing checkbox state
+      let tempProcs = [];
       cart.forEach((x, i) => {
-        x.c.p.forEach(proc => {
-          if(!cartProcedures.find(cp => cp.c === proc.c)) cartProcedures.push({...proc, ptr:i, chk:false, mods:[]});
+        x.c.p.forEach(cptKey => {
+          let existing = cartProcedures.find(cp => cp.c === cptKey && cp.ptr === i);
+          if(existing) tempProcs.push(existing);
+          else tempProcs.push({c: cptKey, ptr: i, chk: false, mods: []});
         });
       });
+      cartProcedures = tempProcs;
 
       const pEl = document.getElementById("cartProcs");
-      pEl.innerHTML = cartProcedures.length ? "" : '<p class="text-[10px] text-slate-400 italic">No procedures.</p>';
+      pEl.innerHTML = cartProcedures.length ? "" : '<p class="text-xs text-slate-400 italic">No procedures available.</p>';
       
       cartProcedures.forEach((p, i) => {
-        let modHtml = "";
-        if(p.c === "68761") modHtml = `<label><input type="checkbox" onchange="mod(this,'E1',${i})"> E1</label> <label><input type="checkbox" onchange="mod(this,'E2',${i})"> E2</label> <label><input type="checkbox" onchange="mod(this,'E3',${i})"> E3</label> <label><input type="checkbox" onchange="mod(this,'E4',${i})"> E4</label>`;
-        else if(["65855","66761"].includes(p.c)) modHtml = `<select onchange="setMod(this.value,${i})" class="text-[9px] border rounded bg-white"><option value="">Side</option><option value="-RT">RT</option><option value="-LT">LT</option><option value="-50">50</option></select>`;
-        else if(p.c === "66821") modHtml = `<label><input type="checkbox" onchange="mod(this,'-55',${i})"> Co-Manage (-55)</label>`;
+        let cptInfo = CPT_DICT[p.c];
+        if(!cptInfo) return;
         
+        let ptrOpts = cart.map((c,idx)=>`<option value="${idx}" ${p.ptr===idx?'selected':''}>Line ${idx+1}</option>`).join("");
+        let modOpts = cptInfo.m.map(m=>`<label class="cursor-pointer flex items-center gap-1 hover:text-blue-500"><input type="checkbox" onchange="mod(this,'${m}',${i})" ${p.mods.includes(m)?'checked':''} class="rounded w-3 h-3 text-blue-600">${m}</label>`).join(" ");
+
         pEl.innerHTML += `
-          <div class="flex items-center justify-between p-2 border-b border-slate-100 dark:border-slate-700">
-            <div class="flex items-center gap-2">
-              <input type="checkbox" onchange="chkP(${i},this.checked)" ${p.chk?'checked':''} class="w-3 h-3 text-blue-600 rounded">
-              <span class="font-mono text-[11px] font-bold dark:text-white">${p.c}</span><span class="text-[10px] dark:text-slate-300">${p.n}</span>
-              ${p.c==='65778'?'<span class="text-[8px] bg-amber-100 text-amber-800 px-1 rounded">PA Warning</span>':''}
+          <div class="flex items-center justify-between p-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800">
+            <div class="flex items-start gap-3">
+              <input type="checkbox" onchange="chkP(${i},this.checked)" ${p.chk?'checked':''} class="w-4 h-4 text-blue-600 rounded cursor-pointer mt-0.5">
+              <div class="flex flex-col gap-1">
+                <div><span class="font-mono text-xs font-bold dark:text-white">${p.c}</span> <span class="text-[11px] font-medium dark:text-slate-300">${cptInfo.n}</span></div>
+                <div class="flex items-center gap-3 text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                  <span class="bg-slate-100 dark:bg-slate-700 px-1 rounded flex items-center gap-1">Pointer: <select onchange="updateProcPtr(${i},this.value)" class="bg-transparent outline-none text-blue-600 dark:text-blue-400 cursor-pointer">${ptrOpts}</select></span>
+                  ${modOpts ? `<div class="flex items-center gap-2 text-purple-600 dark:text-purple-400">Mods: ${modOpts}</div>` : ''}
+                </div>
+              </div>
             </div>
-            <div class="flex items-center gap-2 text-[9px] dark:text-slate-300">${modHtml}</div>
+            <span class="text-xs font-mono font-bold text-emerald-600">+$${cptInfo.f}</span>
           </div>
         `;
       });
 
       calcTotals();
+      generateMacro();
       lucide.createIcons();
     }
 
-    function chkP(i, v) { cartProcedures[i].chk = v; calcTotals(); }
+    function chkP(i, v) { cartProcedures[i].chk = v; calcTotals(); generateMacro(); }
     function mod(el, m, i) { 
       if(el.checked) cartProcedures[i].mods.push(m);
       else cartProcedures[i].mods = cartProcedures[i].mods.filter(x=>x!==m);
-      calcTotals();
+      calcTotals(); generateMacro();
     }
-    function setMod(v, i) { cartProcedures[i].mods = [v]; calcTotals(); }
+    function updateProcPtr(i, v) { cartProcedures[i].ptr = parseInt(v); generateMacro(); }
 
     function calcTotals() {
       ['btn213','btn214','btn215'].forEach(id=>document.getElementById(id).classList.remove('bg-blue-50','border-blue-500','text-blue-700','dark:bg-blue-900/30'));
@@ -507,92 +702,105 @@
       let isVis = document.getElementById("payerSelect").value === "vision";
       let pos = document.getElementById("settingSelect").value;
 
-      let eF = examLevel === '99213' ? 92 : examLevel === '99214' ? 132 : 184;
+      let type = document.querySelector('input[name="codeType"]:checked').value;
+      let eC = type === '99' ? examLevel : (examLevel==='99213'?'92012':'92014');
+      let eF = eC === '99213' ? 92 : eC === '99214' ? 132 : eC === '99215' ? 184 : eC === '92012' ? 90 : 130;
+      
       let eTotal = isVis ? 55 : (eF * cf * pM * sA);
+      document.getElementById("cartExamFee").innerText = `${eC} ($${eTotal.toFixed(2)})`;
       
       let pTotal = 0;
       let alerts = [];
 
       let time = parseInt(document.getElementById("timeInput").value) || 0;
-      let prolonged = (examLevel === '99215' && time >= 55);
+      let prolonged = (examLevel === '99215' && time >= 55 && type==='99');
       document.getElementById("prolongedBadge").style.display = prolonged ? "block" : "none";
-      if(prolonged && !isVis) eTotal += (35 * cf * pM); // 99417 dummy fee
+      if(prolonged && !isVis) pTotal += (35 * cf * pM);
 
       cartProcedures.forEach(p => {
         if(p.chk && !isVis) {
-          let f = p.f * cf * pM;
-          if(p.mods.includes("-55")) f = f * 0.20; // 20% post-op split
-          if(p.mods.includes("E1")||p.mods.includes("E2")||p.mods.includes("E3")||p.mods.includes("E4")) {
-            f = f * p.mods.length; 
-            if(p.mods.length>1) f = f * 0.75; // Dummy -51 reduction
-          }
+          let cInfo = CPT_DICT[p.c];
+          let f = cInfo.f * cf * pM;
+          if(p.mods.includes("-55")) f = f * 0.20; 
+          let eMods = p.mods.filter(m=>m.startsWith("-E"));
+          if(eMods.length) { f = f * eMods.length; if(eMods.length>1) f = f * 0.75; } 
           pTotal += f;
         }
       });
 
       document.getElementById("cartTotal").innerText = `$${(eTotal + pTotal).toFixed(2)}`;
-      document.getElementById("oopTotal").innerText = isVis ? "$0.00" : `$${(eTotal * 0.20).toFixed(2)}`;
+      document.getElementById("oopTotal").innerText = isVis ? "$0.00" : `$${((eTotal+pTotal) * 0.20).toFixed(2)}`;
 
-      // Alerts
-      if(cartProcedures.find(p=>p.c==='92133'&&p.chk) && cartProcedures.find(p=>p.c==='92250'&&p.chk)) alerts.push("⚠️ NCCI: 92133 + 92250 requires -59/-XU.");
+      // Audit Checks
+      let checkedCpts = cartProcedures.filter(p=>p.chk).map(p=>p.c);
+      if(checkedCpts.includes('92133') && checkedCpts.includes('92250')) alerts.push("⚠️ NCCI: 92133 + 92250 requires -59/-XU on one code.");
       if(pos === "02") alerts.push("ℹ️ Telehealth: Append -95 to E/M code.");
-      if(document.getElementById("payerSelect").value === "medicare" && cart.find(c=>c.c.c==="Refractive"&&c.isP)) alerts.push("❌ COB Router: Routine refractive primary to Medicare. Append -GY.");
+      if(document.getElementById("payerSelect").value === "medicare" && cart.find(c=>c.c.c==="Refractive"&&c.isP)) document.getElementById("ccWarning").classList.remove("hidden"); else document.getElementById("ccWarning").classList.add("hidden");
       
-      cart.forEach((c,i)=>{
-        cartProcedures.forEach(p=>{
-          if(p.chk && p.ptr===i && p.mods.includes("-LT") && c.l==="1") alerts.push(`❌ Lat. Clash: ICD ${c.c.i} (OD) with ${p.c} (-LT).`);
-        });
+      let dosCheck = document.getElementById("dosCheck").value;
+      if(dosCheck && (checkedCpts.includes('92133') || checkedCpts.includes('92083'))) {
+        const diff = (new Date().getFullYear() - new Date(dosCheck).getFullYear())*12 + (new Date().getMonth() - new Date(dosCheck).getMonth());
+        if(diff < 6) document.getElementById("dosAlert").classList.remove("hidden");
+        else document.getElementById("dosAlert").classList.add("hidden");
+      } else document.getElementById("dosAlert").classList.add("hidden");
+
+      document.getElementById("alertsContainer").innerHTML = alerts.map(a=>`<div class="text-[10px] bg-amber-100 text-amber-800 p-1.5 rounded font-bold border border-amber-200">${a}</div>`).join("");
+    }
+
+    function generateMacro() {
+      const ehr = document.getElementById("ehrOutput");
+      if(!cart.length) return ehr.innerText = "Add conditions to chart to generate macro.";
+
+      let t = `=======================================================\nOPHTHALMIC ENCOUNTER SUMMARY & SUPERBILL\n=======================================================\n\nCHIEF COMPLAINT & MEDICAL NECESSITY:\nPatient presents for evaluation and management of chronic/acute ocular conditions.\n\nASSESSMENT & PLAN:\n`;
+      
+      cart.forEach((x, i) => {
+        let icd = x.c.i;
+        if(x.c.c === 'Glaucoma' && icd.startsWith("H40.1")) icd = `${icd.slice(0,6)}${x.l}${x.st}`;
+        else if(["Glaucoma","Retina","Cornea & OSD"].includes(x.c.c)) icd = `${icd}.${x.l}`;
+        t += `Line ${i+1}: ${icd} - ${x.c.n} ${x.isP?'[PRIMARY]':''}\n  Plan: ${getConditionDetails(x.c).note}\n  RTC: ${x.c.r}\n\n`;
       });
 
-      document.getElementById("alertsContainer").innerHTML = alerts.map(a=>`<div class="text-[9px] bg-red-100 text-red-800 p-1 rounded font-bold">${a}</div>`).join("");
+      let type = document.querySelector('input[name="codeType"]:checked').value;
+      let eC = type === '99' ? examLevel : (examLevel==='99213'?'92012':'92014');
+      let mdm = examLevel === '99213' ? "Low Complexity (1 stable chronic illness)" : examLevel === '99214' ? "Moderate Complexity (1 progressing illness or Rx drug management)" : "High Complexity (Severe threat to vision)";
+      t += `LEVEL OF SERVICE:\n- CPT: ${eC} ${document.getElementById("settingSelect").value==='02'?'-95 (Telehealth)':''}\n- MDM Rationale: ${mdm}\n`;
+      if(examLevel==='99215' && parseInt(document.getElementById("timeInput").value)>=55) t += `- CPT: 99417 (Prolonged Service >55 mins)\n`;
+
+      let checked = cartProcedures.filter(p=>p.chk);
+      if(checked.length) {
+        t += `\nPROCEDURES & INTERPRETATION AND REPORT (I&R):\n`;
+        checked.forEach(p => {
+          let cInfo = CPT_DICT[p.c];
+          t += `- CPT: ${p.c} ${p.mods.join(" ")} (${cInfo.n})\n`;
+          t += `  Pointer: Line ${p.ptr+1}\n`;
+          t += `  I&R: Test performed for medical necessity tracking. Scan/Test quality reliable. Structural/functional analysis confirms disease status as charted in A/P. Results reviewed with patient. Continue management.\n\n`;
+        });
+      }
+      ehr.innerText = t;
     }
 
-    // Modal / Decision Tree
-    function showClModal() { alert("CL Decision Tree:\n1) Disease present but no irregular astigmatism? Use 92071 (Bandage CL).\n2) Irregular astigmatism (e.g. Keratoconus)? Use 92072 (Fit for Keratoconus).\n3) Bill materials as V2599 (Medically Necessary) with -KX modifier to Medicare DME."); }
-
-    // Export Functions
     function exportData(type) {
       if(!cart.length) return alert("Cart is empty.");
-      let pt = "John Doe"; // Dummy
-      let txt = "";
+      let txt = document.getElementById("ehrOutput").innerText;
+      if(type==='macro') { navigator.clipboard.writeText(txt); alert("Copied!"); return; }
       
-      if(type === 'macro' || type === 'cprs') {
-        txt = `=================================\n${type==='cprs'?'VA CPRS CONSULT NOTE':'EHR ENCOUNTER MACRO'}\n=================================\n`;
-        cart.forEach((c,i) => { txt += `Assessment ${i+1}: ${c.c.i}.${c.l} - ${c.c.n} ${c.isP?'[PRIMARY]':''}\nPlan: RTC ${c.c.r}\n`; });
-        txt += `\nE/M Code: ${examLevel} ${document.getElementById("settingSelect").value==='02'?'-95 (Telehealth)':''}\n`;
-        let checked = cartProcedures.filter(p=>p.chk);
-        if(checked.length) {
-          txt += `\nPROCEDURES & I&R:\n`;
-          checked.forEach(p => txt += `- ${p.c} ${p.mods.join(" ")}\n  I&R: Test reliable. Baseline compared. Med nec met.\n`);
-        }
-        if(type==='cprs') txt += `\nVA ATTESTATION:\nI have personally seen and examined the veteran. Note forwarded to PCP.\n`;
-        
-        let newWin = window.open("","_blank");
-        newWin.document.write(`<pre style="font-family:monospace; font-size:12px;">${txt}</pre>`);
-      }
-      else if(type === 'referral') {
-        txt = `<h2>Referral Letter</h2><p>Dear Specialist,</p><p>I am referring ${pt} for further evaluation of <strong>${cart[0].c.n}</strong> (${cart[0].c.i}).</p><p>Please find attached the latest clinical findings. Thank you.</p>`;
-        let newWin = window.open("","_blank"); newWin.document.write(txt); newWin.print();
-      }
-      else if(type === 'handout') {
-        txt = `<h2>Your Eye Health Summary</h2><p>Diagnosis: <strong>${cart[0].c.n}</strong></p><p>Next Appointment: In ${cart[0].c.r}</p><p>Please take your medications as prescribed and call the office if your vision changes.</p>`;
-        let newWin = window.open("","_blank"); newWin.document.write(txt); newWin.print();
-      }
-      else if(type === 'abn') {
-        txt = `<h2>Advance Beneficiary Notice (ABN)</h2><p>Medicare does not pay for everything.</p><p>Item: Non-Covered Service/Refraction</p><p>Estimated Cost: $65.00</p><br><p>Sign: ___________________</p>`;
-        let newWin = window.open("","_blank"); newWin.document.write(txt); newWin.print();
-      }
-      else if(type === 'superbill') {
-        txt = `<h2>Superbill Summary</h2><table border="1" cellpadding="5"><tr><th>Code</th><th>Modifier</th><th>Fee</th></tr>`;
-        txt += `<tr><td>${examLevel}</td><td>${document.getElementById("settingSelect").value==='02'?'-95':''}</td><td>--</td></tr>`;
-        cartProcedures.filter(p=>p.chk).forEach(p=> txt+=`<tr><td>${p.c}</td><td>${p.mods.join(" ")}</td><td>--</td></tr>`);
+      if(type==='cprs') txt = `VA CPRS CONSULT NOTE\n\n` + txt + `\n\nVA ATTESTATION:\nI have personally seen and examined the veteran. Findings discussed. Note forwarded to primary care.`;
+      else if(type==='referral') txt = `<h2>Referral Letter</h2><p>Dear Dr.,</p><p>I am referring this patient for further evaluation of <strong>${cart[0].c.n}</strong>.</p><pre>${txt}</pre>`;
+      else if(type==='handout') txt = `<h2>Your Eye Health Summary</h2><p>Diagnosis: <strong>${cart[0].c.n}</strong></p><p>Please take your drops as prescribed and return in ${cart[0].c.r}. Call if your vision changes.</p>`;
+      else if(type==='abn') txt = `<h2>Advance Beneficiary Notice (ABN)</h2><p>Medicare does not pay for everything, such as Refraction (92015).</p><p>Estimated Cost: $40.00 - $65.00</p><p>Sign: ___________________</p>`;
+      else if(type==='superbill') {
+        txt = `<h2>Superbill Summary</h2><table border="1" cellpadding="5"><tr><th>Code</th><th>Modifier</th></tr>`;
+        txt += `<tr><td>${document.getElementById("examOutputBadge").innerText.split(" ")[0]}</td><td></td></tr>`;
+        cartProcedures.filter(p=>p.chk).forEach(p=> txt+=`<tr><td>${p.c}</td><td>${p.mods.join(" ")}</td></tr>`);
         txt += `</table>`;
-        let newWin = window.open("","_blank"); newWin.document.write(txt); newWin.print();
       }
+      
+      let newWin = window.open("","_blank"); newWin.document.write(`<div style="font-family:sans-serif; max-width:800px; margin:auto;">${txt}</div>`); newWin.print();
     }
 
-    // Init
+    // Initialize
     filterDb();
+    switchTab('db');
   </script>
 </body>
 </html>
