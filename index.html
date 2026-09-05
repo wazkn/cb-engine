@@ -3,20 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OptoCode Pro | Clinical Coding & Reimbursement</title>
-  <!-- Tailwind CSS CDN for instant, modern styling -->
+  <title>OptoCode Pro | Clinical Protocol & Reimbursement Navigator</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     body { font-family: 'Inter', sans-serif; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
   <!-- Header Navbar -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-6 py-4 shadow-sm">
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-6 py-3.5 shadow-sm">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
       <div>
         <div class="flex items-center gap-2">
@@ -24,8 +26,11 @@
           <span class="text-[11px] bg-emerald-50 text-emerald-700 font-semibold px-2.5 py-0.5 rounded-full border border-emerald-200">
             2026 CMS & NCCI Aligned
           </span>
+          <span id="totalDbBadge" class="text-[11px] bg-blue-50 text-blue-700 font-semibold px-2 py-0.5 rounded-full border border-blue-200">
+            125+ Diagnoses
+          </span>
         </div>
-        <p class="text-xs text-slate-500 mt-0.5">Clinical Follow-up Protocol, Procedure Linkage & Fee Engine</p>
+        <p class="text-xs text-slate-500 mt-0.5">Clinical Follow-up Protocol, Scope-Aligned In-Office Procedures & Fee Engine</p>
       </div>
 
       <div class="flex items-center gap-3">
@@ -53,25 +58,73 @@
   <!-- Main Container -->
   <main class="max-w-7xl mx-auto w-full p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
     
-    <!-- Sidebar: Search & Diagnosis List -->
-    <aside class="lg:col-span-4 flex flex-col gap-4">
+    <!-- Sidebar: Search & Enhanced Filter Suite -->
+    <aside class="lg:col-span-4 flex flex-col gap-3.5">
+      
+      <!-- Instant Search -->
       <div class="relative">
         <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
         <input 
           type="text" 
           id="searchInput" 
-          oninput="filterDiagnoses()" 
-          placeholder="Search ICD-10 or condition name..." 
+          oninput="filterAndSortDiagnoses()" 
+          placeholder="Search code, name, or procedure (e.g. SLT, ulcer)..." 
           class="w-full pl-9 pr-4 py-2 text-xs bg-white border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
         />
       </div>
 
+      <!-- Filter Controls Accordion / Panel -->
+      <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm flex flex-col gap-2.5">
+        <div class="grid grid-cols-2 gap-2">
+          <!-- Sort Dropdown -->
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Sort By</label>
+            <select id="sortBy" onchange="filterAndSortDiagnoses()" class="w-full text-[11px] font-medium bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 outline-none">
+              <option value="income-desc">Revenue: High to Low</option>
+              <option value="income-asc">Revenue: Low to High</option>
+              <option value="icd-asc">ICD-10 Code</option>
+              <option value="name-asc">Condition Name</option>
+            </select>
+          </div>
+
+          <!-- Category Filter -->
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Category</label>
+            <select id="categoryFilter" onchange="filterAndSortDiagnoses()" class="w-full text-[11px] font-medium bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 outline-none">
+              <option value="all">All Categories</option>
+              <option value="Glaucoma">Glaucoma</option>
+              <option value="Retina">Retina & Macula</option>
+              <option value="Cornea & OSD">Cornea & OSD</option>
+              <option value="Uveitis">Uveitis</option>
+              <option value="Neuro-Optometry">Neuro-Optometry</option>
+              <option value="High-Risk Rx">High-Risk Rx</option>
+              <option value="Pediatric & Strabismus">Pediatrics & Strabismus</option>
+              <option value="Cataract">Cataract</option>
+              <option value="Refractive">Refractive</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Quick Filter Toggles -->
+        <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-[11px]">
+          <label class="flex items-center gap-1.5 cursor-pointer text-slate-600 font-medium">
+            <input type="checkbox" id="procedureOnlyFilter" onchange="filterAndSortDiagnoses()" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-3.5 h-3.5 cursor-pointer">
+            In-Office Procedures Only
+          </label>
+          <label class="flex items-center gap-1.5 cursor-pointer text-slate-600 font-medium">
+            <input type="checkbox" id="verifiedOnlyFilter" onchange="filterAndSortDiagnoses()" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5 cursor-pointer">
+            Verified PPPs Only
+          </label>
+        </div>
+      </div>
+
+      <!-- List Container -->
       <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm flex-1 flex flex-col">
-        <div class="px-4 py-3 bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider flex justify-between items-center">
-          <span>Diagnoses</span>
+        <div class="px-4 py-2.5 bg-slate-50/90 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider flex justify-between items-center">
+          <span>Matching Conditions</span>
           <span id="countBadge" class="bg-slate-200 text-slate-700 rounded-full px-2 py-0.5 text-[10px]">0</span>
         </div>
-        <div id="diagnosisList" class="divide-y divide-slate-100 overflow-y-auto max-h-[700px]">
+        <div id="diagnosisList" class="divide-y divide-slate-100 overflow-y-auto max-h-[640px]">
           <!-- Populated by JavaScript -->
         </div>
       </div>
@@ -133,12 +186,12 @@
         </div>
       </div>
 
-      <!-- Testing Procedures Card -->
+      <!-- Testing & In-Office Procedures Card -->
       <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col gap-3">
-        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Eligible Special Testing Procedures (Toggle to Include)</h3>
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Linked Testing & In-Office Procedures (Toggle to Include)</h3>
         <div id="visionWarning" class="hidden p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-center gap-2">
           <i data-lucide="alert-circle" class="w-4 h-4 text-amber-600 shrink-0"></i>
-          Routine Vision Plans do not cover medical diagnostic testing (OCT, VF, Photos). Cross-bill to medical plan.
+          Routine Vision Plans do not cover medical diagnostic testing (OCT, VF, Photos) or surgical procedures. Cross-bill to medical plan.
         </div>
         <div id="proceduresList" class="space-y-2">
           <!-- Populated by JavaScript -->
@@ -171,17 +224,17 @@
   </main>
 
   <script>
-    // Comprehensive Optometric ICD-10 Master Database (70+ Clinical Conditions)
+    // Master Optometric Clinical Database: 125+ Codified ICD-10 Conditions
     const DATABASE = [
-      // ==========================================
-      // 1. GLAUCOMA & ANTERIOR SEGMENT PROCEDURES
-      // ==========================================
+      // ----------------------------------------------------
+      // GLAUCOMA & ANTERIOR SEGMENT LASER PROCEDURES
+      // ----------------------------------------------------
       {
         icd10: "H40.1132",
         name: "Primary open-angle glaucoma, bilateral, moderate stage",
         category: "Glaucoma",
         status: "VERIFIED_PPP",
-        citation: "AAO Preferred Practice Pattern: Primary Open-Angle Glaucoma Guidelines (2026)",
+        citation: "AAO Preferred Practice Pattern: Primary Open-Angle Glaucoma (2026)",
         rtc: "3 - 4 Months",
         examCpt: "99214",
         examFee: 132.00,
@@ -191,7 +244,7 @@
           { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Covered under LCD L34648", checked: true },
           { cpt: "92020", name: "Gonioscopy", fee: 28.00, lcd: "Annual baseline coverage", checked: false },
           { cpt: "76514", name: "Corneal Pachymetry", fee: 12.00, lcd: "Once per lifetime baseline", checked: false },
-          { cpt: "65855", name: "Selective Laser Trabeculoplasty (SLT)", fee: 245.00, lcd: "First-line or adjunctive therapy (Scope Permitting)", checked: false }
+          { cpt: "65855", name: "Selective Laser Trabeculoplasty (SLT)", fee: 245.00, lcd: "First-line or adjunctive IOP lowering (Scope Permitting)", checked: false }
         ],
         pitfalls: [
           "NCCI Edit: 92133 (OCT) and 92250 (Photo) bundled without modifier -59/-XU and distinct pathology.",
@@ -208,26 +261,43 @@
         name: "Primary open-angle glaucoma, bilateral, severe stage",
         category: "Glaucoma",
         status: "VERIFIED_PPP",
-        citation: "AAO Preferred Practice Pattern: Primary Open-Angle Glaucoma Guidelines (2026)",
+        citation: "AAO Preferred Practice Pattern: Primary Open-Angle Glaucoma",
         rtc: "1 - 3 Months",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Severe chronic optic neuropathy with imminent threat to fixation; requires aggressive multi-agent IOP management.",
+        examRationale: "Severe optic neuropathy with imminent threat to fixation; intensive multi-agent therapy.",
         procedures: [
-          { cpt: "92083", name: "Visual Field (Humphrey 10-2)", fee: 65.00, lcd: "10-2 recommended when defect threatens central 10°", checked: true },
-          { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "May exhibit floor effect in severe stage", checked: false },
+          { cpt: "92083", name: "Visual Field (Humphrey 10-2)", fee: 65.00, lcd: "10-2 indicated when central 10 degrees threatened", checked: true },
+          { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "RNFL reaches floor effect (~50µm)", checked: false },
           { cpt: "92020", name: "Gonioscopy", fee: 28.00, lcd: "Verify angle patency and rule out PAS", checked: true },
           { cpt: "65855", name: "Selective Laser Trabeculoplasty (SLT)", fee: 245.00, lcd: "Adjunctive IOP lowering (Scope Permitting)", checked: false }
         ],
         pitfalls: [
-          "In severe stage POAG, RNFL thickness reaches floor effect (~50µm); rely on 10-2 fields rather than serial OCTs.",
-          "Ensure modifier -25 is attached to exam if SLT (65855) is performed on same date."
+          "Rely on 10-2 fields rather than OCT in advanced stage due to RNFL floor effect.",
+          "Append modifier -25 to exam if SLT (65855) performed on same date."
         ],
         docs: [
           "Document split fixation status and central field preservation.",
-          "Explicitly record target IOP (typically ≤12 mmHg for severe stage).",
-          "Document adherence and side effects of topical hypotensive therapy."
+          "Explicitly record target IOP (typically ≤12 mmHg for severe stage)."
         ]
+      },
+      {
+        icd10: "H40.1131",
+        name: "Primary open-angle glaucoma, bilateral, mild stage",
+        category: "Glaucoma",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Primary Open-Angle Glaucoma",
+        rtc: "4 - 6 Months",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Chronic disease requiring ongoing topical hypotensive therapy and progression tracking.",
+        procedures: [
+          { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "Covered under LCD L33751", checked: true },
+          { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Covered under LCD L34648", checked: true },
+          { cpt: "65855", name: "Selective Laser Trabeculoplasty (SLT)", fee: 245.00, lcd: "First-line treatment option per LiGHT trial", checked: false }
+        ],
+        pitfalls: ["Do not perform pachymetry repeatedly; billable once per lifetime."],
+        docs: ["Document baseline optic nerve cupping and early nasal step/paracentral defect."]
       },
       {
         icd10: "H40.013",
@@ -238,43 +308,66 @@
         rtc: "6 Months",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Level 4 MDM due to multiple high-risk anatomical factors requiring comprehensive evaluation.",
+        examRationale: "Multiple high-risk factors requiring comprehensive structural and functional evaluation.",
         procedures: [
           { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "Covered baseline evaluation", checked: true },
           { cpt: "92083", name: "Visual Field (24-2)", fee: 65.00, lcd: "Covered baseline evaluation", checked: false },
           { cpt: "76514", name: "Corneal Pachymetry", fee: 12.00, lcd: "Baseline risk assessment", checked: true }
         ],
-        pitfalls: [
-          "Verify medical necessity before repeating testing within 12 months on a glaucoma suspect."
+        pitfalls: ["Verify medical necessity before repeating testing within 12 months on a glaucoma suspect."],
+        docs: ["Document family history, central corneal thickness (CCT), and baseline nerve appearance."]
+      },
+      {
+        icd10: "H40.023",
+        name: "Open angle with borderline findings, low risk, bilateral",
+        category: "Glaucoma",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Glaucoma Suspect",
+        rtc: "12 Months",
+        examCpt: "92014",
+        examFee: 130.00,
+        examRationale: "Annual surveillance of physiologic cupping or borderline IOP.",
+        procedures: [
+          { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "Baseline assessment", checked: true }
         ],
-        docs: [
-          "Document family history, central corneal thickness (CCT), and baseline nerve appearance."
-        ]
+        pitfalls: ["Avoid over-testing without documented anatomical risk factors."],
+        docs: ["Record stable optic nerve appearance and normal IOP."]
+      },
+      {
+        icd10: "H40.053",
+        name: "Ocular hypertension, bilateral",
+        category: "Glaucoma",
+        status: "VERIFIED_PPP",
+        citation: "Ocular Hypertension Treatment Study (OHTS) Protocol",
+        rtc: "6 Months",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Elevated IOP >21 mmHg with normal fields and nerves; risk stratification required.",
+        procedures: [
+          { cpt: "76514", name: "Corneal Pachymetry", fee: 12.00, lcd: "Mandatory CCT risk calculation per OHTS", checked: true },
+          { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "Verify absence of subclinical thinning", checked: true },
+          { cpt: "92083", name: "Visual Field (24-2)", fee: 65.00, lcd: "Verify absence of functional defect", checked: true }
+        ],
+        pitfalls: ["Thin cornea (<555 µm) significantly increases risk of conversion to POAG."],
+        docs: ["Calculate 5-year POAG conversion risk score and document treatment threshold."]
       },
       {
         icd10: "H40.1230",
         name: "Low-tension glaucoma (Normal Tension Glaucoma), bilateral",
         category: "Glaucoma",
         status: "VERIFIED_PPP",
-        citation: "AAO Preferred Practice Pattern: Primary Open-Angle Glaucoma Guidelines (2026)",
+        citation: "AAO Preferred Practice Pattern: Primary Open-Angle Glaucoma",
         rtc: "3 - 4 Months",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Chronic progressive optic neuropathy requiring target IOP reduction despite normal baseline pressures.",
+        examRationale: "Progressive optic neuropathy requiring target IOP reduction despite normal baseline pressures.",
         procedures: [
           { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "Covered under LCD L33751", checked: true },
           { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Covered under LCD L34648", checked: true },
-          { cpt: "76514", name: "Corneal Pachymetry", fee: 12.00, lcd: "Verify thin CCT contributing to under-applanation", checked: false }
+          { cpt: "76514", name: "Corneal Pachymetry", fee: 12.00, lcd: "Verify thin CCT", checked: false }
         ],
-        pitfalls: [
-          "Rule out non-glaucomatous compressive or ischemic optic neuropathies if pallor exceeds cupping.",
-          "Check for nocturnal hypotension, vasospastic syndrome, or sleep apnea in history."
-        ],
-        docs: [
-          "Document diurnal IOP baseline range and thin CCT adjustments.",
-          "Record presence/absence of Drance disc hemorrhages.",
-          "State aggressive target IOP reduction (≥30% from peak recorded pressure)."
-        ]
+        pitfalls: ["Rule out non-glaucomatous compressive or ischemic optic neuropathies if pallor exceeds cupping."],
+        docs: ["Document diurnal IOP range, Drance hemorrhages, and target IOP reduction (≥30%)."]
       },
       {
         icd10: "H40.033",
@@ -292,13 +385,12 @@
           { cpt: "66761", name: "Laser Peripheral Iridotomy (LPI)", fee: 320.00, lcd: "Prophylactic or therapeutic for pupillary block (Scope Permitting)", checked: false }
         ],
         pitfalls: [
-          "Do not dilate without documenting angle opening distance (AOD) or indentation gonioscopy confirming absence of total closure.",
-          "If performing prophylactic LPI (66761), document ≥180° of iridotrabecular contact (ITC)."
+          "Do not dilate without documenting angle opening distance (AOD) or indentation gonioscopy.",
+          "If performing prophylactic LPI (66761), document ≥180 degrees of iridotrabecular contact (ITC)."
         ],
         docs: [
           "Document gonioscopy grading in all 4 quadrants using Spaeth or Shaffer scale.",
-          "Record presence/absence of peripheral anterior synechiae (PAS) and iris contour.",
-          "Document patient education regarding acute angle closure symptoms (halos, pain, nausea)."
+          "Record presence/absence of peripheral anterior synechiae (PAS) and iris contour."
         ]
       },
       {
@@ -315,68 +407,68 @@
           { cpt: "92020", name: "Gonioscopy (Compression)", fee: 28.00, lcd: "Identify complete angle occlusion and PAS", checked: true },
           { cpt: "66761", name: "Laser Peripheral Iridotomy (LPI)", fee: 320.00, lcd: "Therapeutic iridotomy once cornea clears (Scope Permitting)", checked: false }
         ],
-        pitfalls: [
-          "Medical therapy first: topical beta-blocker, alpha-2 agonist, pilocarpine 1-2%, oral acetazolamide, IV mannitol if refractory.",
-          "Examine contralateral eye; high risk of bilateral acute attack."
+        pitfalls: ["Medical therapy first: topical drops, oral acetazolamide; examine contralateral eye."],
+        docs: ["Document peak IOP, steamy cornea, mid-dilated fixed pupil, and post-treatment timeline."]
+      },
+      {
+        icd10: "H40.223",
+        name: "Chronic angle-closure glaucoma, bilateral",
+        category: "Glaucoma",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Primary Angle Closure",
+        rtc: "2 - 3 Months",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Progressive synechial angle closure resulting in chronic elevation of IOP and disc cupping.",
+        procedures: [
+          { cpt: "92020", name: "Gonioscopy", fee: 28.00, lcd: "Serial tracking of PAS extent", checked: true },
+          { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "Covered under LCD L33751", checked: true },
+          { cpt: "66761", name: "Laser Peripheral Iridotomy (LPI)", fee: 320.00, lcd: "Eliminate pupillary block component (Scope Permitting)", checked: false }
         ],
-        docs: [
-          "Document peak IOP, presence of steamy/edematous cornea, mid-dilated fixed pupil, and shallow anterior chamber.",
-          "Record medications administered with post-instillation IOP reduction timeline."
-        ]
+        pitfalls: ["LPI eliminates pupillary block but will not reopen areas of established synechial closure."],
+        docs: ["Document clock hours of peripheral anterior synechiae (PAS)."]
       },
       {
         icd10: "H40.143",
         name: "Capsular glaucoma with pseudoexfoliation of lens, bilateral",
         category: "Glaucoma",
         status: "VERIFIED_PPP",
-        citation: "AAO Preferred Practice Pattern: Primary Open-Angle Glaucoma Guidelines",
+        citation: "AAO Preferred Practice Pattern: Primary Open-Angle Glaucoma",
         rtc: "2 - 3 Months",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Aggressive secondary open-angle glaucoma characterized by high IOP spikes and rapid visual field progression.",
+        examRationale: "Aggressive secondary open-angle glaucoma characterized by high IOP spikes and rapid progression.",
         procedures: [
           { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "Covered under LCD L33751", checked: true },
           { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Covered under LCD L34648", checked: true },
-          { cpt: "92020", name: "Gonioscopy", fee: 28.00, lcd: "Document Sampaolesi line and hyperpigmentation", checked: true },
+          { cpt: "92020", name: "Gonioscopy", fee: 28.00, lcd: "Document Sampaolesi line", checked: true },
           { cpt: "65855", name: "Selective Laser Trabeculoplasty (SLT)", fee: 245.00, lcd: "Highly responsive due to trabecular pigment (Scope Permitting)", checked: false }
         ],
-        pitfalls: [
-          "PXG carries higher post-SLT IOP spike rates; monitor closely post-procedure.",
-          "Patients have zonular weakness and phacodonesis; coordinate cataract co-management carefully."
-        ],
-        docs: [
-          "Document fibrillar white flake deposits on anterior lens capsule and pupillary ruff.",
-          "Record baseline IOP fluctuations and gonioscopic trabecular meshwork pigmentation."
-        ]
+        pitfalls: ["PXG carries higher post-SLT IOP spike rates; monitor closely post-procedure."],
+        docs: ["Document fibrillar flake deposits on lens capsule, pupillary ruff, and Sampaolesi line."]
       },
       {
         icd10: "H40.133",
         name: "Pigmentary glaucoma, bilateral",
         category: "Glaucoma",
         status: "VERIFIED_PPP",
-        citation: "AAO Preferred Practice Pattern: Primary Open-Angle Glaucoma Guidelines",
+        citation: "AAO Preferred Practice Pattern: Primary Open-Angle Glaucoma",
         rtc: "3 - 4 Months",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Secondary glaucoma driven by reverse pupillary block and mechanical iris chaffing against zonules.",
+        examRationale: "Secondary glaucoma driven by reverse pupillary block and iris chaffing against zonules.",
         procedures: [
           { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "Covered under LCD L33751", checked: true },
           { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Covered under LCD L34648", checked: true },
-          { cpt: "92020", name: "Gonioscopy", fee: 28.00, lcd: "Assess dense 360° trabecular band pigmentation", checked: true },
+          { cpt: "92020", name: "Gonioscopy", fee: 28.00, lcd: "Assess 360 degree trabecular band pigmentation", checked: true },
           { cpt: "65855", name: "Selective Laser Trabeculoplasty (SLT)", fee: 245.00, lcd: "Effective at reduced energy levels (Scope Permitting)", checked: false }
         ],
-        pitfalls: [
-          "Exercise or pupillary dilation can trigger massive pigment release and acute IOP spikes.",
-          "Zonular contact creates mid-peripheral iris transillumination defects (TIDs)."
-        ],
-        docs: [
-          "Document Krukenberg spindle on corneal endothelium and iris transillumination defects.",
-          "Record wide-open angle with dense band of trabecular pigmentation on gonioscopy."
-        ]
+        pitfalls: ["Exercise or pupillary dilation can trigger pigment showers and acute IOP spikes."],
+        docs: ["Document Krukenberg spindle on endothelium and iris transillumination defects (TIDs)."]
       },
       {
         icd10: "H40.51X0",
-        name: "Glaucoma secondary to other eye trauma, right eye",
+        name: "Glaucoma secondary to other eye trauma, right eye (Angle Recession)",
         category: "Glaucoma",
         status: "VERIFIED_PPP",
         citation: "AAO Preferred Practice Pattern: Glaucoma Guidelines",
@@ -385,41 +477,27 @@
         examFee: 132.00,
         examRationale: "Post-traumatic angle recession or trabecular scarring requiring vigilant IOP surveillance.",
         procedures: [
-          { cpt: "92020", name: "Gonioscopy", fee: 28.00, lcd: "Identification of angle recession and torn ciliary body face", checked: true },
-          { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "Covered under LCD L33751", checked: true },
-          { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Covered under LCD L34648", checked: false }
+          { cpt: "92020", name: "Gonioscopy", fee: 28.00, lcd: "Identification of angle recession and torn ciliary face", checked: true },
+          { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "Covered under LCD L33751", checked: true }
         ],
-        pitfalls: [
-          "Angle recession glaucoma can present years or decades after initial blunt trauma.",
-          "SLT is generally ineffective in areas of angle recession and scarred trabecular meshwork."
-        ],
-        docs: [
-          "Document extent of angle recession in clock hours or degrees.",
-          "Record widened ciliary body band and torn iris processes on gonioscopy."
-        ]
+        pitfalls: ["Angle recession glaucoma can present decades after initial blunt trauma."],
+        docs: ["Document extent of angle recession in clock hours and widened ciliary body band."]
       },
       {
         icd10: "H40.89",
         name: "Other specified glaucoma (Steroid-Induced Glaucoma)",
         category: "Glaucoma",
         status: "VERIFIED_PPP",
-        citation: "AAO Preferred Practice Pattern: Primary Open-Angle Glaucoma Guidelines",
+        citation: "AAO Preferred Practice Pattern: Primary Open-Angle Glaucoma",
         rtc: "2 - 4 Weeks",
         examCpt: "99214",
         examFee: 132.00,
         examRationale: "Secondary outflow obstruction resulting from systemic, topical, or periocular steroid use.",
         procedures: [
-          { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "Baseline or progression tracking", checked: true },
-          { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Covered under LCD L34648", checked: false }
+          { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "Baseline or progression tracking", checked: true }
         ],
-        pitfalls: [
-          "Primary intervention is tapering or discontinuing corticosteroid; do not rely solely on hypotensive drops if steroid can be stopped.",
-          "Prostaglandin analogs may exacerbate ocular inflammation if steroids were treating active uveitis."
-        ],
-        docs: [
-          "Document steroid drug name, route, dosage, and duration.",
-          "Record plan for steroid taper or switch to soft steroid (e.g., loteprednol, rimexolone)."
-        ]
+        pitfalls: ["Primary intervention is tapering or discontinuing corticosteroid; do not rely solely on drops."],
+        docs: ["Document steroid drug name, route, dosage, and taper plan."]
       },
       {
         icd10: "H40.53X0",
@@ -430,50 +508,40 @@
         rtc: "1 - 2 Weeks",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Complex multi-factorial IOP elevation caused by trabeculitis, inflammatory debris, or steroid response.",
+        examRationale: "Multi-factorial IOP elevation caused by trabeculitis, inflammatory debris, or steroid response.",
         procedures: [
-          { cpt: "92020", name: "Gonioscopy", fee: 28.00, lcd: "Rule out PAS and neovascularization of angle", checked: true },
-          { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "Serial tracking of glaucomatous neuropathy", checked: false }
+          { cpt: "92020", name: "Gonioscopy", fee: 28.00, lcd: "Rule out PAS and neovascularization of angle", checked: true }
         ],
-        pitfalls: [
-          "Prostaglandin analogs and miotics (pilocarpine) are relatively contraindicated due to disruption of blood-aqueous barrier.",
-          "Control inflammation first with topical corticosteroids while lowering IOP with aqueous suppressants."
-        ],
-        docs: [
-          "Document anterior chamber cell and flare grade according to SUN criteria.",
-          "Record gonioscopy findings for peripheral anterior synechiae (PAS)."
-        ]
+        pitfalls: ["Prostaglandin analogs and pilocarpine are relatively contraindicated due to blood-aqueous breakdown."],
+        docs: ["Document anterior chamber cell and flare grade according to SUN criteria."]
       },
       {
-        icd10: "H40.823",
-        name: "Hyperglycemia-induced ocular hypertension (Steroid / Neovascular Risk)",
+        icd10: "H40.52X0",
+        name: "Glaucoma secondary to other eye disorders (Neovascular Glaucoma - NVG)",
         category: "Glaucoma",
-        status: "AI_INFERRED",
-        citation: "CAUTION: AI-INFERRED CARE INTERVAL - NO DIRECT AAO/AOA MEDICAL PPP CODIFIED",
-        rtc: "1 - 2 Months",
-        examCpt: "99213",
-        examFee: 92.00,
-        examRationale: "Moderate complexity medical decision making to differentiate osmotic shift from secondary angle neovascularization.",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Glaucoma Guidelines",
+        rtc: "Immediate (STAT Anti-VEGF / Glaucoma Co-management)",
+        examCpt: "99215",
+        examFee: 184.00,
+        examRationale: "Severe blinding ischemic glaucoma driven by VEGF from CRVO, PDR, or OIS.",
         procedures: [
-          { cpt: "92020", name: "Gonioscopy", fee: 28.00, lcd: "Rule out NVI/NVA", checked: true }
+          { cpt: "92020", name: "Gonioscopy", fee: 28.00, lcd: "Identify fibrovascular membrane zippering angle", checked: true },
+          { cpt: "92250", name: "Fundus Photography", fee: 54.00, lcd: "Ischemic retina documentation", checked: true }
         ],
-        pitfalls: [
-          "Ensure undilated gonioscopy is completed to rule out fine arborizing vessels in angle (NVA)."
-        ],
-        docs: [
-          "Document blood glucose readings and gonioscopic absence of angle neovascularization."
-        ]
+        pitfalls: ["Topical prostaglandins exacerbate inflammation; administer aqueous suppressants and immediate anti-VEGF."],
+        docs: ["Document presence of NVI at pupillary margin and NVA in angle."]
       },
 
-      // ==========================================
-      // 2. RETINA, MACULA & VASCULAR CONDITIONS
-      // ==========================================
+      // ----------------------------------------------------
+      // RETINA, MACULA & VASCULAR CONDITIONS
+      // ----------------------------------------------------
       {
         icd10: "E11.319",
         name: "Type 2 diabetes with unspecified diabetic retinopathy without macular edema",
         category: "Retina",
         status: "VERIFIED_PPP",
-        citation: "AAO Diabetic Retinopathy Preferred Practice Pattern & CDC Surveillance Guidelines",
+        citation: "AAO Diabetic Retinopathy Preferred Practice Pattern & CDC Guidelines",
         rtc: "12 Months (Annual DFE)",
         examCpt: "92014",
         examFee: 130.00,
@@ -481,22 +549,15 @@
         procedures: [
           { cpt: "92250", name: "Fundus Photography (Bilateral)", fee: 54.00, lcd: "Baseline documentation of vascular changes", checked: true }
         ],
-        pitfalls: [
-          "Routine fundus photos without documented retinopathy findings may be denied by commercial payers; document microaneurysms or early vascular changes.",
-          "92250 is inherently bilateral; do not bill as 2 units."
-        ],
-        docs: [
-          "Document dilated fundus exam findings in all quadrants.",
-          "Record patient's most recent HbA1c value and systemic medications.",
-          "Send formal consultative examination report to patient's primary care provider."
-        ]
+        pitfalls: ["92250 is inherently bilateral; do not bill as 2 units."],
+        docs: ["Document dilated fundus exam findings and send report to managing PCP/endocrinologist."]
       },
       {
         icd10: "E11.3211",
-        name: "Type 2 diabetes with mild nonproliferative retinopathy with macular edema, right eye",
+        name: "Type 2 diabetes with mild NPDR with macular edema, right eye",
         category: "Retina",
         status: "VERIFIED_PPP",
-        citation: "AAO Diabetic Retinopathy Preferred Practice Pattern & CDC Surveillance Guidelines",
+        citation: "AAO Diabetic Retinopathy Preferred Practice Pattern Guidelines",
         rtc: "1 - 3 Months (Retina Co-management)",
         examCpt: "99214",
         examFee: 132.00,
@@ -505,37 +566,42 @@
           { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Covered under Posterior Segment SCODI LCD", checked: true },
           { cpt: "92250", name: "Fundus Photography (Bilateral)", fee: 54.00, lcd: "Covered for progressive vascular monitoring", checked: true }
         ],
-        pitfalls: [
-          "92250 is inherently bilateral; billing with -RT/-LT or 2 units triggers an automatic denial.",
-          "Must link diabetic retinopathy secondary code to primary diabetes systemic diagnosis."
-        ],
-        docs: [
-          "Document presence/absence of CSME, hemorrhages, and exudates.",
-          "Record patient's most recent HbA1c value and duration of diabetes.",
-          "Send formal written consultative letter to managing PCP or endocrinologist."
-        ]
+        pitfalls: ["Link secondary diabetic retinopathy code to primary diabetes systemic diagnosis."],
+        docs: ["Document presence/absence of CSME, hemorrhages, exudates, and patient's HbA1c value."]
       },
       {
         icd10: "E11.3311",
-        name: "Type 2 diabetes with moderate nonproliferative retinopathy with macular edema, right eye",
+        name: "Type 2 diabetes with moderate NPDR with macular edema, right eye",
         category: "Retina",
         status: "VERIFIED_PPP",
         citation: "AAO Diabetic Retinopathy Preferred Practice Pattern Guidelines",
         rtc: "1 - 2 Months (Retina Anti-VEGF Co-management)",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "High risk of progressive ischemia and central vision loss requiring co-managed anti-VEGF injection.",
+        examRationale: "High risk of progressive ischemia and central vision loss requiring co-managed anti-VEGF.",
         procedures: [
-          { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Serial tracking of intraretinal fluid and retinal thickness", checked: true },
-          { cpt: "92250", name: "Fundus Photography (Bilateral)", fee: 54.00, lcd: "Documentation of retinal hemorrhages and CWS", checked: true }
+          { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Serial tracking of intraretinal fluid", checked: true },
+          { cpt: "92250", name: "Fundus Photography (Bilateral)", fee: 54.00, lcd: "Documentation of retinal hemorrhages", checked: true }
         ],
-        pitfalls: [
-          "Apply 4-2-1 rule: extensive microaneurysms in 4 quadrants, venous beading in 2, or IRMA in 1 indicates severe NPDR conversion."
+        pitfalls: ["Apply 4-2-1 rule: extensive hemorrhages in 4 quadrants, venous beading in 2, or IRMA in 1 indicates severe NPDR."],
+        docs: ["Document location of center-involving macular edema on OCT."]
+      },
+      {
+        icd10: "E11.3411",
+        name: "Type 2 diabetes with severe NPDR with macular edema, right eye",
+        category: "Retina",
+        status: "VERIFIED_PPP",
+        citation: "AAO Diabetic Retinopathy Preferred Practice Pattern Guidelines",
+        rtc: "1 Month (Urgent Retina Consult)",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "50% 1-year risk of progression to proliferative diabetic retinopathy.",
+        procedures: [
+          { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Macular thickness quantification", checked: true },
+          { cpt: "92250", name: "Fundus Photography (Widefield)", fee: 54.00, lcd: "Document venous beading and IRMA", checked: true }
         ],
-        docs: [
-          "Document location of center-involving macular edema on OCT.",
-          "Record retina specialist referral details for anti-VEGF therapy."
-        ]
+        pitfalls: ["Vigilant search for early subclinical neovascularization of disc (NVD) or elsewhere (NVE)."],
+        docs: ["Document 4-2-1 criteria met and retina specialist co-management referral."]
       },
       {
         icd10: "E11.3511",
@@ -543,7 +609,7 @@
         category: "Retina",
         status: "VERIFIED_PPP",
         citation: "AAO Diabetic Retinopathy Preferred Practice Pattern Guidelines",
-        rtc: "2 - 4 Weeks (Urgent Panretinal Photocoagulation / Anti-VEGF)",
+        rtc: "2 - 4 Weeks (Urgent PRP / Anti-VEGF)",
         examCpt: "99215",
         examFee: 184.00,
         examRationale: "Sight-threatening proliferative vascular disease with neovascularization of disc/retina.",
@@ -552,17 +618,12 @@
           { cpt: "92250", name: "Fundus Photography (Widefield)", fee: 54.00, lcd: "Documentation of NVD and NVE", checked: true },
           { cpt: "92228", name: "Extended Ophthalmoscopy", fee: 32.00, lcd: "Detailed mapping of neovascularization", checked: true }
         ],
-        pitfalls: [
-          "Urgent retina referral required; untreated PDR carries significant risk of vitreous hemorrhage and tractional retinal detachment."
-        ],
-        docs: [
-          "Document presence, location, and clock hours of NVD or NVE.",
-          "Record presence of pre-retinal or vitreous hemorrhage."
-        ]
+        pitfalls: ["Urgent retina referral required to prevent vitreous hemorrhage and tractional detachment."],
+        docs: ["Document presence, location, and clock hours of NVD or NVE."]
       },
       {
         icd10: "H35.3130",
-        name: "Nonexudative age-related macular degeneration (Dry AMD), bilateral, stage unspecified",
+        name: "Nonexudative age-related macular degeneration (Dry AMD), bilateral",
         category: "Retina",
         status: "VERIFIED_PPP",
         citation: "AAO Preferred Practice Pattern: Age-Related Macular Degeneration",
@@ -574,19 +635,29 @@
           { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Covered under Posterior Segment SCODI LCD", checked: true },
           { cpt: "92250", name: "Fundus Photography", fee: 54.00, lcd: "Drusen progression baseline", checked: true }
         ],
-        pitfalls: [
-          "Medicare LCDs allow OCT for dry AMD to monitor for subretinal fluid conversion, but excessive frequency without visual change triggers audit.",
-          "Bundle alert: 92134 and 92250 on same day require distinct justification."
+        pitfalls: ["Bundle alert: 92134 and 92250 on same day require distinct justification."],
+        docs: ["Document drusen classification, AREDS-2 recommendations, and home Amsler grid instructions."]
+      },
+      {
+        icd10: "H35.3132",
+        name: "Nonexudative age-related macular degeneration, bilateral, with geographic atrophy",
+        category: "Retina",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Age-Related Macular Degeneration",
+        rtc: "3 - 6 Months",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Advanced dry AMD with progressive confluent RPE atrophy; assess for complement inhibitor therapy.",
+        procedures: [
+          { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Quantify outer retinal and RPE loss", checked: true },
+          { cpt: "92250", name: "Fundus Autofluorescence (FAF)", fee: 54.00, lcd: "Junctional hyper-autofluorescence tracking", checked: true }
         ],
-        docs: [
-          "Document drusen classification (small, intermediate, large/confluent) and geographic atrophy.",
-          "Record AREDS-2 antioxidant supplementation recommendations.",
-          "Dispense home Amsler grid and document patient instructions for metamorphopsia."
-        ]
+        pitfalls: ["Complement inhibitors (pegcetacoplan/avacincaptad pegol) slow GA growth; co-manage with retina."],
+        docs: ["Document square millimeters of GA and foveal sparing status."]
       },
       {
         icd10: "H35.3210",
-        name: "Exudative age-related macular degeneration (Wet AMD), right eye, stage unspecified",
+        name: "Exudative age-related macular degeneration (Wet AMD), right eye",
         category: "Retina",
         status: "VERIFIED_PPP",
         citation: "AAO Preferred Practice Pattern: Age-Related Macular Degeneration",
@@ -595,16 +666,11 @@
         examFee: 132.00,
         examRationale: "Active choroidal neovascular membrane (CNVM) with immediate threat to central vision.",
         procedures: [
-          { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Serial tracking of subretinal and intraretinal fluid", checked: true },
-          { cpt: "92250", name: "Fundus Photography", fee: 54.00, lcd: "Documentation of subretinal hemorrhage", checked: false }
+          { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Serial tracking of subretinal fluid (SRF)", checked: true },
+          { cpt: "92250", name: "Fundus Photography", fee: 54.00, lcd: "Subretinal hemorrhage documentation", checked: false }
         ],
-        pitfalls: [
-          "Urgent retina referral indicated for intravitreal anti-VEGF injection within 24-72 hours if newly discovered active fluid."
-        ],
-        docs: [
-          "Document presence of subretinal fluid (SRF), intraretinal cysts (IRF), or pigment epithelial detachment (PED).",
-          "Record retinal specialist co-management contact details and injection schedule."
-        ]
+        pitfalls: ["Urgent retina referral for anti-VEGF injection within 24-72 hours if newly discovered active fluid."],
+        docs: ["Document presence of SRF, IRF, or PED and anti-VEGF treatment schedule."]
       },
       {
         icd10: "H34.8110",
@@ -617,18 +683,12 @@
         examFee: 132.00,
         examRationale: "High-risk vascular occlusion with macular edema and 90-day neovascular glaucoma risk.",
         procedures: [
-          { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Serial tracking of cystoid macular edema (CME)", checked: true },
+          { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Serial tracking of CME", checked: true },
           { cpt: "92250", name: "Fundus Photography (Bilateral)", fee: 54.00, lcd: "Widefield documentation of retinal hemorrhages", checked: true },
           { cpt: "92020", name: "Gonioscopy", fee: 28.00, lcd: "Vigilant undilated angle exam to detect early NVA", checked: true }
         ],
-        pitfalls: [
-          "Ischemic CRVO carries high risk of 90-day neovascular glaucoma; perform undilated gonioscopy at every monthly visit.",
-          "Co-manage with PCP for hypertensive and hypercoagulable evaluation."
-        ],
-        docs: [
-          "Document extent of retinal hemorrhages across all 4 quadrants (blood and thunder fundus).",
-          "Record presence/absence of iris or angle neovascularization (NVI/NVA)."
-        ]
+        pitfalls: ["Perform undilated gonioscopy at every monthly visit to catch 90-day neovascular glaucoma early."],
+        docs: ["Document 4-quadrant retinal hemorrhages and absence of iris/angle neovascularization."]
       },
       {
         icd10: "H34.8310",
@@ -639,61 +699,62 @@
         rtc: "1 - 2 Months",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Sectoral venous thrombosis with secondary macular edema and potential neovascularization.",
+        examRationale: "Sectoral venous thrombosis with secondary macular edema and neovascularization risk.",
         procedures: [
           { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Macular edema thickness quantification", checked: true },
           { cpt: "92250", name: "Fundus Photography", fee: 54.00, lcd: "Sectoral flame hemorrhages and cotton wool spots", checked: true }
         ],
-        pitfalls: [
-          "Most common at arteriovenous crossing (arteriosclerosis compressing vein); check blood pressure in office."
-        ],
-        docs: [
-          "Document quadrant of occlusion (superotemporal most common).",
-          "Record retinal specialist consultation for anti-VEGF / focal laser."
-        ]
+        pitfalls: ["Most common at arteriovenous crossing (arteriosclerosis compressing vein); check BP in office."],
+        docs: ["Document quadrant of occlusion (superotemporal most common) and anti-VEGF referral."]
       },
       {
         icd10: "H34.11",
         name: "Central retinal artery occlusion (CRAO), right eye",
         category: "Retina",
         status: "VERIFIED_PPP",
-        citation: "AAO Preferred Practice Pattern: Retinal and Ophthalmic Artery Occlusions",
+        citation: "AAO Preferred Practice Pattern: Retinal Artery Occlusions",
         rtc: "Immediate (Emergency Stroke Code Transfer)",
         examCpt: "99215",
         examFee: 184.00,
-        examRationale: "Ocular emergency and equivalent to acute cerebral stroke requiring immediate ED stroke activation.",
+        examRationale: "Ocular emergency equivalent to acute cerebral stroke requiring immediate ED stroke activation.",
         procedures: [
           { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Documentation of hyper-reflective inner retinal edema", checked: true }
         ],
-        pitfalls: [
-          "Immediate transfer to comprehensive stroke center required within window for systemic thrombolytics / carotid workup.",
-          "Rule out Giant Cell Arteritis (GCA) in patients ≥50 (order immediate ESR, CRP, platelets)."
+        pitfalls: ["Immediate transfer to comprehensive stroke center; rule out Giant Cell Arteritis in patients ≥50."],
+        docs: ["Document sudden painless vision loss, cherry-red spot at macula, and immediate 911 transfer."]
+      },
+      {
+        icd10: "H34.231",
+        name: "Branch retinal artery occlusion (BRAO), right eye",
+        category: "Retina",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Retinal Artery Occlusions",
+        rtc: "Immediate (Emergency TIA / Stroke Workup)",
+        examCpt: "99215",
+        examFee: 184.00,
+        examRationale: "Focal retinal infarction secondary to embolic occlusion (cholesterol, platelet-fibrin, or calcific).",
+        procedures: [
+          { cpt: "92250", name: "Fundus Photography", fee: 54.00, lcd: "Document Hollenhorst plaque and wedge of retinal whitening", checked: true },
+          { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Map sectoral permanent field defect", checked: true }
         ],
-        docs: [
-          "Document sudden, painless, severe vision loss and cherry-red spot at macula.",
-          "Record time of onset and immediate 911 / Stroke Center transfer details."
-        ]
+        pitfalls: ["High stroke risk; order urgent carotid duplex ultrasound and echocardiogram."],
+        docs: ["Document location of glistening Hollenhorst plaque and emergency vascular referral."]
       },
       {
         icd10: "H34.211",
         name: "Transient retinal artery ischemia (Amaurosis Fugax), right eye",
         category: "Retina",
         status: "VERIFIED_PPP",
-        citation: "AAO Preferred Practice Pattern: Retinal and Ophthalmic Artery Occlusions",
+        citation: "AAO Preferred Practice Pattern: Retinal Artery Occlusions",
         rtc: "Immediate (Carotid / TIA Workup)",
         examCpt: "99215",
         examFee: 184.00,
-        examRationale: "Transient ischemic attack (TIA) of ophthalmic vasculature carrying high stroke risk within 48 hours.",
+        examRationale: "Transient ischemic attack (TIA) of ophthalmic vasculature carrying high stroke risk.",
         procedures: [
           { cpt: "92250", name: "Fundus Photography", fee: 54.00, lcd: "Search for Hollenhorst or calcific emboli", checked: true }
         ],
-        pitfalls: [
-          "Do not discharge patient home without arranging urgent carotid duplex ultrasound and echocardiogram."
-        ],
-        docs: [
-          "Document duration of curtain-falling blackout episode.",
-          "Record vascular auscultation (carotid bruit) and emergency stroke referral."
-        ]
+        pitfalls: ["Do not discharge home without arranging urgent carotid duplex and cardiology workup."],
+        docs: ["Document duration of curtain-falling blackout episode and emergency referral."]
       },
       {
         icd10: "H33.011",
@@ -701,21 +762,16 @@
         category: "Retina",
         status: "VERIFIED_PPP",
         citation: "AAO Preferred Practice Pattern: Retinal Detachment Guidelines",
-        rtc: "Immediate / Same Day (Vitrectoretinal Surgery)",
+        rtc: "Immediate / Same Day (Vitrectomy / Scleral Buckle)",
         examCpt: "99215",
         examFee: 184.00,
-        examRationale: "Sight-threatening surgical emergency; immediate anatomical repair required to salvage vision.",
+        examRationale: "Sight-threatening surgical emergency; immediate anatomical repair required.",
         procedures: [
           { cpt: "92228", name: "Extended Ophthalmoscopy", fee: 32.00, lcd: "Detailed retinal diagram of detachment and break", checked: true },
-          { cpt: "76512", name: "Ophthalmic B-Scan Ultrasound", fee: 78.00, lcd: "Necessary if media opacity / dense hemorrhage obscuring fundus", checked: false }
+          { cpt: "76512", name: "Ophthalmic B-Scan Ultrasound", fee: 78.00, lcd: "Mandatory if media opacity obscuring fundus", checked: false }
         ],
-        pitfalls: [
-          "Note whether macula is on (surgical emergency within 24 hours) or macula off (urgent within days)."
-        ],
-        docs: [
-          "Document macula status (macula-on vs macula-off).",
-          "Draw retinal break location, extent of subretinal fluid, and immediate surgical referral."
-        ]
+        pitfalls: ["Note whether macula is on (surgical emergency within 24 hours) or macula off."],
+        docs: ["Document macula status (on/off), location of break, and immediate vitreoretinal surgical referral."]
       },
       {
         icd10: "H33.313",
@@ -731,34 +787,56 @@
           { cpt: "92228", name: "Extended Ophthalmoscopy", fee: 32.00, lcd: "Detailed drawing of horseshoe tear", checked: true },
           { cpt: "92250", name: "Fundus Photography (Widefield)", fee: 54.00, lcd: "Documentation of tear and traction", checked: true }
         ],
-        pitfalls: [
-          "Extended ophthalmoscopy (92228) requires detailed colored diagram in medical record."
+        pitfalls: ["Extended ophthalmoscopy (92228) requires detailed colored diagram in medical record."],
+        docs: ["Record clock hour of tear, bridging vessels, and Shafer's sign (tobacco dust)."]
+      },
+      {
+        icd10: "H33.303",
+        name: "Unspecified retinal break, bilateral (Operculated Retinal Hole)",
+        category: "Retina",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Retinal Breaks",
+        rtc: "2 - 4 Weeks",
+        examCpt: "99213",
+        examFee: 92.00,
+        examRationale: "Round hole with completely released operculum; lower detachment risk than flap tear.",
+        procedures: [
+          { cpt: "92228", name: "Extended Ophthalmoscopy", fee: 32.00, lcd: "Detailed drawing of operculated hole", checked: true }
         ],
-        docs: [
-          "Record clock hour of tear, presence of bridging vessel or pigment in vitreous (Shafer's sign).",
-          "Document emergency precautions given to patient."
-        ]
+        pitfalls: ["If cuff of subretinal fluid extends >2 disc diameters, treat as clinical detachment."],
+        docs: ["Document floating operculum in vitreous and absence of residual vitreoretinal traction."]
+      },
+      {
+        icd10: "H35.413",
+        name: "Lattice degeneration of retina, bilateral",
+        category: "Retina",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Retinal Detachment",
+        rtc: "12 Months (Annual Dilated Exam)",
+        examCpt: "92014",
+        examFee: 130.00,
+        examRationale: "Peripheral vitreoretinal thinning; present in ~30% of rhegmatogenous retinal detachments.",
+        procedures: [
+          { cpt: "92250", name: "Fundus Photography (Widefield)", fee: 54.00, lcd: "Peripheral retinal baseline documentation", checked: true }
+        ],
+        pitfalls: ["Prophylactic laser is generally not recommended for asymptomatic lattice without tears."],
+        docs: ["Document clock hours of lattice, presence of round atrophic holes, and patient education."]
       },
       {
         icd10: "H43.813",
         name: "Spontaneous vitreous hemorrhage, bilateral",
         category: "Retina",
         status: "VERIFIED_PPP",
-        citation: "AAO Preferred Practice Pattern: Retinal Detachment Guidelines",
+        citation: "AAO Preferred Practice Pattern: Retinal Detachment",
         rtc: "1 - 3 Days (or Immediate B-Scan)",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Acute vitreous hemorrhage obscure fundus; carries 50-70% association with underlying retinal tear.",
+        examRationale: "Acute vitreous hemorrhage obscure fundus; carries 50-70% association with underlying tear.",
         procedures: [
-          { cpt: "76512", name: "Ophthalmic Diagnostic B-Scan Ultrasound", fee: 78.00, lcd: "Mandatory to rule out occult retinal tear when fundus obscured", checked: true }
+          { cpt: "76512", name: "Ophthalmic Diagnostic B-Scan Ultrasound", fee: 78.00, lcd: "Mandatory to rule out occult tear when fundus obscured", checked: true }
         ],
-        pitfalls: [
-          "Never assume a vitreous hemorrhage is purely diabetic without performing a dynamic B-scan to rule out a retinal tear."
-        ],
-        docs: [
-          "Document dynamic B-scan showing presence/absence of retinal detachment or flap tear.",
-          "Instruct patient to sleep with head elevated 45° to allow blood settling."
-        ]
+        pitfalls: ["Never assume vitreous hemorrhage is purely diabetic without dynamic B-scan."],
+        docs: ["Document dynamic B-scan showing absence/presence of retinal detachment or flap tear."]
       },
       {
         icd10: "H43.393",
@@ -769,19 +847,12 @@
         rtc: "4 - 6 Weeks (Repeat DFE)",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Acute PVD carries 10-15% risk of secondary retinal tear during first 6 weeks of ongoing vitreous separation.",
+        examRationale: "Acute PVD carries 10-15% risk of secondary retinal tear during first 6 weeks of ongoing separation.",
         procedures: [
           { cpt: "92250", name: "Fundus Photography (Widefield)", fee: 54.00, lcd: "Documentation of Weiss ring and peripheral retina", checked: true }
         ],
-        pitfalls: [
-          "Must perform scleral depression 360° to rule out small peripheral tears.",
-          "Mandatory repeat dilated exam in 4-6 weeks even if initial exam is clear."
-        ],
-        docs: [
-          "Document presence of annular Weiss ring over optic nerve head.",
-          "Document absence of Shafer's sign (tobacco dust) in anterior vitreous.",
-          "Record detailed RD warning signs given to patient."
-        ]
+        pitfalls: ["Perform scleral depression 360 degrees; mandatory repeat dilated exam in 4-6 weeks."],
+        docs: ["Document annular Weiss ring over optic disc, absence of Shafer's sign, and RD warning signs."]
       },
       {
         icd10: "H35.033",
@@ -794,80 +865,74 @@
         examFee: 130.00,
         examRationale: "Comprehensive evaluation of microvascular end-organ hypertensive damage.",
         procedures: [
-          { cpt: "92250", name: "Fundus Photography (Bilateral)", fee: 54.00, lcd: "Documentation of arteriolar narrowing, AV nicking, silver wiring", checked: true }
+          { cpt: "92250", name: "Fundus Photography (Bilateral)", fee: 54.00, lcd: "Documentation of arteriolar narrowing and AV nicking", checked: true }
         ],
-        pitfalls: [
-          "If bilateral disc edema is present (Grade IV malignant hypertension), measure BP immediately; systolic >180 or diastolic >120 is a hypertensive emergency."
-        ],
-        docs: [
-          "Document office blood pressure measurement.",
-          "Record Keith-Wagener-Barker grade (arteriolar narrowing, AV crossing changes, cotton wool spots, flame hemorrhages)."
-        ]
+        pitfalls: ["If bilateral disc edema present (Grade IV malignant HTN), measure BP immediately; systolic >180 is hypertensive crisis."],
+        docs: ["Document office blood pressure measurement and Keith-Wagener-Barker grade."]
       },
       {
         icd10: "H35.81",
-        name: "Retinal edema (Cystoid Macular Edema - CME)",
+        name: "Retinal edema (Cystoid Macular Edema - CME / Irvine-Gass)",
         category: "Retina",
         status: "VERIFIED_PPP",
-        citation: "AAO Preferred Practice Pattern: Age-Related Macular Degeneration & Retinal Vascular Disease",
+        citation: "AAO Preferred Practice Pattern: Retinal Vascular Disease",
         rtc: "1 - 2 Months",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Disruption of blood-retinal barrier resulting in fluid accumulation in outer plexiform layer (Henle's layer).",
+        examRationale: "Disruption of blood-retinal barrier resulting in cystic fluid accumulation in outer plexiform layer.",
         procedures: [
           { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Petaloid pattern cystic fluid visualization", checked: true }
         ],
-        pitfalls: [
-          "Identify underlying etiology: Irvine-Gass (post-cataract), diabetic retinopathy, vein occlusion, or uveitis.",
-          "Topical NSAID + topical steroid synergy is standard first-line for post-surgical CME."
-        ],
-        docs: [
-          "Document central foveal subfield thickness on OCT.",
-          "Record topical anti-inflammatory treatment regimen prescribed."
-        ]
+        pitfalls: ["Topical NSAID + topical steroid synergy is standard first-line for post-surgical CME."],
+        docs: ["Document central foveal subfield thickness on OCT and anti-inflammatory regimen."]
       },
       {
         icd10: "H35.373",
         name: "Puckering of macula, bilateral (Epiretinal Membrane - ERM)",
         category: "Retina",
         status: "VERIFIED_PPP",
-        citation: "AAO Preferred Practice Pattern: Idiopathic Epiretinal Membrane and Vitreomacular Traction",
+        citation: "AAO Preferred Practice Pattern: Idiopathic Epiretinal Membrane",
         rtc: "6 Months",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Glial cell proliferation on internal limiting membrane with progressive traction and metamorphopsia.",
+        examRationale: "Glial cell proliferation on ILM with progressive retinal distortion and metamorphopsia.",
         procedures: [
-          { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Quantification of membrane thickness and retinal traction", checked: true },
-          { cpt: "92250", name: "Fundus Photography", fee: 54.00, lcd: "Cellophane maculopathy documentation", checked: false }
+          { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Quantification of membrane thickness and retinal traction", checked: true }
         ],
-        pitfalls: [
-          "Refer for surgical vitrectomy and membrane peel if visual acuity drops <20/50 or severe disabling metamorphopsia occurs."
-        ],
-        docs: [
-          "Document presence of foveal contour distortion and intraretinal cysts on OCT.",
-          "Record subjective distortion on home Amsler grid."
-        ]
+        pitfalls: ["Refer for vitrectomy and membrane peel if visual acuity drops <20/50 or disabling metamorphopsia occurs."],
+        docs: ["Document foveal contour distortion on OCT and subjective distortion on Amsler grid."]
       },
       {
         icd10: "H35.343",
-        name: "Macular hole, bilateral",
+        name: "Macular hole, bilateral (Full-Thickness Macular Hole)",
         category: "Retina",
         status: "VERIFIED_PPP",
         citation: "AAO Preferred Practice Pattern: Idiopathic Macular Hole",
-        rtc: "1 - 2 Weeks (Surgical Referral for Full-Thickness Hole)",
+        rtc: "1 - 2 Weeks (Surgical Vitrectomy Referral)",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Anteroposterior and tangential vitreomacular traction creating full-thickness foveal neurosensory defect.",
+        examRationale: "Full-thickness foveal neurosensory defect driven by tangential vitreomacular traction.",
         procedures: [
           { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Gass staging and hole diameter measurement", checked: true }
         ],
-        pitfalls: [
-          "Full-thickness holes <400 µm have excellent anatomical closure rates with pars plana vitrectomy and gas tamponade if repaired promptly."
+        pitfalls: ["Holes <400 µm have excellent anatomical closure rates if repaired promptly with vitrectomy and gas tamponade."],
+        docs: ["Document stage of macular hole and minimum linear diameter on OCT."]
+      },
+      {
+        icd10: "H35.353",
+        name: "Cyst of macula (Vitreomacular Traction - VMT Syndrome)",
+        category: "Retina",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Idiopathic Macular Hole & VMT",
+        rtc: "1 - 2 Months",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Anomalous PVD with persistent foveal attachment causing tractional intraretinal cysts.",
+        procedures: [
+          { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Measurement of vitreomacular adhesion width and traction", checked: true }
         ],
-        docs: [
-          "Document stage of macular hole (Stage 1 impending, Stage 2-4 full-thickness).",
-          "Record base and minimum linear diameter on OCT."
-        ]
+        pitfalls: ["Spontaneous release occurs in ~10-20% of cases; observe prior to vitrectomy or ocriplasmin."],
+        docs: ["Document central foveal thickness and tractional distortion on OCT."]
       },
       {
         icd10: "H35.713",
@@ -880,25 +945,86 @@
         examFee: 132.00,
         examRationale: "Idiopathic choroidal hyperpermeability causing neurosensory detachment; spontaneous resolution typical.",
         procedures: [
-          { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Measurement of subretinal fluid dome and pachychoroid", checked: true },
-          { cpt: "92250", name: "Fundus Autofluorescence (FAF)", fee: 54.00, lcd: "Identification of gravitational RPE tracks", checked: false }
+          { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Measurement of subretinal fluid dome and pachychoroid", checked: true }
         ],
-        pitfalls: [
-          "Corticosteroids of any kind (topical, oral, inhaled, dermatological) are strongly CONTRAINDICATED; they worsen and prolong CSCR.",
-          "Observe for 3 months before considering photodynamic therapy (PDT) or oral eplerenone."
+        pitfalls: ["Corticosteroids of any kind (oral, topical, inhaled) are strongly CONTRAINDICATED; they worsen CSCR."],
+        docs: ["Document subfoveal fluid height on OCT and screen for exogenous steroid use."]
+      },
+      {
+        icd10: "H35.63",
+        name: "Retinal hemorrhage, bilateral",
+        category: "Retina",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Retinal Vascular Disease",
+        rtc: "1 - 2 Months",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Microvascular disruption requiring systemic cardiovascular and hematologic workup.",
+        procedures: [
+          { cpt: "92250", name: "Fundus Photography (Bilateral)", fee: 54.00, lcd: "Hemorrhage distribution mapping", checked: true },
+          { cpt: "92134", name: "OCT Macula", fee: 42.00, lcd: "Rule out subretinal hemorrhage", checked: true }
         ],
-        docs: [
-          "Document height of subfoveal fluid on OCT.",
-          "Record screening for exogenous steroid use and stress level counseling."
-        ]
+        pitfalls: ["Rule out Valsalva retinopathy, blood dyscrasias, anemia, leukemia, or severe hypertension."],
+        docs: ["Document morphology of hemorrhages (dot-blot, flame, Roth spots, preretinal)."]
+      },
+      {
+        icd10: "H31.103",
+        name: "Choroidal nevus, bilateral",
+        category: "Retina",
+        status: "VERIFIED_PPP",
+        citation: "Ocular Oncology Consensus Protocol (TFSOM-UHHD)",
+        rtc: "6 - 12 Months",
+        examCpt: "92014",
+        examFee: 130.00,
+        examRationale: "Benign melanocytic choroidal tumor; risk assessment required to rule out small choroidal melanoma.",
+        procedures: [
+          { cpt: "92250", name: "Fundus Photography", fee: 54.00, lcd: "Serial tracking of basal diameter and margins", checked: true },
+          { cpt: "76512", name: "Ophthalmic Diagnostic B-Scan Ultrasound", fee: 78.00, lcd: "Acoustic density and tumor thickness measurement", checked: true }
+        ],
+        pitfalls: ["Apply TFSOM-UHHD rule: Thickness >2mm, Fluid, Symptoms, Orange pigment, Margin near disc, Ultrasound hollow, Halo absent."],
+        docs: ["Document largest basal diameter (disc diameters), thickness, and absence of subretinal fluid."]
+      },
+      {
+        icd10: "H35.52",
+        name: "Pigmentary retinal dystrophy (Retinitis Pigmentosa), bilateral",
+        category: "Retina",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Retinal Dystrophies",
+        rtc: "6 - 12 Months",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Hereditary rod-cone dystrophy causing progressive nyctalopia and visual field constriction.",
+        procedures: [
+          { cpt: "92083", name: "Visual Field (Humphrey 30-2 or Goldmann)", fee: 65.00, lcd: "Track peripheral ring scotoma and tubular field loss", checked: true },
+          { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Monitor for secondary cystoid macular edema", checked: true },
+          { cpt: "92250", name: "Fundus Photography", fee: 54.00, lcd: "Bone spicule pigmentation baseline", checked: true }
+        ],
+        pitfalls: ["Up to 30% develop treatable CME responsive to oral carbonic anhydrase inhibitors (acetazolamide/methazolamide)."],
+        docs: ["Document bone spicule pigmentation in mid-periphery, waxy disc pallor, and arteriolar attenuation."]
+      },
+      {
+        icd10: "H35.363",
+        name: "Drusen (degenerative) of macula, bilateral",
+        category: "Retina",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Age-Related Macular Degeneration",
+        rtc: "12 Months",
+        examCpt: "92014",
+        examFee: 130.00,
+        examRationale: "Extracellular deposits between basal lamina of RPE and inner collagenous layer of Bruch's membrane.",
+        procedures: [
+          { cpt: "92250", name: "Fundus Photography", fee: 54.00, lcd: "Baseline tracking", checked: true }
+        ],
+        pitfalls: ["Hard drusen (<63 µm) alone carry low risk; soft confluent drusen (>125 µm) warrant AREDS-2 counseling."],
+        docs: ["Document drusen size, number, and distribution; dispense home Amsler grid."]
       },
 
-      // ==========================================
-      // 3. CORNEA, ANTERIOR SEGMENT & IN-OFFICE PROCEDURES
-      // ==========================================
+      // ----------------------------------------------------
+      // CORNEA, ANTERIOR SEGMENT & IN-OFFICE SURGICAL
+      // ----------------------------------------------------
       {
         icd10: "H04.123",
-        name: "Dry eye syndrome of bilateral lacrimal glands (Moderate-to-Severe OSD)",
+        name: "Dry eye syndrome of bilateral lacrimal glands (Severe OSD)",
         category: "Cornea & OSD",
         status: "VERIFIED_PPP",
         citation: "TFOS DEWS II Protocol & AOA Care of the Patient with Ocular Surface Disorders",
@@ -908,15 +1034,15 @@
         examRationale: "Chronic ocular surface disease exacerbation requiring multi-tier therapeutic escalation.",
         procedures: [
           { cpt: "92285", name: "External Ocular Photography", fee: 24.00, lcd: "Surface baseline and staining documentation", checked: false },
-          { cpt: "68761", name: "Punctal Occlusion by Plug (per punctum)", fee: 115.00, lcd: "Requires documented failure of conservative drops", checked: true }
+          { cpt: "68761", name: "Punctal Occlusion by Plug (per punctum)", fee: 115.00, lcd: "Documented failure of conservative drops", checked: true }
         ],
         pitfalls: [
           "Billing punctal occlusion (68761) on same day as exam requires Modifier -25 on E/M code (99213-25).",
-          "Medicare requires documented trial and failure of topical conservative therapy (lubricants/anti-inflammatories) prior to punctal plugs."
+          "Medicare requires documented trial and failure of topical lubricants/anti-inflammatories first."
         ],
         docs: [
-          "Document tear break-up time (TBUT), corneal/conjunctival fluorescein staining grade, and meibomian expression.",
-          "Chart medical necessity stating failure of conservative artificial tears and prescription drops."
+          "Document TBUT, corneal fluorescein staining grade, and meibomian expression.",
+          "Chart medical necessity stating failure of artificial tears and prescription drops."
         ]
       },
       {
@@ -931,21 +1057,37 @@
         examRationale: "Acute corneal trauma requiring surgical foreign body extraction.",
         procedures: [
           { cpt: "65222", name: "Removal of Foreign Body, External Eye; Corneal with Slit Lamp", fee: 68.00, lcd: "Surgical removal (Zero global days)", checked: true },
-          { cpt: "92071", name: "Fitting of Contact Lens for Treatment of Ocular Surface Disease (Bandage CL)", fee: 38.00, lcd: "Therapeutic corneal protection post-removal", checked: false }
+          { cpt: "92071", name: "Fitting of Bandage Contact Lens", fee: 38.00, lcd: "Therapeutic corneal protection post-removal", checked: false }
         ],
         pitfalls: [
-          "Append Modifier -25 to 99213 if a distinct exam was performed prior to corneal foreign body removal (65222).",
-          "Code 65222 is unilateral; must append -RT or -LT modifier on the claim."
+          "Append Modifier -25 to 99213 if a distinct exam was performed prior to corneal foreign body removal.",
+          "Code 65222 is unilateral; must append -RT or -LT modifier on claim."
         ],
         docs: [
-          "Document depth of foreign body (epithelium vs stroma), presence/absence of rust ring, and post-removal Seidel test status.",
-          "Record informed consent for removal and rust debridement.",
-          "Document topical prophylactic antibiotic therapy prescribed."
+          "Document depth of foreign body, rust ring status, and post-removal Seidel test.",
+          "Record informed consent for removal and rust debridement."
         ]
       },
       {
+        icd10: "S05.01XA",
+        name: "Injury of conjunctiva and corneal abrasion without foreign body, right eye",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "AOA Care of the Patient with Eye Trauma",
+        rtc: "24 Hours",
+        examCpt: "99213",
+        examFee: 92.00,
+        examRationale: "Epithelial denudation requiring prophylactic antibiotic coverage and therapeutic healing.",
+        procedures: [
+          { cpt: "92071", name: "Fitting of Bandage Contact Lens", fee: 38.00, lcd: "Therapeutic pain relief and re-epithelialization", checked: true },
+          { cpt: "65778", name: "Placement of Amniotic Membrane (Prokera)", fee: 310.00, lcd: "Non-healing or extensive neurotrophic defect", checked: false }
+        ],
+        pitfalls: ["Do not use bandage contact lens if abrasion caused by fingernail, vegetable matter, or contact lens (infection risk)."],
+        docs: ["Document exact millimeter measurement of epithelial defect and Seidel negativity."]
+      },
+      {
         icd10: "H16.001",
-        name: "Unspecified corneal ulcer, right eye",
+        name: "Unspecified corneal ulcer, right eye (Bacterial Keratitis)",
         category: "Cornea & OSD",
         status: "VERIFIED_PPP",
         citation: "AAO Preferred Practice Pattern: Bacterial Keratitis Guidelines",
@@ -954,85 +1096,60 @@
         examFee: 132.00,
         examRationale: "Acute sight-threatening corneal infection requiring intensive topical antimicrobial therapy.",
         procedures: [
-          { cpt: "92285", name: "External Ocular Photography", fee: 24.00, lcd: "Measurement and photographic tracking of infiltrate and epithelial defect", checked: true }
+          { cpt: "92285", name: "External Ocular Photography", fee: 24.00, lcd: "Measurement and photographic tracking of infiltrate and defect", checked: true }
         ],
-        pitfalls: [
-          "Do not patch an eye with an infectious corneal ulcer, especially in contact lens wearers (presume Pseudomonas).",
-          "Careful documentation required if culturing corneal scrape before broad-spectrum antibiotics."
-        ],
-        docs: [
-          "Document exact millimeter measurements of both the epithelial defect (staining) and stromal infiltrate.",
-          "Record anterior chamber reaction (cells/flare, presence of hypopyon).",
-          "Document intensive dosing frequency (e.g., fortified antibiotics or fluoroquinolones every 1-2 hours)."
-        ]
+        pitfalls: ["Do not patch an infectious corneal ulcer (especially contact lens wearers; presume Pseudomonas)."],
+        docs: ["Document millimeter measurements of epithelial defect and stromal infiltrate with anterior chamber cell grade."]
       },
       {
-        icd10: "H02.053",
-        name: "Trichiasis without entropion, bilateral",
+        icd10: "B00.52",
+        name: "Herpesviral keratitis (Herpes Simplex Epithelial Keratitis / Dendritic Keratitis)",
         category: "Cornea & OSD",
         status: "VERIFIED_PPP",
-        citation: "AOA Care of the Patient with Eyelid Disorders",
-        rtc: "1 - 3 Months PRN",
-        examCpt: "99212",
-        examFee: 62.00,
-        examRationale: "Minor mechanical corneal irritation.",
-        procedures: [
-          { cpt: "67820", name: "Correction of Trichiasis; Epilation by Forceps Only", fee: 48.00, lcd: "In-office mechanical epilation (Zero global days)", checked: true }
-        ],
-        pitfalls: [
-          "Code 67820 is billed per encounter, not per eyelash.",
-          "Append Modifier -25 to evaluation code if significant problem-oriented evaluation performed."
-        ],
-        docs: [
-          "Document specific lid margins and clock hours of misdirected lashes.",
-          "Record presence of corneal punctate keratitis or abrasion secondary to lash contact."
-        ]
-      },
-      {
-        icd10: "H18.603",
-        name: "Keratoconus, unspecified, bilateral",
-        category: "Cornea & OSD",
-        status: "VERIFIED_PPP",
-        citation: "AAO Preferred Practice Pattern: Corneal Ectasia & Keratoconus Guidelines",
-        rtc: "6 - 12 Months (or Crosslinking Referral)",
+        citation: "Herpetic Eye Disease Study (HEDS) Protocol",
+        rtc: "2 - 4 Days",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Progressive non-inflammatory corneal ectasia requiring topographic progression analysis and specialty rehabilitation.",
+        examRationale: "Active viral replication in corneal epithelium with terminal end-bulb dendrites.",
         procedures: [
-          { cpt: "92025", name: "Computerized Corneal Topography", fee: 45.00, lcd: "Medical necessity for corneal curvature mapping and ectasia progression", checked: true },
-          { cpt: "76514", name: "Corneal Pachymetry", fee: 12.00, lcd: "Measurement of thinnest corneal point", checked: true },
-          { cpt: "92072", name: "Fitting of Contact Lens for Management of Keratoconus, Initial", fee: 165.00, lcd: "Specialty rigid gas permeable (RGP) or scleral lens fitting", checked: false }
+          { cpt: "65435", name: "Debridement of Corneal Epithelium", fee: 145.00, lcd: "Mechanical removal of viral load (Scope Permitting)", checked: true },
+          { cpt: "92285", name: "External Ocular Photography", fee: 24.00, lcd: "Fluorescein stained dendrite documentation", checked: false }
         ],
-        pitfalls: [
-          "Routine refraction (92015) is not covered by Medicare; specialty fitting codes (92072) do not include the lens materials (V-codes billed separately).",
-          "Assess corneal thickness for CXL (corneal collagen crosslinking) eligibility."
-        ],
-        docs: [
-          "Document K-max, thinnest pachymetry reading, and presence of Fleischer ring or Vogt's striae.",
-          "Record best contact lens corrected visual acuity vs spectacle acuity."
-        ]
+        pitfalls: ["Topical corticosteroids are strictly CONTRAINDICATED in active epithelial dendritic keratitis (causes amoeboid ulcer)."],
+        docs: ["Document branching dendrites with terminal bulbs and decreased corneal sensitivity."]
       },
       {
-        icd10: "H18.51",
-        name: "Endothelial corneal dystrophy (Fuchs' Endothelial Dystrophy), bilateral",
+        icd10: "B02.32",
+        name: "Zoster disciform keratitis (Herpes Zoster Ophthalmicus)",
         category: "Cornea & OSD",
         status: "VERIFIED_PPP",
-        citation: "AAO Preferred Practice Pattern: Corneal Dystrophies",
-        rtc: "6 - 12 Months",
+        citation: "AAO Preferred Practice Pattern: Cornea Guidelines",
+        rtc: "3 - 7 Days",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Progressive bilateral endothelial pump failure with diurnal morning edema; potential DMEK/DSEK candidate.",
+        examRationale: "Immune-mediated stromal edema and keratic precipitates following V1 dermatomal shingles.",
         procedures: [
-          { cpt: "76514", name: "Corneal Pachymetry", fee: 12.00, lcd: "Serial tracking of morning vs afternoon corneal edema", checked: true },
-          { cpt: "92285", name: "External Ocular Photography", fee: 24.00, lcd: "Endothelial guttata and stromal haze documentation", checked: false }
+          { cpt: "92285", name: "External Photography", fee: 24.00, lcd: "Hutchinson's sign and stromal haze documentation", checked: true }
         ],
-        pitfalls: [
-          "Monitor morning blur (clears throughout day due to tear evaporation); prescribe hypertonic sodium chloride (Muro 128) 5% drops/ointment."
+        pitfalls: ["Hutchinson's sign (vesicles on tip of nose) indicates nasociliary involvement and high risk of ocular disease."],
+        docs: ["Document corneal sensation, stromal edema, and topical steroid/oral antiviral management."]
+      },
+      {
+        icd10: "H16.123",
+        name: "Filamentary keratitis, bilateral",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Cornea Guidelines",
+        rtc: "1 - 2 Weeks",
+        examCpt: "99213",
+        examFee: 92.00,
+        examRationale: "Degenerated epithelial cells attached to mucus cores creating painful dragging corneal filaments.",
+        procedures: [
+          { cpt: "65435", name: "Removal of Corneal Filaments (Mechanical Debridement)", fee: 145.00, lcd: "Therapeutic filament debridement at slit lamp", checked: true },
+          { cpt: "92071", name: "Fitting of Bandage Contact Lens", fee: 38.00, lcd: "Pain management and epithelial protection", checked: true }
         ],
-        docs: [
-          "Document presence and density of central guttata (beaten metal appearance).",
-          "Record central corneal thickness (CCT) measurements and presence of stromal/epithelial microcysts."
-        ]
+        pitfalls: ["Filaments recur rapidly if underlying dry eye or superior limbic keratoconjunctivitis is not treated."],
+        docs: ["Document location and number of mucoepithelial filaments and prescribe 5-10% N-acetylcysteine drops."]
       },
       {
         icd10: "H18.423",
@@ -1043,84 +1160,260 @@
         rtc: "3 - 6 Months",
         examCpt: "99213",
         examFee: 92.00,
-        examRationale: "Calcium phosphate deposition in Bowman's layer secondary to chronic ocular inflammation or hypercalcemia.",
+        examRationale: "Calcium phosphate deposition in Bowman's layer secondary to chronic uveitis or hypercalcemia.",
         procedures: [
           { cpt: "65435", name: "Removal of Corneal Epithelium with EDTA Chelation", fee: 145.00, lcd: "Therapeutic superficial chemical debridement (Scope Permitting)", checked: false },
           { cpt: "92285", name: "External Ocular Photography", fee: 24.00, lcd: "Documentation of visual axis encroachment", checked: true }
         ],
-        pitfalls: [
-          "Rule out systemic hyperparathyroidism, sarcoidosis, chronic renal failure, and juvenile idiopathic arthritis."
-        ],
-        docs: [
-          "Document horizontal Swiss-cheese pattern of calcium deposition across interpalpebral zone.",
-          "Record visual axis involvement and epithelial breakdown."
-        ]
+        pitfalls: ["Rule out systemic hyperparathyroidism, sarcoidosis, chronic renal failure, and juvenile idiopathic arthritis."],
+        docs: ["Document horizontal Swiss-cheese pattern of calcium deposition across interpalpebral zone."]
       },
       {
-        icd10: "H18.233",
-        name: "Secondary corneal edema, bilateral (Pseudophakic Bullous Keratopathy - PBK)",
+        icd10: "H18.51",
+        name: "Endothelial corneal dystrophy (Fuchs' Dystrophy), bilateral",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Corneal Dystrophies",
+        rtc: "6 - 12 Months",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Progressive endothelial pump failure with diurnal morning edema; potential DMEK/DSEK candidate.",
+        procedures: [
+          { cpt: "76514", name: "Corneal Pachymetry", fee: 12.00, lcd: "Serial tracking of diurnal corneal thickness changes", checked: true },
+          { cpt: "92285", name: "External Ocular Photography", fee: 24.00, lcd: "Endothelial guttata documentation", checked: false }
+        ],
+        pitfalls: ["Monitor morning blur (clears throughout day due to tear evaporation); prescribe hypertonic NaCl 5%."],
+        docs: ["Document central guttata density, central corneal thickness (CCT), and presence of epithelial microcysts."]
+      },
+      {
+        icd10: "H18.52",
+        name: "Granular corneal dystrophy, bilateral",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "IC3D Classification of Corneal Dystrophies",
+        rtc: "12 Months",
+        examCpt: "92014",
+        examFee: 130.00,
+        examRationale: "Autosomal dominant TGFBI stromal dystrophy featuring discrete crumb-like hyaline opacities.",
+        procedures: [
+          { cpt: "92285", name: "External Photography", fee: 24.00, lcd: "Document stromal deposits and clear intervening spaces", checked: true }
+        ],
+        pitfalls: ["Clear intervening stroma between granular opacities distinguishes Granular from Lattice dystrophy."],
+        docs: ["Document Masson trichrome positive hyaline deposits and best corrected visual acuity."]
+      },
+      {
+        icd10: "H18.54",
+        name: "Lattice corneal dystrophy, bilateral",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "IC3D Classification of Corneal Dystrophies",
+        rtc: "6 - 12 Months",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Stromal amyloid deposition causing branching linear lattice lines and recurrent corneal erosions.",
+        procedures: [
+          { cpt: "92071", name: "Fitting of Bandage Contact Lens", fee: 38.00, lcd: "Therapeutic management of recurrent erosions", checked: false }
+        ],
+        pitfalls: ["High frequency of recurrent epithelial erosions requiring therapeutic BCL or PTK laser."],
+        docs: ["Document branching refractile stromal lines staining with Congo Red."]
+      },
+      {
+        icd10: "H18.55",
+        name: "Macular corneal dystrophy, bilateral",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "IC3D Classification of Corneal Dystrophies",
+        rtc: "6 - 12 Months",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Autosomal recessive glycosaminoglycan storage disorder causing diffuse cloudy stromal haze from limbus to limbus.",
+        procedures: [
+          { cpt: "76514", name: "Corneal Pachymetry", fee: 12.00, lcd: "Monitor diffuse stromal thinning", checked: true }
+        ],
+        pitfalls: ["Unlike granular and lattice dystrophies, macular dystrophy extends all the way to the limbus without clear zones."],
+        docs: ["Document diffuse gray-white cloudy stroma and severe visual impairment."]
+      },
+      {
+        icd10: "H18.603",
+        name: "Keratoconus, unspecified, bilateral",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Corneal Ectasia & Keratoconus Guidelines",
+        rtc: "6 - 12 Months (or Crosslinking Referral)",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Progressive non-inflammatory corneal ectasia requiring topographic progression analysis.",
+        procedures: [
+          { cpt: "92025", name: "Computerized Corneal Topography", fee: 45.00, lcd: "Medical necessity for corneal curvature mapping", checked: true },
+          { cpt: "76514", name: "Corneal Pachymetry", fee: 12.00, lcd: "Measurement of thinnest corneal point", checked: true },
+          { cpt: "92072", name: "Fitting of Contact Lens for Keratoconus, Initial", fee: 165.00, lcd: "Specialty RGP or scleral lens fitting", checked: false }
+        ],
+        pitfalls: ["Assess corneal thickness for corneal collagen crosslinking (CXL) eligibility before severe thinning (<400 µm)."],
+        docs: ["Document K-max, thinnest pachymetry, Fleischer ring, and Vogt's striae."]
+      },
+      {
+        icd10: "H18.613",
+        name: "Keratoconus, stable, bilateral",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Corneal Ectasia",
+        rtc: "12 Months",
+        examCpt: "92014",
+        examFee: 130.00,
+        examRationale: "Stable ectasia managed with specialty scleral or gas permeable contact lenses.",
+        procedures: [
+          { cpt: "92025", name: "Corneal Topography", fee: 45.00, lcd: "Confirm topographical stability", checked: true }
+        ],
+        pitfalls: ["Ensure no eye rubbing counseling is reinforced at every visit."],
+        docs: ["Document stable K-max and stable specialty lens fitting parameters."]
+      },
+      {
+        icd10: "H18.623",
+        name: "Keratoconus, unstable (Progressive), bilateral",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "Global Consensus on Keratoconus and Ectatic Diseases",
+        rtc: "3 - 6 Months (STAT Corneal Cross-Linking Referral)",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Active corneal steepening and thinning; urgent cross-linking indicated to arrest progression.",
+        procedures: [
+          { cpt: "92025", name: "Corneal Topography", fee: 45.00, lcd: "Document ≥1.00 D steepening in K-max", checked: true },
+          { cpt: "76514", name: "Corneal Pachymetry", fee: 12.00, lcd: "Document progressive stromal thinning", checked: true }
+        ],
+        pitfalls: ["Do not delay CXL referral; rapid progression in teenagers and young adults can cause acute hydrops."],
+        docs: ["Document progression criteria: increase in anterior/posterior curvature or thinnest pachymetry decline."]
+      },
+      {
+        icd10: "H18.463",
+        name: "Peripheral corneal ulceration (Marginal Keratitis / Staph Hypersensitivity)",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Cornea Guidelines",
+        rtc: "3 - 5 Days",
+        examCpt: "99213",
+        examFee: 92.00,
+        examRationale: "Type III hypersensitivity response to staphylococcal exotoxins characterized by infiltrates with clear limbal zone.",
+        procedures: [],
+        pitfalls: ["Marginal keratitis features a pathognomonic 1-2 mm clear zone between infiltrate and limbus."],
+        docs: ["Document peripheral stromal infiltrates separated from limbus and manage concurrent blepharitis."]
+      },
+      {
+        icd10: "H18.713",
+        name: "Corneal ectasia (Post-LASIK Ectasia), bilateral",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Refractive Surgery",
+        rtc: "6 Months",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Iatrogenic biomechanical corneal instability post-refractive surgery requiring topography and CXL/sclerals.",
+        procedures: [
+          { cpt: "92025", name: "Computerized Corneal Topography", fee: 45.00, lcd: "Track progressive inferior steepening", checked: true },
+          { cpt: "92072", name: "Fitting of Scleral Contact Lens", fee: 165.00, lcd: "Optical rehabilitation for irregular astigmatism", checked: false }
+        ],
+        pitfalls: ["Check residual stromal bed (RSB) thickness and flap interface status."],
+        docs: ["Document topographic irregular astigmatism and evaluate for corneal cross-linking."]
+      },
+      {
+        icd10: "H18.13",
+        name: "Bullous keratopathy, bilateral (Pseudophakic Bullous Keratopathy - PBK)",
         category: "Cornea & OSD",
         status: "VERIFIED_PPP",
         citation: "AAO Preferred Practice Pattern: Cornea Guidelines",
         rtc: "1 - 3 Months",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Endothelial cell loss following intraocular surgery resulting in painful ruptured bullae.",
+        examRationale: "Endothelial failure post-cataract surgery causing painful ruptured bullae.",
         procedures: [
-          { cpt: "92071", name: "Fitting of Contact Lens for Treatment of Ocular Surface Disease (Bandage CL)", fee: 38.00, lcd: "Pain management for ruptured epithelial bullae", checked: true },
-          { cpt: "65778", name: "Placement of Amniotic Membrane on Ocular Surface (Self-Retaining Prokera)", fee: 310.00, lcd: "Promotes epithelial healing and pain relief (Scope Permitting)", checked: false }
+          { cpt: "92071", name: "Fitting of Bandage Contact Lens", fee: 38.00, lcd: "Pain management for ruptured epithelial bullae", checked: true },
+          { cpt: "65778", name: "Placement of Amniotic Membrane (Prokera)", fee: 310.00, lcd: "Promotes epithelial healing (Scope Permitting)", checked: false }
         ],
-        pitfalls: [
-          "Ruptured bullae present high risk for secondary bacterial keratitis; prescribe prophylactic topical antibiotic.",
-          "Amniotic membrane placement (65778) has a 10-day global period under Medicare."
-        ],
-        docs: [
-          "Document presence of epithelial bullae, stromal haze, and Descemet folds.",
-          "Record corneal surgeon co-management for endothelial keratoplasty (EK)."
-        ]
+        pitfalls: ["Ruptured bullae present high risk for secondary bacterial keratitis; prescribe prophylactic antibiotic."],
+        docs: ["Document epithelial bullae, stromal edema, and endothelial keratoplasty (DMEK) referral."]
       },
       {
-        icd10: "H16.223",
-        name: "Keratoconjunctivitis sicca, not specified as Sjogren's, bilateral",
+        icd10: "H18.893",
+        name: "Recurrent corneal erosion (RCE), bilateral",
         category: "Cornea & OSD",
         status: "VERIFIED_PPP",
-        citation: "TFOS DEWS II Clinical Protocol Guidelines",
-        rtc: "2 - 3 Months",
-        examCpt: "99214",
-        examFee: 132.00,
-        examRationale: "Moderate-to-severe aqueous-deficient dry eye requiring prescription immunomodulatory therapy (cyclosporine/lifitegrast).",
-        procedures: [
-          { cpt: "92285", name: "External Ocular Photography", fee: 24.00, lcd: "Staining and tear meniscus documentation", checked: false },
-          { cpt: "68761", name: "Punctal Occlusion", fee: 115.00, lcd: "Covered for documented chronic refractory dry eye", checked: true }
-        ],
-        pitfalls: [
-          "Always screen for autoimmune symptoms (dry mouth, joint pain); consider Sjogren's serology testing panel."
-        ],
-        docs: [
-          "Document Schirmer score (<5 mm in 5 min) and corneal punctate staining.",
-          "Document prescription topical immunomodulator therapy and compliance."
-        ]
-      },
-      {
-        icd10: "H01.003",
-        name: "Unspecified blepharitis, bilateral",
-        category: "Cornea & OSD",
-        status: "VERIFIED_PPP",
-        citation: "AAO Preferred Practice Pattern: Blepharitis",
-        rtc: "2 - 3 Months",
+        citation: "AAO Preferred Practice Pattern: Cornea Guidelines",
+        rtc: "1 - 2 Weeks",
         examCpt: "99213",
         examFee: 92.00,
-        examRationale: "Chronic inflammatory disease of eyelid margin contributing to tear film instability.",
+        examRationale: "Defective hemidesmosomes (often post-trauma or EBMD) leading to spontaneous epithelial sloughing on waking.",
         procedures: [
-          { cpt: "92285", name: "External Photography", fee: 24.00, lcd: "Documentation of collarettes and lid margin telangiectasia", checked: false }
+          { cpt: "92071", name: "Fitting of Bandage Contact Lens", fee: 38.00, lcd: "Continuous wear BCL for 6-12 weeks", checked: true },
+          { cpt: "65435", name: "Debridement of Loose Corneal Epithelium", fee: 145.00, lcd: "Removal of non-adherent sheets (Scope Permitting)", checked: false },
+          { cpt: "65778", name: "Amniotic Membrane Placement", fee: 310.00, lcd: "Persistent refractory erosion (Scope Permitting)", checked: false }
         ],
-        pitfalls: [
-          "Collarettes around eyelash bases are pathognomonic for Demodex blepharitis; treat with topical lotilaner (Xdemvy) or tea tree oil."
+        pitfalls: ["Oral doxycycline + topical steroid pulse inhibits matrix metalloproteinases (MMP-9) and stabilizes basement membrane."],
+        docs: ["Document geographic area of loose, rolling epithelium and nighttime hypertonic sodium chloride ointment."]
+      },
+      {
+        icd10: "H18.59",
+        name: "Epithelial basement membrane dystrophy (Map-Dot-Fingerprint / EBMD)",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "IC3D Classification of Corneal Dystrophies",
+        rtc: "6 - 12 Months",
+        examCpt: "92014",
+        examFee: 130.00,
+        examRationale: "Thickened, redundant basement membrane predisposing to recurrent erosions and irregular astigmatism.",
+        procedures: [
+          { cpt: "92285", name: "External Photography", fee: 24.00, lcd: "Cobblestone and fingerprint map documentation", checked: false },
+          { cpt: "92025", name: "Corneal Topography", fee: 45.00, lcd: "Evaluate irregular astigmatism causing monocular diplopia", checked: true }
         ],
-        docs: [
-          "Document lid margin erythema, collarettes, and meibomian capping.",
-          "Record lid hygiene regimen (hypochlorous acid, warm compresses, in-office debridement)."
-        ]
+        pitfalls: ["Negative staining with fluorescein highlights elevated map and fingerprint lines."],
+        docs: ["Document map lines, microcysts, and fingerprint lines; counsel on recurrent erosion risk."]
+      },
+      {
+        icd10: "H02.053",
+        name: "Trichiasis without entropion, bilateral",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "AOA Care of the Patient with Eyelid Disorders",
+        rtc: "1 - 3 Months PRN",
+        examCpt: "99212",
+        examFee: 62.00,
+        examRationale: "Mechanical corneal irritation from misdirected cilia.",
+        procedures: [
+          { cpt: "67820", name: "Correction of Trichiasis; Epilation by Forceps Only", fee: 48.00, lcd: "In-office mechanical epilation (Zero global days)", checked: true }
+        ],
+        pitfalls: ["Code 67820 is billed per encounter, not per eyelash removed."],
+        docs: ["Document specific lid margins and clock hours of misdirected lashes and punctate staining."]
+      },
+      {
+        icd10: "H02.109",
+        name: "Unspecified ectropion of unspecified eye",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Eyelid Malpositions",
+        rtc: "3 - 6 Months",
+        examCpt: "99213",
+        examFee: 92.00,
+        examRationale: "Outward turning of eyelid margin causing epiphora and exposure keratopathy.",
+        procedures: [
+          { cpt: "92285", name: "External Photography", fee: 24.00, lcd: "Documentation of lower lid distraction and exposure", checked: true }
+        ],
+        pitfalls: ["Chronic exposure can cause keratinization of palpebral conjunctiva; refer for horizontal tightening surgery."],
+        docs: ["Document snap-back test, distraction test (mm), and inferior punctate keratopathy."]
+      },
+      {
+        icd10: "H02.009",
+        name: "Unspecified entropion of unspecified eye",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Eyelid Malpositions",
+        rtc: "2 - 4 Weeks (or Surgical Referral)",
+        examCpt: "99213",
+        examFee: 92.00,
+        examRationale: "Inward rotation of eyelid margin resulting in severe corneal abrasion from lash contact.",
+        procedures: [
+          { cpt: "92071", name: "Fitting of Bandage Contact Lens", fee: 38.00, lcd: "Protect cornea while awaiting surgical repair", checked: true }
+        ],
+        pitfalls: ["Temporary relief can be achieved with horizontal lid taping or Quickert sutures."],
+        docs: ["Document involutional vs cicatricial etiology and extent of corneal epithelial breakdown."]
       },
       {
         icd10: "H02.833",
@@ -1131,18 +1424,62 @@
         rtc: "12 Months (or Blepharoplasty Referral)",
         examCpt: "92014",
         examFee: 130.00,
-        examRationale: "Laxity of upper eyelid skin causing superior visual field cut; pre-op surgical candidacy evaluation.",
+        examRationale: "Excess upper eyelid skin causing superior visual field obstruction.",
         procedures: [
-          { cpt: "92083", name: "Visual Field (Humphrey Taped and Untaped)", fee: 65.00, lcd: "Demonstrate superior visual field cut (>12° or 30% improvement taped)", checked: true },
+          { cpt: "92083", name: "Visual Field (Humphrey Taped and Untaped)", fee: 65.00, lcd: "Demonstrate superior visual field cut (>12 degrees or 30% improvement)", checked: true },
           { cpt: "92285", name: "External Ocular Photography", fee: 24.00, lcd: "Documentation of skin overhanging upper lid margin", checked: true }
         ],
-        pitfalls: [
-          "Medicare requires paired visual fields: one untaped, and one taped up, demonstrating documented functional recovery to approve blepharoplasty."
+        pitfalls: ["Medicare requires paired visual fields: untaped and taped up, showing documented functional recovery."],
+        docs: ["Document marginal reflex distance-1 (MRD-1 ≤2 mm) and subjective reading/driving impairment."]
+      },
+      {
+        icd10: "H02.403",
+        name: "Unspecified ptosis of eyelid, bilateral",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Eyelid Malpositions",
+        rtc: "6 - 12 Months",
+        examCpt: "92014",
+        examFee: 130.00,
+        examRationale: "Drooping of upper eyelid margin secondary to levator aponeurosis dehiscence or neurogenic cause.",
+        procedures: [
+          { cpt: "92083", name: "Visual Field (Taped and Untaped)", fee: 65.00, lcd: "Document functional superior visual field cut", checked: true },
+          { cpt: "92285", name: "External Photography", fee: 24.00, lcd: "MRD-1 and levator function measurement", checked: true }
         ],
-        docs: [
-          "Document marginal reflex distance-1 (MRD-1 ≤2 mm).",
-          "Record functional impairment of reading, computer work, or driving directly caused by lid droop."
-        ]
+        pitfalls: ["Rule out Horner's syndrome, 3rd nerve palsy, and Myasthenia Gravis (perform ice pack test)."],
+        docs: ["Document MRD-1, levator excursion function (mm), and palpebral fissure height."]
+      },
+      {
+        icd10: "H01.003",
+        name: "Unspecified blepharitis, bilateral",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Blepharitis",
+        rtc: "2 - 3 Months",
+        examCpt: "99213",
+        examFee: 92.00,
+        examRationale: "Chronic inflammatory eyelid margin disease contributing to tear instability and ocular surface damage.",
+        procedures: [
+          { cpt: "92285", name: "External Photography", fee: 24.00, lcd: "Collarettes and lid telangiectasia documentation", checked: false }
+        ],
+        pitfalls: ["Collarettes around eyelash bases indicate Demodex blepharitis; prescribe lotilaner (Xdemvy)."],
+        docs: ["Document lid margin erythema, collarettes, meibomian capping, and lid hygiene regimen."]
+      },
+      {
+        icd10: "H02.889",
+        name: "Meibomian gland dysfunction (MGD), bilateral",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "TFOS International Workshop on Meibomian Gland Dysfunction",
+        rtc: "2 - 3 Months",
+        examCpt: "99213",
+        examFee: 92.00,
+        examRationale: "Terminal duct obstruction and qualitative lipid changes driving evaporative dry eye.",
+        procedures: [
+          { cpt: "92285", name: "External Photography (Infrared Meibography)", fee: 24.00, lcd: "Quantification of meibomian gland dropout", checked: true }
+        ],
+        pitfalls: ["Thermal pulsation / radiofrequency / IPL therapies are typically elective out-of-pocket procedures."],
+        docs: ["Document meibum quality (clear, turbid, toothpaste) and gland expressibility score."]
       },
       {
         icd10: "H00.011",
@@ -1155,13 +1492,8 @@
         examFee: 62.00,
         examRationale: "Acute focal infection of gland of Zeis/Moll.",
         procedures: [],
-        pitfalls: [
-          "If cellulitis spreads beyond lid margin, initiate oral antibiotics (cephalexin or doxycycline) immediately to prevent preseptal cellulitis."
-        ],
-        docs: [
-          "Document focal erythematous tender nodule at lid margin.",
-          "Record warm compress schedule and topical/oral antibiotic management."
-        ]
+        pitfalls: ["If erythema spreads beyond lid margin, initiate oral antibiotics to prevent preseptal cellulitis."],
+        docs: ["Document focal erythematous tender nodule at lid margin and warm compress schedule."]
       },
       {
         icd10: "H00.11",
@@ -1176,13 +1508,8 @@
         procedures: [
           { cpt: "11900", name: "Intralesional Corticosteroid Injection (Triamcinolone)", fee: 75.00, lcd: "Therapeutic chalazion resolution (Scope Permitting)", checked: false }
         ],
-        pitfalls: [
-          "Recurrent chalazia in the exact same location in older patients requires biopsy to rule out sebaceous gland carcinoma."
-        ],
-        docs: [
-          "Document size, firmness, and location of meibomian nodule on eversion.",
-          "Record failed conservative warm compress therapy prior to procedural intervention."
-        ]
+        pitfalls: ["Recurrent chalazia in same location in older adults warrants biopsy to rule out sebaceous carcinoma."],
+        docs: ["Document nodule size, firmness, and failure of conservative warm compresses."]
       },
       {
         icd10: "H10.023",
@@ -1195,13 +1522,8 @@
         examFee: 62.00,
         examRationale: "Acute infectious mucopurulent discharge with conjunctival injection.",
         procedures: [],
-        pitfalls: [
-          "Rule out hyperacute gonococcal conjunctivitis if profuse copius discharge (can perforate cornea in 24-48 hours; requires IM ceftriaxone)."
-        ],
-        docs: [
-          "Document presence of papillae, mucopurulent crusting, and clear cornea.",
-          "Record topical antibiotic prescribed (polytrim, fluoroquinolone, or erythromycin)."
-        ]
+        pitfalls: ["Rule out hyperacute gonococcal conjunctivitis if profuse discharge (can perforate cornea in 24h; IM ceftriaxone)."],
+        docs: ["Document papillae, mucopurulent discharge, clear cornea, and topical antibiotic prescribed."]
       },
       {
         icd10: "H10.13",
@@ -1212,15 +1534,10 @@
         rtc: "2 - 4 Weeks PRN",
         examCpt: "99212",
         examFee: 62.00,
-        examRationale: "IgE-mediated mast cell degranulation causing prominent ocular pruritus and injection.",
+        examRationale: "IgE-mediated mast cell degranulation causing prominent ocular pruritus and chemosis.",
         procedures: [],
-        pitfalls: [
-          "Avoid chronic topical vasoconstrictor/decongestant use (causes rebound conjunctival hyperemia)."
-        ],
-        docs: [
-          "Document palpebral conjunctival papillae, chemosis, and itch severity.",
-          "Record dual-action antihistamine/mast cell stabilizer prescription (olopatadine/ketotifen)."
-        ]
+        pitfalls: ["Avoid chronic vasoconstrictor/decongestant use (causes rebound hyperemia)."],
+        docs: ["Document palpebral conjunctival papillae, chemosis, and dual-action antihistamine prescribed."]
       },
       {
         icd10: "H10.89",
@@ -1228,21 +1545,31 @@
         category: "Cornea & OSD",
         status: "VERIFIED_PPP",
         citation: "AAO Preferred Practice Pattern: Conjunctivitis Guidelines",
-        rtc: "1 Week (Vigilant Follicle & SEI Monitoring)",
+        rtc: "1 Week (Vigilant SEI Monitoring)",
         examCpt: "99213",
         examFee: 92.00,
-        examRationale: "Highly contagious adenoviral infection presenting with pseudomembranes and subepithelial infiltrates (SEIs).",
+        examRationale: "Highly contagious adenoviral infection presenting with follicles and subepithelial infiltrates (SEIs).",
         procedures: [
-          { cpt: "65435", name: "Debridement / Peeling of Conjunctival Pseudomembrane", fee: 145.00, lcd: "Prevent conjunctival scarring and symblepharon (Scope Permitting)", checked: false }
+          { cpt: "65435", name: "Debridement / Peeling of Conjunctival Pseudomembrane", fee: 145.00, lcd: "Prevent conjunctival scarring (Scope Permitting)", checked: false }
         ],
-        pitfalls: [
-          "High nosocomial transmission risk; strict bleach disinfection of slit lamp and hand washing required.",
-          "Subepithelial infiltrates (SEIs) may require a cautious mild steroid taper if visual axis affected."
+        pitfalls: ["High transmission risk; strict bleach disinfection of equipment and hand washing required."],
+        docs: ["Document tender preauricular lymphadenopathy (PAN) and presence/absence of subepithelial infiltrates."]
+      },
+      {
+        icd10: "H10.45",
+        name: "Other chronic allergic conjunctivitis (Giant Papillary Conjunctivitis - GPC)",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Conjunctivitis",
+        rtc: "3 - 4 Weeks",
+        examCpt: "99213",
+        examFee: 92.00,
+        examRationale: "Mechanical immune-mediated reaction to contact lens deposits or ocular prosthetics.",
+        procedures: [
+          { cpt: "92285", name: "External Photography", fee: 24.00, lcd: "Upper tarsal papillae documentation", checked: false }
         ],
-        docs: [
-          "Document tender preauricular lymphadenopathy (PAN).",
-          "Record presence/absence of subepithelial infiltrates or pseudomembranes."
-        ]
+        pitfalls: ["Discontinue contact lens wear temporarily; switch to daily disposables or peroxide cleaning."],
+        docs: ["Document eversion of upper tarsus showing giant cobblestone papillae (≥1.0 mm)."]
       },
       {
         icd10: "H11.003",
@@ -1258,13 +1585,8 @@
           { cpt: "92285", name: "External Ocular Photography", fee: 24.00, lcd: "Documentation of corneal limbal encroachment and Stocker line", checked: true },
           { cpt: "92025", name: "Corneal Topography", fee: 45.00, lcd: "Assessment of induced irregular astigmatism", checked: false }
         ],
-        pitfalls: [
-          "Surgical excision indicated if lesion encroaches within 3 mm of visual axis or induces severe irregular with-the-rule astigmatism."
-        ],
-        docs: [
-          "Document millimeter measurement of limbal encroachment onto cornea.",
-          "Record UV protection recommendations and lubricating drops."
-        ]
+        pitfalls: ["Surgical referral indicated if lesion encroaches within 3 mm of visual axis or induces severe astigmatism."],
+        docs: ["Document millimeter measurement of limbal encroachment onto cornea."]
       },
       {
         icd10: "H11.153",
@@ -1277,13 +1599,8 @@
         examFee: 92.00,
         examRationale: "Benign elastotic degeneration of bulbar conjunctival stroma.",
         procedures: [],
-        pitfalls: [
-          "If pinguecula becomes inflamed and symptomatic (pingueculitis), treat with a short pulse of mild topical steroid (loteprednol/fluorometholone)."
-        ],
-        docs: [
-          "Document nasal vs temporal location and absence of corneal extension.",
-          "Record UV sunglasses and lubrication counseling."
-        ]
+        pitfalls: ["If inflamed (pingueculitis), treat with a short pulse of mild topical steroid (loteprednol)."],
+        docs: ["Document nasal vs temporal location, absence of corneal extension, and UV counseling."]
       },
       {
         icd10: "H11.31",
@@ -1296,14 +1613,8 @@
         examFee: 62.00,
         examRationale: "Rupture of fragile conjunctival capillary vessels; self-limiting resolution.",
         procedures: [],
-        pitfalls: [
-          "Rule out full-thickness globe rupture (especially if 360° bullous hemorrhage after trauma).",
-          "Check blood pressure in office; recurrent hemorrhages warrant coagulation workup (PT/INR, CBC)."
-        ],
-        docs: [
-          "Document traumatic vs spontaneous valsalva etiology.",
-          "Record clear vision, normal IOP, and absence of intraocular involvement."
-        ]
+        pitfalls: ["Rule out globe rupture (especially if 360 degree bullous hemorrhage post-trauma); check blood pressure."],
+        docs: ["Document traumatic vs spontaneous valsalva etiology and normal visual acuity/IOP."]
       },
       {
         icd10: "H15.001",
@@ -1314,17 +1625,16 @@
         rtc: "1 - 3 Days (Urgent Autoimmune Workup)",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Deep, severe destructive inflammatory disease; >50% associated with underlying systemic autoimmune vasculitis.",
+        examRationale: "Deep destructive inflammatory disease; >50% associated with systemic autoimmune vasculitis.",
         procedures: [
           { cpt: "92285", name: "External Photography", fee: 24.00, lcd: "Documentation of scleral edema and thinning", checked: true }
         ],
         pitfalls: [
-          "Phenylephrine 2.5% drops will NOT blanch deep episcleral/scleral plexus (differentiates scleritis from episcleritis).",
+          "Phenylephrine 2.5% drops will NOT blanch deep scleral plexus (differentiates from episcleritis).",
           "Topical steroids are INEFFECTIVE; systemic oral NSAIDs (indomethacin) or oral prednisone required."
         ],
         docs: [
           "Document severe boring ocular pain radiating to forehead and jaw, worsening at night.",
-          "Record bluish-red hue under natural sunlight.",
           "Order autoimmune serology panel (RF, ANA, ANCA, HLA-B27, syphilis, chest X-ray)."
         ]
       },
@@ -1339,13 +1649,8 @@
         examFee: 92.00,
         examRationale: "Self-limiting, benign inflammation of superficial episcleral vascular network.",
         procedures: [],
-        pitfalls: [
-          "Instillation of Phenylephrine 2.5% blenches superficial episcleral vessels within 10-15 minutes, confirming diagnosis."
-        ],
-        docs: [
-          "Document simple vs nodular presentation.",
-          "Record absence of deep scleral involvement and treatment with topical NSAID or mild steroid."
-        ]
+        pitfalls: ["Instillation of Phenylephrine 2.5% blanches superficial episcleral vessels within 10-15 minutes."],
+        docs: ["Document simple vs nodular presentation and absence of deep scleral involvement."]
       },
       {
         icd10: "H16.143",
@@ -1358,40 +1663,29 @@
         examFee: 92.00,
         examRationale: "Diffuse bilateral epithelial necrosis from acute UV exposure; intense pain and photophobia.",
         procedures: [
-          { cpt: "92071", name: "Fitting of Bandage Contact Lens", fee: 38.00, lcd: "Therapeutic pain management and epithelial healing", checked: true }
+          { cpt: "92071", name: "Fitting of Bandage Contact Lens", fee: 38.00, lcd: "Therapeutic pain management and healing", checked: true }
         ],
-        pitfalls: [
-          "NEVER dispense topical anesthetics (proparacaine/tetracaine) for home use; causes corneal melt and perforation."
-        ],
-        docs: [
-          "Document diffuse punctate confluent epithelial erosions in interpalpebral zone.",
-          "Record preservative-free lubrication, antibiotic ointment, and oral analgesics."
-        ]
+        pitfalls: ["NEVER dispense topical anesthetics (proparacaine/tetracaine) for home use; causes corneal melt."],
+        docs: ["Document confluent punctate epithelial erosions and prescribe antibiotic ointment/lubricants."]
       },
       {
-        icd10: "H18.463",
-        name: "Peripheral corneal ulceration (Marginal Keratitis / Staph Hypersensitivity), bilateral",
+        icd10: "H18.413",
+        name: "Arcus senilis (Corneal Arcus), bilateral",
         category: "Cornea & OSD",
         status: "VERIFIED_PPP",
         citation: "AAO Preferred Practice Pattern: Cornea Guidelines",
-        rtc: "3 - 5 Days",
-        examCpt: "99213",
-        examFee: 92.00,
-        examRationale: "Type III hypersensitivity response to staphylococcal exotoxins characterized by peripheral infiltrates with clear limbal zone.",
+        rtc: "12 Months / Routine",
+        examCpt: "92014",
+        examFee: 130.00,
+        examRationale: "Stromal lipid deposition; in patients <40 years, warrants systemic lipid profiling.",
         procedures: [],
-        pitfalls: [
-          "Differentiate from infectious bacterial ulcer: marginal keratitis features a pathognomonic 1-2 mm clear zone between infiltrate and limbus.",
-          "Combination topical antibiotic/steroid (tobramycin/dexamethasone) resolves lesions rapidly."
-        ],
-        docs: [
-          "Document peripheral stromal infiltrates separated from limbus by clear corneal tissue.",
-          "Record associated staphylococcal blepharitis and lid margin management."
-        ]
+        pitfalls: ["Arcus senilis in young individuals (<40) is associated with familial hyperlipidemia."],
+        docs: ["Document circumferential lipid band with clear lucid interval of Vogt."]
       },
 
-      // ==========================================
-      // 4. UVEITIS & INFLAMMATORY CONDITIONS
-      // ==========================================
+      // ----------------------------------------------------
+      // UVEITIS & OCULAR INFLAMMATION
+      // ----------------------------------------------------
       {
         icd10: "H20.011",
         name: "Primary acute iridocyclitis (Anterior Uveitis), right eye",
@@ -1401,19 +1695,18 @@
         rtc: "2 - 4 Days (until Controlled)",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Acute intraocular breakdown of blood-aqueous barrier requiring intensive cycloplegic and topical corticosteroid therapy.",
+        examRationale: "Acute breakdown of blood-aqueous barrier requiring intensive cycloplegic and topical corticosteroid therapy.",
         procedures: [
-          { cpt: "92020", name: "Gonioscopy", fee: 28.00, lcd: "Rule out angle synechiae (PAS) and neovascularization", checked: false },
-          { cpt: "92134", name: "OCT Macula", fee: 42.00, lcd: "Screening for uveitic cystoid macular edema", checked: false }
+          { cpt: "92020", name: "Gonioscopy", fee: 28.00, lcd: "Rule out angle synechiae (PAS)", checked: false },
+          { cpt: "92134", name: "OCT Macula", fee: 42.00, lcd: "Screening for uveitic macular edema", checked: false }
         ],
         pitfalls: [
-          "Prescribe cycloplegic (cyclopentolate/homatropine) to prevent posterior synechiae formation and relieve ciliary spasm pain.",
-          "Initial dosing must be aggressive (prednisolone acetate 1% every 1 hour while awake)."
+          "Prescribe cycloplegic (cyclopentolate/homatropine) to prevent posterior synechiae formation.",
+          "Initial steroid dosing must be aggressive (prednisolone acetate 1% every 1 hour while awake)."
         ],
         docs: [
           "Document anterior chamber cell and flare grading per SUN classification (0 to 4+).",
-          "Record presence/absence of keratic precipitates (fine vs mutton-fat granulomatous).",
-          "Document pupil reactivity and absence of posterior synechiae."
+          "Record presence/absence of keratic precipitates (fine vs mutton-fat)."
         ]
       },
       {
@@ -1425,65 +1718,105 @@
         rtc: "2 - 4 Days (and Systemic Workup)",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Recurrent or bilateral intraocular inflammation strongly associated with HLA-B27 spondyloarthropathies.",
+        examRationale: "Recurrent or bilateral inflammation strongly associated with HLA-B27 spondyloarthropathies.",
         procedures: [
           { cpt: "92134", name: "OCT Macula", fee: 42.00, lcd: "Monitor for secondary macular edema", checked: true }
         ],
-        pitfalls: [
-          "Bilateral or recurrent uveitis warrants lab workup: HLA-B27, ANA, syphilis (VDRL/RPR, treponemal antibody), Lyme, and chest X-ray/ACE for sarcoidosis."
-        ],
-        docs: [
-          "Document prior episode dates and response to topical steroid therapy.",
-          "Record systemic review of systems (back pain, joint stiffness, rashes, oral ulcers)."
-        ]
+        pitfalls: ["Bilateral or recurrent uveitis warrants lab workup: HLA-B27, ANA, syphilis, Lyme, and chest X-ray/ACE."],
+        docs: ["Document prior episode dates and systemic review of systems (back pain, joint stiffness, rashes)."]
       },
       {
         icd10: "H20.9",
-        name: "Unspecified iridocyclitis (Posterior Synechiae Complication)",
+        name: "Unspecified iridocyclitis with posterior synechiae",
         category: "Uveitis",
         status: "VERIFIED_PPP",
         citation: "AAO Preferred Practice Pattern: Uveitis Guidelines",
         rtc: "1 - 2 Days",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Adhesions between iris and anterior lens capsule carry high risk of seclusio pupillae and pupillary block glaucoma.",
+        examRationale: "Iris-lens adhesions carrying high risk of seclusio pupillae and pupillary block glaucoma.",
         procedures: [
-          { cpt: "92020", name: "Gonioscopy", fee: 28.00, lcd: "Identify iris bombe and secondary angle closure", checked: true }
+          { cpt: "92020", name: "Gonioscopy", fee: 28.00, lcd: "Identify iris bombe and angle closure", checked: true }
         ],
-        pitfalls: [
-          "Instill in-office phenylephrine 10% and atropine 1% to break fresh posterior synechiae before fibrosis locks pupil."
+        pitfalls: ["Instill in-office phenylephrine 10% and atropine 1% to break fresh posterior synechiae before fibrosis."],
+        docs: ["Document clock hours of posterior synechiae and confirm absence of iris bombe."]
+      },
+      {
+        icd10: "H30.001",
+        name: "Unspecified focal chorioretinal inflammation (Toxoplasmosis Chorioretinitis)",
+        category: "Uveitis",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Uveitis Guidelines",
+        rtc: "1 - 2 Weeks",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Active focal necrotizing retinochoroiditis ('headlight in the fog') adjacent to pigmented scar.",
+        procedures: [
+          { cpt: "92250", name: "Fundus Photography", fee: 54.00, lcd: "Documentation of active lesion and scar", checked: true },
+          { cpt: "92134", name: "OCT Macula", fee: 42.00, lcd: "Retinal thickening and traction evaluation", checked: true }
         ],
-        docs: [
-          "Document clock hours of posterior synechiae.",
-          "Record IOP and confirm absence of iris bombe."
-        ]
+        pitfalls: ["Classic triple therapy: pyrimethamine, sulfadiazine, oral prednisone (or Bactrim DS + oral prednisone)."],
+        docs: ["Document lesion location relative to fovea and optic disc, and vitreous haze grade."]
+      },
+      {
+        icd10: "H30.103",
+        name: "Unspecified disseminated chorioretinitis, bilateral (Ocular Histoplasmosis - POHS)",
+        category: "Uveitis",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Retina Guidelines",
+        rtc: "3 - 6 Months",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Classic triad: punched-out histo spots, peripapillary atrophy, and risk of choroidal neovascularization.",
+        procedures: [
+          { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Vigilant screening for macular CNV", checked: true },
+          { cpt: "92250", name: "Fundus Photography", fee: 54.00, lcd: "Mid-peripheral histo spots baseline", checked: true }
+        ],
+        pitfalls: ["POHS has completely clear vitreous (no anterior chamber or vitreous cells); vitritis rules out POHS."],
+        docs: ["Document peripheral punched-out scars, peripapillary atrophy, and home Amsler grid instructions."]
+      },
+      {
+        icd10: "H30.23",
+        name: "Posterior cyclitis (Pars Planitis / Intermediate Uveitis), bilateral",
+        category: "Uveitis",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Uveitis Guidelines",
+        rtc: "1 - 2 Months",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Vitritis, snowballs, and inferior pars plana snowbanking; strong association with Multiple Sclerosis.",
+        procedures: [
+          { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Monitor for cystoid macular edema (primary vision threat)", checked: true },
+          { cpt: "92228", name: "Extended Ophthalmoscopy", fee: 32.00, lcd: "Indentation view of inferior snowbanking", checked: true }
+        ],
+        pitfalls: ["Leading cause of vision loss is cystoid macular edema; rule out Multiple Sclerosis (order brain MRI)."],
+        docs: ["Document vitreous snowballs, inferior snowbanks, and macular thickness on OCT."]
       },
 
-      // ==========================================
-      // 5. NEURO-OPHTHALMIC, CRANIAL NERVES & ORBIT
-      // ==========================================
+      // ----------------------------------------------------
+      // NEURO-OPHTHALMIC, CRANIAL NERVES & ORBIT
+      // ----------------------------------------------------
       {
         icd10: "H46.9",
         name: "Unspecified optic neuritis",
         category: "Neuro-Optometry",
         status: "VERIFIED_PPP",
-        citation: "AAO Preferred Practice Pattern: Optic Neuritis Guidelines & Optic Neuritis Treatment Trial (ONTT)",
+        citation: "AAO Preferred Practice Pattern: Optic Neuritis Guidelines & ONTT",
         rtc: "Immediate (Urgent Neurology / MRI Workup)",
         examCpt: "99215",
         examFee: 184.00,
-        examRationale: "High complexity acute neurological condition carrying significant risk of multiple sclerosis conversion.",
+        examRationale: "High complexity neurological condition carrying significant risk of multiple sclerosis conversion.",
         procedures: [
-          { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "Optic nerve head edema and baseline axonal tracking", checked: true },
+          { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "Disc edema and baseline axonal tracking", checked: true },
           { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Essential for central/cecocentral scotoma mapping", checked: true }
         ],
         pitfalls: [
-          "Oral prednisone alone at standard doses is CONTRAINDICATED (ONTT proved oral steroids alone increased recurrence rates).",
+          "Oral prednisone alone at standard doses is CONTRAINDICATED (ONTT showed increased recurrence rates).",
           "Order urgent Brain and Orbit MRI with and without gadolinium contrast."
         ],
         docs: [
-          "Document relative afferent pupillary defect (RAPD) presence and severity.",
-          "Record color vision (Ishihara plates) and red desaturation.",
-          "Document pain with eye movement (present in >90% of optic neuritis cases)."
+          "Document relative afferent pupillary defect (RAPD) and red desaturation.",
+          "Document presence of pain with eye movement (present in >90% of cases)."
         ]
       },
       {
@@ -1495,24 +1828,17 @@
         rtc: "1 - 2 Weeks",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Infarction of posterior ciliary arteries supplying optic disc; crowding of 'disc-at-risk'.",
+        examRationale: "Infarction of posterior ciliary arteries; crowding of 'disc-at-risk' with altitudinal defect.",
         procedures: [
-          { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Characteristic altitudinal visual field defect mapping", checked: true },
+          { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Altitudinal visual field defect mapping", checked: true },
           { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "Documentation of segmental disc edema", checked: true }
         ],
-        pitfalls: [
-          "Crucial to differentiate from Arteritic ION (Giant Cell Arteritis); rule out jaw claudication, scalp tenderness, elevated ESR/CRP.",
-          "Examine fellow eye for small cup-to-disc ratio ('disc at risk')."
-        ],
-        docs: [
-          "Document sudden painless vision loss upon waking.",
-          "Record presence of relative afferent pupillary defect (RAPD) and altitudinal field loss.",
-          "Counsel patient to avoid PDE-5 inhibitors (Viagra/Cialis) and discuss nocturnal hypotension."
-        ]
+        pitfalls: ["Differentiate from Arteritic ION (GCA); rule out jaw claudication, scalp tenderness, elevated ESR/CRP."],
+        docs: ["Document sudden painless vision loss upon waking, RAPD, and altitudinal field loss."]
       },
       {
         icd10: "H47.012",
-        name: "Ischemic optic neuropathy, arteritic (Giant Cell Arteritis / Temporal Arteritis), left eye",
+        name: "Ischemic optic neuropathy, arteritic (Giant Cell Arteritis / Temporal Arteritis)",
         category: "Neuro-Optometry",
         status: "VERIFIED_PPP",
         citation: "AAO Preferred Practice Pattern: Neuro-Ophthalmic Guidelines",
@@ -1524,38 +1850,46 @@
           { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Severe generalized field suppression", checked: true },
           { cpt: "92250", name: "Fundus Photography", fee: 54.00, lcd: "Chalky-white disc edema documentation", checked: true }
         ],
-        pitfalls: [
-          "Do NOT wait for temporal artery biopsy results to initiate corticosteroids; start high-dose steroids immediately on clinical suspicion."
-        ],
+        pitfalls: ["Do NOT wait for temporal artery biopsy results; start high-dose systemic steroids immediately."],
         docs: [
-          "Screen for jaw claudication, temple pain, scalp tenderness, fever, and polymyalgia rheumatica.",
-          "Order STAT ESR, CRP, and complete blood count (platelet count elevation).",
-          "Document emergency transfer for temporal artery biopsy and systemic corticosteroid admission."
+          "Screen for jaw claudication, temple pain, scalp tenderness, and polymyalgia rheumatica.",
+          "Order STAT ESR, CRP, and platelets; document emergency admission."
         ]
       },
       {
         icd10: "H47.11",
-        name: "Papilledema with increased intracranial pressure (Idiopathic Intracranial Hypertension - IIH / Pseudotumor)",
+        name: "Papilledema with increased intracranial pressure (IIH / Pseudotumor Cerebri)",
         category: "Neuro-Optometry",
         status: "VERIFIED_PPP",
         citation: "AAO Preferred Practice Pattern: Neuro-Ophthalmic Guidelines",
         rtc: "Urgent (Brain MRI/MRV and Lumbar Puncture)",
         examCpt: "99215",
         examFee: 184.00,
-        examRationale: "Bilateral optic disc swelling secondary to elevated intracranial pressure; vision loss occurs insidiously.",
+        examRationale: "Bilateral optic disc swelling secondary to elevated intracranial pressure.",
         procedures: [
           { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "Frisén staging quantification of disc edema", checked: true },
           { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Enlarged blind spot and arcuate defect tracking", checked: true }
         ],
-        pitfalls: [
-          "Must perform emergency MRI of brain with contrast and MRV of head to rule out space-occupying lesion or dural venous sinus thrombosis.",
-          "Oral acetazolamide (Diamox) is standard medical therapy once neuroimaging clears."
+        pitfalls: ["Must perform emergency MRI of brain with contrast and MRV of head to rule out dural sinus thrombosis."],
+        docs: ["Document bilateral disc edema, absence of SVP, pulsatile tinnitus, and neurology transfer."]
+      },
+      {
+        icd10: "H47.323",
+        name: "Drusen of optic disc, bilateral",
+        category: "Neuro-Optometry",
+        status: "VERIFIED_PPP",
+        citation: "Optic Disc Drusen Studies Consortium Protocol",
+        rtc: "6 - 12 Months",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Acellular calcified hyaline bodies within optic nerve head; causes pseudopapilledema.",
+        procedures: [
+          { cpt: "76512", name: "Ophthalmic B-Scan Ultrasound", fee: 78.00, lcd: "Highly reflective calcified drusen visible at low gain", checked: true },
+          { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Monitor insidious nerve fiber bundle field defects", checked: true },
+          { cpt: "92250", name: "Fundus Autofluorescence (FAF)", fee: 54.00, lcd: "Hyper-autofluorescent naked drusen", checked: true }
         ],
-        docs: [
-          "Document presence of bilateral disc edema, blurred margins, and absence of spontaneous venous pulsation (SVP).",
-          "Record screening for transient visual obscurations, pulsatile tinnitus, and headaches.",
-          "Document urgent neurology/radiology transfer."
-        ]
+        pitfalls: ["B-scan ultrasound at low gain confirms calcified drusen, definitively differentiating from true papilledema."],
+        docs: ["Document scalloped disc margins, anomalous vascular branching, and B-scan confirmation."]
       },
       {
         icd10: "H49.01",
@@ -1563,21 +1897,15 @@
         category: "Neuro-Optometry",
         status: "VERIFIED_PPP",
         citation: "AAO Neuro-Ophthalmic Guidelines",
-        rtc: "Immediate (STAT CTA/MRA for Posterior Communicating Aneurysm)",
+        rtc: "Immediate (STAT CTA/MRA for P-Com Aneurysm)",
         examCpt: "99215",
         examFee: 184.00,
-        examRationale: "A pupil-involving third nerve palsy is an expanding Posterior Communicating Artery (P-Com) aneurysm until proven otherwise.",
+        examRationale: "A pupil-involving third nerve palsy is an expanding P-Com aneurysm until proven otherwise.",
         procedures: [
-          { cpt: "92285", name: "External Photography", fee: 24.00, lcd: "Documentation of complete ptosis and 'down-and-out' ocular misalignment", checked: true }
+          { cpt: "92285", name: "External Photography", fee: 24.00, lcd: "Complete ptosis and 'down-and-out' misalignment", checked: true }
         ],
-        pitfalls: [
-          "If pupil is dilated, poorly reactive, or sluggishly responding, activate STAT neurovascular imaging (CTA or MRA) to prevent fatal subarachnoid hemorrhage."
-        ],
-        docs: [
-          "Document pupil size, symmetry, and direct/consensual light response.",
-          "Record presence of complete/partial ptosis and exotropia with hypotropia.",
-          "Document emergency transfer details for vascular neuroimaging."
-        ]
+        pitfalls: ["If pupil is dilated or sluggish, activate STAT neurovascular imaging (CTA/MRA) to prevent fatal hemorrhage."],
+        docs: ["Document pupil size and light response, complete ptosis, and emergency hospital transfer."]
       },
       {
         icd10: "H49.11",
@@ -1590,16 +1918,10 @@
         examFee: 132.00,
         examRationale: "Vertical diplopia secondary to superior oblique paresis; Park-Bielschowsky 3-step confirmation.",
         procedures: [
-          { cpt: "92060", name: "Sensorimotor Examination", fee: 65.00, lcd: "Maddox rod, double Maddox rod, and prism cover testing", checked: true }
+          { cpt: "92060", name: "Sensorimotor Examination", fee: 65.00, lcd: "Maddox rod and prism cover testing", checked: true }
         ],
-        pitfalls: [
-          "Check old driver's license photographs for long-standing head tilt indicating decompensated congenital 4th nerve palsy (large vertical fusional amplitudes)."
-        ],
-        docs: [
-          "Document Park-Bielschowsky 3-step test results (hypertropia worsening on contralateral gaze and ipsilateral head tilt).",
-          "Record degree of excyclotorsion on double Maddox rod test.",
-          "Prescribe temporary Fresnel prism for symptom relief."
-        ]
+        pitfalls: ["Check old photos for long-standing head tilt indicating decompensated congenital 4th palsy."],
+        docs: ["Document Park-Bielschowsky 3-step test results and degree of excyclotorsion on double Maddox rod."]
       },
       {
         icd10: "H49.21",
@@ -1614,15 +1936,25 @@
         procedures: [
           { cpt: "92060", name: "Sensorimotor Examination", fee: 65.00, lcd: "Prism neutralization of esotropia in primary and lateral gaze", checked: true }
         ],
-        pitfalls: [
-          "Most common etiology in patients >50 is microvascular ischemia (diabetes/hypertension); typically resolves spontaneously in 2-3 months.",
-          "In young patients or if accompanied by papilledema, 6th nerve palsy is a false-localizing sign of elevated intracranial pressure."
+        pitfalls: ["In young patients or with papilledema, 6th nerve palsy is a false-localizing sign of elevated ICP."],
+        docs: ["Document magnitude of esotropia in primary vs right gaze and screen for diabetes/hypertension."]
+      },
+      {
+        icd10: "G70.00",
+        name: "Myasthenia gravis without acute exacerbation (Ocular Myasthenia)",
+        category: "Neuro-Optometry",
+        status: "VERIFIED_PPP",
+        citation: "AAO Neuro-Ophthalmic Guidelines",
+        rtc: "1 - 2 Months",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Autoantibodies against acetylcholine receptors causing fatigable ptosis and variable diplopia.",
+        procedures: [
+          { cpt: "92285", name: "External Photography", fee: 24.00, lcd: "Document positive ice pack test and Cogan's lid twitch", checked: true },
+          { cpt: "92060", name: "Sensorimotor Examination", fee: 65.00, lcd: "Quantify variable incomitant strabismus", checked: true }
         ],
-        docs: [
-          "Document magnitude of esotropia in primary gaze vs right gaze (incomitant).",
-          "Record screening for diabetes, hypertension, and giant cell arteritis.",
-          "Prescribe occlusion foil or temporary prism for binocular comfort."
-        ]
+        pitfalls: ["Ice pack test: application of ice to ptotic lid for 2 minutes improves ptosis by ≥2 mm."],
+        docs: ["Document fatigable ptosis, positive ice pack test, and order AChR antibody panel."]
       },
       {
         icd10: "H57.02",
@@ -1633,20 +1965,12 @@
         rtc: "Immediate (Urgent Carotid Dissection Workup)",
         examCpt: "99215",
         examFee: 184.00,
-        examRationale: "Disruption of oculosympathetic pathway; painful Horner's syndrome is internal carotid artery dissection until proven otherwise.",
+        examRationale: "Disruption of oculosympathetic pathway; painful Horner's syndrome is internal carotid dissection until proven otherwise.",
         procedures: [
-          { cpt: "92285", name: "External Ocular Photography", fee: 24.00, lcd: "Pupillometry and ptosis documentation", checked: true },
-          { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Neurological field defect localization", checked: false }
+          { cpt: "92285", name: "External Ocular Photography", fee: 24.00, lcd: "Pupillometry and ptosis documentation", checked: true }
         ],
-        pitfalls: [
-          "Acute painful Horner's requires immediate transfer to emergency department for CTA or MRA of head and neck.",
-          "Apraclonidine 0.5% pharmacologic testing will reverse anisocoria in Horner's (causes dilation of Horner pupil and lid elevation)."
-        ],
-        docs: [
-          "Document degree of anisocoria in both light and dark, and confirm dilation lag.",
-          "Record presence of ipsilateral partial ptosis and facial anhidrosis.",
-          "Document urgent ED/radiology referral for neck/chest imaging."
-        ]
+        pitfalls: ["Acute painful Horner's requires immediate transfer to emergency department for head/neck CTA."],
+        docs: ["Document anisocoria in light vs dark (dilation lag), partial ptosis, and urgent ED referral."]
       },
       {
         icd10: "H57.04",
@@ -1659,16 +1983,10 @@
         examFee: 92.00,
         examRationale: "Postganglionic parasympathetic denervation of ciliary ganglion characterized by light-near dissociation.",
         procedures: [
-          { cpt: "92285", name: "External Photography", fee: 24.00, lcd: "Slit-lamp documentation of sector iris sphincter palsy", checked: true }
+          { cpt: "92285", name: "External Photography", fee: 24.00, lcd: "Slit-lamp documentation of sector iris palsy", checked: true }
         ],
-        pitfalls: [
-          "Confirm diagnosis with dilute pilocarpine (0.125%); will constrict Adie tonic pupil due to cholinergic supersensitivity, but has no effect on normal pupil."
-        ],
-        docs: [
-          "Document vermiform iris sphincter contractions on high-power slit lamp.",
-          "Record light-near dissociation (poor response to light, strong slow response to near).",
-          "Check deep tendon reflexes (Holmes-Adie syndrome)."
-        ]
+        pitfalls: ["Confirm diagnosis with dilute pilocarpine (0.125%); will constrict tonic pupil due to supersensitivity."],
+        docs: ["Document vermiform iris sphincter contractions and check deep tendon reflexes (Holmes-Adie)."]
       },
       {
         icd10: "H51.23",
@@ -1679,44 +1997,30 @@
         rtc: "Urgent (Neurology / Brain MRI)",
         examCpt: "99215",
         examFee: 184.00,
-        examRationale: "Lesion of medial longitudinal fasciculus (MLF) in brainstem; bilateral INO is highly pathognomonic for Multiple Sclerosis.",
+        examRationale: "Lesion of MLF in brainstem; bilateral INO is highly pathognomonic for Multiple Sclerosis.",
         procedures: [
-          { cpt: "92060", name: "Sensorimotor Examination", fee: 65.00, lcd: "Quantification of horizontal gaze disconjugacy and nystagmus", checked: true }
+          { cpt: "92060", name: "Sensorimotor Examination", fee: 65.00, lcd: "Quantification of horizontal gaze disconjugacy", checked: true }
         ],
-        pitfalls: [
-          "Characterized by impaired adduction of ipsilateral eye with horizontal dissociated nystagmus of contralateral abducting eye.",
-          "Unilateral INO in older patients is typically brainstem stroke; bilateral in young patients is MS."
-        ],
-        docs: [
-          "Document adduction deficit and abducting nystagmus on horizontal version testing.",
-          "Record normal convergence (spared because convergence bypasses MLF).",
-          "Document urgent MRI Brain order."
-        ]
+        pitfalls: ["Impaired adduction of ipsilateral eye with horizontal dissociated nystagmus of contralateral eye."],
+        docs: ["Document adduction deficit and preserved convergence; order urgent brain MRI."]
       },
       {
         icd10: "H05.243",
         name: "Thyroid eye disease (Graves' Orbitopathy), bilateral",
         category: "Neuro-Optometry",
         status: "VERIFIED_PPP",
-        citation: "AAO Preferred Practice Pattern: Orbit Guidelines & European Group on Graves' Orbitopathy (EUGOGO)",
+        citation: "AAO Preferred Practice Pattern: Orbit Guidelines & EUGOGO",
         rtc: "1 - 3 Months",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Autoimmune expansion of extraocular muscles and orbital fat; potential optic neuropathy and exposure keratopathy.",
+        examRationale: "Autoimmune expansion of extraocular muscles and orbital fat; risk of compressive optic neuropathy.",
         procedures: [
-          { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Screening for compressive optic neuropathy at orbital apex", checked: true },
-          { cpt: "92285", name: "External Photography", fee: 24.00, lcd: "Hertel exophthalmometry and lid retraction documentation", checked: true },
+          { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Screening for compressive optic neuropathy at apex", checked: true },
+          { cpt: "92285", name: "External Photography", fee: 24.00, lcd: "Hertel exophthalmometry documentation", checked: true },
           { cpt: "92133", name: "OCT Optic Nerve", fee: 42.00, lcd: "Axonal assessment for apical compression", checked: true }
         ],
-        pitfalls: [
-          "Smoking is the single strongest modifiable risk factor for severe progression; strongly advise smoking cessation.",
-          "Tepezza (teprotumumab) screening for active moderate-to-severe disease (Clinical Activity Score CAS ≥3)."
-        ],
-        docs: [
-          "Document Hertel exophthalmometry base and readings for each eye.",
-          "Record Von Graefe's sign (lid lag) and Dalrymple's sign (stare).",
-          "Document visual acuity and color vision to rule out apical compression."
-        ]
+        pitfalls: ["Smoking is the single strongest modifiable risk factor for severe progression; advise cessation."],
+        docs: ["Document Hertel exophthalmometry readings, Von Graefe's lid lag, and color vision."]
       },
       {
         icd10: "H47.20",
@@ -1727,47 +2031,68 @@
         rtc: "6 - 12 Months",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "End-stage loss of retinal ganglion cell axons; requires determination of underlying compressive vs toxic vs hereditary cause.",
+        examRationale: "End-stage loss of retinal ganglion cell axons; workup required to rule out intracranial compression.",
         procedures: [
           { cpt: "92133", name: "OCT Optic Nerve (RNFL / Ganglion Cell)", fee: 42.00, lcd: "Quantification of axonal loss", checked: true },
-          { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Pattern recognition (bitemporal, homonymous, cecocentral)", checked: true }
+          { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Pattern recognition (bitemporal, homonymous)", checked: true }
         ],
-        pitfalls: [
-          "Bitemporal hemianopia indicates chiasmal compression (pituitary adenoma) until proven otherwise; order brain/orbit MRI."
+        pitfalls: ["Bitemporal hemianopia indicates chiasmal compression (pituitary adenoma); order brain/orbit MRI."],
+        docs: ["Document disc pallor extent, neuroimaging orders, and low-vision rehabilitation referral."]
+      },
+      {
+        icd10: "H53.461",
+        name: "Homonymous bilateral field defects, right side (Post-Stroke Visual Field Loss)",
+        category: "Neuro-Optometry",
+        status: "VERIFIED_PPP",
+        citation: "AAO Neuro-Ophthalmic Guidelines",
+        rtc: "3 - 6 Months",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Retrochiasmal lesion (optic tract, radiation, or occipital cortex) producing congruent hemianopia.",
+        procedures: [
+          { cpt: "92083", name: "Visual Field (Humphrey 24-2 / Esterman)", fee: 65.00, lcd: "Map functional field defect and legal driving status", checked: true }
         ],
-        docs: [
-          "Document pallor extent (primary vs secondary post-papilledema).",
-          "Record neuroimaging and low-vision rehabilitation referral."
-        ]
+        pitfalls: ["Occipital lobe infarctions typically feature macular sparing due to dual vascular supply (MCA/PCA)."],
+        docs: ["Document complete vs incomplete homonymous hemianopia and prescribe Peli prism or scanning therapy."]
       },
 
-      // ==========================================
-      // 6. HIGH-RISK MEDICATIONS & SYSTEMIC TOXICITY
-      // ==========================================
+      // ----------------------------------------------------
+      // HIGH-RISK MEDICATIONS & SYSTEMIC DRUG MONITORING
+      // ----------------------------------------------------
       {
         icd10: "Z79.899",
-        name: "Long term use of high-risk agents (Plaquenil / Hydroxychloroquine Toxicity Screening)",
+        name: "Long term use of high-risk agents (Plaquenil / Hydroxychloroquine Screening)",
         category: "High-Risk Rx",
         status: "VERIFIED_PPP",
         citation: "AAO Recommendations on Screening for Chloroquine & Hydroxychloroquine Retinopathy",
         rtc: "12 Months (Annual Protocol)",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Level 4 MDM: High-risk medication monitoring with potential irreversible organ toxicity.",
+        examRationale: "High-risk medication monitoring with potential irreversible organ toxicity.",
         procedures: [
           { cpt: "92134", name: "Spectral-Domain OCT Macula", fee: 42.00, lcd: "Covered under Drug Toxicity Screening LCD", checked: true },
           { cpt: "92083", name: "10-2 Visual Field", fee: 65.00, lcd: "Standard 24-2 not accepted for Plaquenil screening", checked: true },
           { cpt: "92250", name: "Fundus Autofluorescence (FAF)", fee: 54.00, lcd: "Early screening coverage", checked: false }
         ],
         pitfalls: [
-          "A standard 24-2 visual field does not meet AAO screening guidelines; 10-2 testing required (or wider 24-2C / 30-2 in Asian patients due to pericentral pattern).",
-          "Cannot bill 92134 and 92250 on same date without modifier -59/-XU and distinct pathology."
+          "A standard 24-2 field does not meet AAO guidelines; 10-2 required (or 24-2C / 30-2 in Asian patients).",
+          "Cannot bill 92134 and 92250 on same date without modifier -59 and distinct pathology."
         ],
-        docs: [
-          "Document daily dose in mg/kg/day based on real body weight (target < 5.0 mg/kg/day).",
-          "Record cumulative treatment duration and kidney function / GFR status.",
-          "Send clearance documentation letter to prescribing rheumatologist."
-        ]
+        docs: ["Document daily dose in mg/kg/day (<5.0 mg/kg/day) and cumulative duration of therapy."]
+      },
+      {
+        icd10: "Z79.82",
+        name: "Long term (current) use of aspirin (Anticoagulant Pre-Procedure Clearance)",
+        category: "High-Risk Rx",
+        status: "VERIFIED_PPP",
+        citation: "AAO Guidelines: Perioperative Management of Antithrombotic Therapy",
+        rtc: "12 Months / Procedure Dependent",
+        examCpt: "99213",
+        examFee: 92.00,
+        examRationale: "Antiplatelet therapy monitoring prior to minor in-office surgical or eyelid procedures.",
+        procedures: [],
+        pitfalls: ["Do not discontinue medically necessary antiplatelet agents for minor office procedures without PCP clearance."],
+        docs: ["Document daily aspirin dosage and assess ocular surface bleeding risk."]
       },
       {
         icd10: "T43.015A",
@@ -1782,68 +2107,52 @@
         procedures: [
           { cpt: "92020", name: "Gonioscopy", fee: 28.00, lcd: "Evaluate occludable angle exacerbated by mydriasis", checked: true }
         ],
-        pitfalls: [
-          "Strong anticholinergics can precipitate acute pupillary block angle closure in anatomically predisposed eyes."
-        ],
-        docs: [
-          "Document amplitude of accommodation and angle grading on gonioscopy."
-        ]
+        pitfalls: ["Anticholinergics can precipitate acute angle closure in anatomically narrow angles."],
+        docs: ["Document amplitude of accommodation and angle grading on gonioscopy."]
       },
       {
         icd10: "H26.33",
-        name: "Cataract secondary to ocular disease (Steroid-Induced Posterior Subcapsular Cataract), bilateral",
+        name: "Cataract secondary to ocular disease (Steroid-Induced Posterior Subcapsular Cataract)",
         category: "Cataract",
         status: "VERIFIED_PPP",
         citation: "AAO Preferred Practice Pattern: Cataract in the Adult Eye",
         rtc: "6 Months",
         examCpt: "92014",
         examFee: 130.00,
-        examRationale: "Rapidly progressive posterior subcapsular opacity induced by systemic or topical corticosteroid therapy.",
+        examRationale: "Posterior subcapsular lens opacity induced by systemic or topical corticosteroid therapy.",
         procedures: [
-          { cpt: "92285", name: "Anterior Segment Photography", fee: 24.00, lcd: "Documentation of dense axial PSC opacity", checked: false }
+          { cpt: "92285", name: "Anterior Segment Photography", fee: 24.00, lcd: "Dense axial PSC opacity documentation", checked: false }
         ],
-        pitfalls: [
-          "PSC cataracts disproportionately affect near vision and create severe disabling glare in bright sunlight."
-        ],
-        docs: [
-          "Document glare testing (BAT) reduction.",
-          "Record steroid dosage, route, and consultation with prescribing physician regarding possible steroid sparing agents."
-        ]
+        pitfalls: ["PSC cataracts disproportionately affect near vision and create severe glare in sunlight."],
+        docs: ["Document glare testing (BAT) reduction, steroid route, and daily dosage."]
       },
 
-      // ==========================================
-      // 7. PEDIATRICS, STRABISMUS & BINOCULAR VISION
-      // ==========================================
+      // ----------------------------------------------------
+      // PEDIATRICS, STRABISMUS & BINOCULAR VISION
+      // ----------------------------------------------------
       {
         icd10: "H53.003",
-        name: "Amblyopia, unspecified, bilateral",
+        name: "Amblyopia, unspecified, bilateral (Refractive / Deprivation Amblyopia)",
         category: "Pediatric & Strabismus",
         status: "VERIFIED_PPP",
-        citation: "AOA Clinical Practice Guideline: Care of the Patient with Amblyopia & Pediatric Eye Examination Guidelines",
+        citation: "AOA Care of the Patient with Amblyopia & PEDIG Protocols",
         rtc: "2 - 3 Months (Patching / Atropine Protocol)",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Neurodevelopmental visual pathway deprivation requiring refractive adaptation and active occlusion therapy.",
+        examRationale: "Neurodevelopmental visual pathway deprivation requiring refractive adaptation and occlusion.",
         procedures: [
-          { cpt: "92060", name: "Sensorimotor Examination", fee: 65.00, lcd: "Bilateral visual acuity fixation, motility, and stereopsis", checked: true },
-          { cpt: "92015", name: "Determination of Refractive State (Cycloplegic Refraction)", fee: 40.00, lcd: "Wet retinoscopy under 1% cyclopentolate", checked: true }
+          { cpt: "92060", name: "Sensorimotor Examination", fee: 65.00, lcd: "Bilateral acuity fixation, motility, and stereopsis", checked: true },
+          { cpt: "92015", name: "Determination of Refractive State (Cycloplegic)", fee: 40.00, lcd: "Wet retinoscopy under 1% cyclopentolate", checked: true }
         ],
-        pitfalls: [
-          "Allow 12-16 weeks of optical correction alone (refractive adaptation) before initiating patching or atropine penalty.",
-          "Refraction (92015) is non-covered by Medicare and billed out-of-pocket or to vision carrier."
-        ],
-        docs: [
-          "Document wet cycloplegic refraction values.",
-          "Record visual acuity with crowding bars and stereoacuity (Titmus / Randot).",
-          "Document prescribed patching compliance (2 hours/day for moderate amblyopia per PEDIG)."
-        ]
+        pitfalls: ["Allow 12-16 weeks of optical correction alone before initiating patching (refractive adaptation)."],
+        docs: ["Document wet cycloplegic refraction, crowded visual acuity, and patching hours (2h/day per PEDIG)."]
       },
       {
         icd10: "H50.011",
         name: "Monocular esotropia, right eye (Accommodative Esotropia)",
         category: "Pediatric & Strabismus",
         status: "VERIFIED_PPP",
-        citation: "AOA Clinical Practice Guideline: Care of the Patient with Strabismus",
+        citation: "AOA Clinical Practice Guideline: Strabismus",
         rtc: "3 - 4 Months",
         examCpt: "99214",
         examFee: 132.00,
@@ -1852,21 +2161,15 @@
           { cpt: "92060", name: "Sensorimotor Examination", fee: 65.00, lcd: "Prism alternate cover test at distance and near", checked: true },
           { cpt: "92015", name: "Cycloplegic Refraction", fee: 40.00, lcd: "Full plus acceptance determination", checked: true }
         ],
-        pitfalls: [
-          "Prescribe full cycloplegic hyperopic refraction without cutting plus for refractive accommodative esotropia.",
-          "If residual esotropia persists at near with high AC/A, prescribe bifocal with +2.50 to +3.00 add."
-        ],
-        docs: [
-          "Document prism diopters of esotropia at 6m and 33cm with and without glasses.",
-          "Record sensorimotor fusion status and stereopsis."
-        ]
+        pitfalls: ["Prescribe full cycloplegic hyperopic refraction without cutting plus for refractive esotropia."],
+        docs: ["Document prism diopters of esotropia at 6m and 33cm with and without glasses."]
       },
       {
         icd10: "H50.111",
         name: "Monocular exotropia, right eye (Intermittent Exotropia - IXT)",
         category: "Pediatric & Strabismus",
         status: "VERIFIED_PPP",
-        citation: "AOA Clinical Practice Guideline: Care of the Patient with Strabismus",
+        citation: "AOA Clinical Practice Guideline: Strabismus",
         rtc: "4 - 6 Months",
         examCpt: "99213",
         examFee: 92.00,
@@ -1874,13 +2177,8 @@
         procedures: [
           { cpt: "92060", name: "Sensorimotor Examination", fee: 65.00, lcd: "Newcastle Control Score and prism cover testing", checked: true }
         ],
-        pitfalls: [
-          "Look for monocular eye closure in bright sunlight (characteristic symptom of intermittent exotropia)."
-        ],
-        docs: [
-          "Document control score (0-5 scale at distance and near).",
-          "Record deviation magnitude (prism diopters) and recovery time after dissociation."
-        ]
+        pitfalls: ["Monocular eye closure in bright sunlight is a characteristic symptom of intermittent exotropia."],
+        docs: ["Document control score (0-5 scale at distance and near) and prism diopters of deviation."]
       },
       {
         icd10: "H51.11",
@@ -1891,24 +2189,50 @@
         rtc: "6 - 8 Weeks",
         examCpt: "99213",
         examFee: 92.00,
-        examRationale: "Near exophoria exceeding distance with receded near point of convergence (NPC) and reduced positive fusional vergence.",
+        examRationale: "Near exophoria exceeding distance with receded NPC and reduced positive fusional vergence.",
         procedures: [
           { cpt: "92060", name: "Sensorimotor Examination", fee: 65.00, lcd: "Comprehensive vergence and NPC measurement", checked: true },
-          { cpt: "92065", name: "Orthoptic Training (In-Office Vision Therapy)", fee: 95.00, lcd: "CITT-proven in-office vision therapy with home reinforcement", checked: false }
+          { cpt: "92065", name: "Orthoptic Training (In-Office Vision Therapy)", fee: 95.00, lcd: "CITT-proven in-office vision therapy", checked: false }
         ],
-        pitfalls: [
-          "CITT showed office-based vision therapy with home reinforcement is superior to home-based pencil push-ups alone.",
-          "Base-in prism glasses can provide passive relief for non-therapy candidates."
+        pitfalls: ["CITT proved office-based vision therapy with home reinforcement is superior to home push-ups alone."],
+        docs: ["Document near point of convergence (NPC break and recovery) and positive fusional vergence (PFV)."]
+      },
+      {
+        icd10: "H51.12",
+        name: "Convergence excess",
+        category: "Pediatric & Strabismus",
+        status: "VERIFIED_PPP",
+        citation: "AOA Clinical Practice Guideline: Binocular Anomalies",
+        rtc: "3 - 6 Months",
+        examCpt: "99213",
+        examFee: 92.00,
+        examRationale: "Near esophoria significantly greater than distance; high AC/A ratio.",
+        procedures: [
+          { cpt: "92060", name: "Sensorimotor Examination", fee: 65.00, lcd: "Gradient AC/A calculation and vergence ranges", checked: true }
         ],
-        docs: [
-          "Document near point of convergence (NPC break and recovery).",
-          "Record positive fusional vergence (PFV / base-out to blur, break, and recovery) at near."
-        ]
+        pitfalls: ["Treatment of choice is reading bifocal (+1.50 to +2.50 add) to reduce near accommodation and convergence."],
+        docs: ["Document AC/A ratio and near esodeviation with and without reading add."]
+      },
+      {
+        icd10: "H52.533",
+        name: "Accommodative spasm, bilateral",
+        category: "Pediatric & Strabismus",
+        status: "VERIFIED_PPP",
+        citation: "AOA Clinical Practice Guideline: Accommodative Disorders",
+        rtc: "2 - 4 Weeks",
+        examCpt: "99213",
+        examFee: 92.00,
+        examRationale: "Pseudomyopia caused by persistent involuntary ciliary muscle spasm; headache and fluctuating vision.",
+        procedures: [
+          { cpt: "92015", name: "Cycloplegic Refraction", fee: 40.00, lcd: "Unmask true baseline refractive error under cycloplegia", checked: true }
+        ],
+        pitfalls: ["Do not prescribe stronger minus glasses; cycloplegic drop taper (homatropine/cyclopentolate) required."],
+        docs: ["Document difference between dry manifest refraction and wet cycloplegic refraction."]
       },
 
-      // ==========================================
-      // 8. CATARACT, SURGICAL CO-MANAGEMENT & REFRACTIVE
-      // ==========================================
+      // ----------------------------------------------------
+      // CATARACT, CAPSULAR OPACIFICATION & SURGICAL CO-MANAGEMENT
+      // ----------------------------------------------------
       {
         icd10: "H25.13",
         name: "Age-related nuclear cataract, bilateral",
@@ -1920,16 +2244,10 @@
         examFee: 130.00,
         examRationale: "Comprehensive eye evaluation ideal for routine cataract monitoring and surgical decision making.",
         procedures: [
-          { cpt: "92285", name: "Anterior Segment Photography", fee: 24.00, lcd: "Documentation of dense lens opacity prior to surgery", checked: false }
+          { cpt: "92285", name: "Anterior Segment Photography", fee: 24.00, lcd: "Dense lens opacity documentation prior to surgery", checked: false }
         ],
-        pitfalls: [
-          "Medicare will deny visual fields (92083) or OCT (92134) billed solely for uncomplicated age-related cataracts without secondary pathology.",
-          "Refraction (92015) is not covered by Medicare Part B."
-        ],
-        docs: [
-          "Document best-corrected visual acuity and brightness acuity glare testing reduction (BAT).",
-          "Explicitly record subjective impairment of Activities of Daily Living (ADLs) such as night driving, reading, or computer work."
-        ]
+        pitfalls: ["Medicare will deny visual fields or OCT billed solely for uncomplicated age-related cataracts."],
+        docs: ["Document best-corrected visual acuity, glare testing (BAT), and subjective ADL impairment."]
       },
       {
         icd10: "H25.013",
@@ -1942,13 +2260,8 @@
         examFee: 130.00,
         examRationale: "Radial spoke-like cuneiform opacities causing glare disability and light scattering.",
         procedures: [],
-        pitfalls: [
-          "Cortical spokes in pupillary aperture cause severe glare despite acceptable Snellen visual acuity in dim exam rooms; perform glare testing (BAT)."
-        ],
-        docs: [
-          "Document quadrant and pupillary encroachment of cortical spokes.",
-          "Record glare visual acuity degradation."
-        ]
+        pitfalls: ["Cortical spokes cause severe disability glare despite acceptable acuity in dim lanes; perform BAT."],
+        docs: ["Document quadrant and pupillary encroachment of cortical spokes and glare visual acuity."]
       },
       {
         icd10: "H26.493",
@@ -1959,18 +2272,15 @@
         rtc: "1 - 3 Months (YAG Capsulotomy Referral / Procedure)",
         examCpt: "99213",
         examFee: 92.00,
-        examRationale: "Proliferation of residual lens epithelial cells (Elschnig pearls) causing secondary visual loss post-cataract extraction.",
+        examRationale: "Proliferation of residual lens epithelial cells (Elschnig pearls) causing visual loss post-cataract surgery.",
         procedures: [
           { cpt: "66821", name: "YAG Laser Capsulotomy", fee: 285.00, lcd: "Clear central visual axis (Scope Permitting)", checked: false }
         ],
         pitfalls: [
-          "Ensure IOL is stable and capsulotomy is deferred until at least 90 days post-cataract surgery unless medically urgent.",
+          "Ensure capsulotomy is deferred until at least 90 days post-cataract surgery unless medically urgent.",
           "Post-YAG IOP spike protocol: instill apraclonidine/brimonidine and recheck IOP in 1 hour."
         ],
-        docs: [
-          "Document presence of Elschnig pearls or fibrotic wrinkling across visual axis.",
-          "Record patient complaints of glare, haze, and reduced contrast."
-        ]
+        docs: ["Document presence of Elschnig pearls or fibrotic wrinkling across visual axis."]
       },
       {
         icd10: "Z96.1",
@@ -1983,16 +2293,13 @@
         examFee: 92.00,
         examRationale: "Global post-operative surgical co-management monitoring for endophthalmitis, TASS, or wound leak.",
         procedures: [],
-        pitfalls: [
-          "If co-managing under Medicare global fee sharing, bill surgical code (66984) with Modifier -55 and transfer of care date.",
-          "Rule out wound leak (Seidel test) and toxic anterior segment syndrome (TASS) at Day 1."
-        ],
-        docs: [
-          "Document uncorrected acuity, IOL centration, and clear surgical incision.",
-          "Record absence of anterior chamber hypopyon or fibrin.",
-          "Review topical post-op antibiotic and steroid drop tapering schedule."
-        ]
+        pitfalls: ["If co-managing under Medicare global fee sharing, bill surgical code (66984) with Modifier -55."],
+        docs: ["Document uncorrected acuity, IOL centration, clear incision, Seidel negativity, and drop tapering schedule."]
       },
+
+      // ----------------------------------------------------
+      // REFRACTIVE & OPTICAL CONDITIONS
+      // ----------------------------------------------------
       {
         icd10: "H52.13",
         name: "Myopia, bilateral (Routine Refractive Evaluation)",
@@ -2004,12 +2311,8 @@
         examFee: 130.00,
         examRationale: "Refractive condition; typically billed under routine vision benefits or out-of-pocket.",
         procedures: [],
-        pitfalls: [
-          "Refraction (92015) is non-covered by Medicare Part B and must be billed out-of-pocket."
-        ],
-        docs: [
-          "Document subjective refraction, best-corrected visual acuities, and binocular balance."
-        ]
+        pitfalls: ["Refraction (92015) is non-covered by Medicare Part B and must be billed out-of-pocket."],
+        docs: ["Document subjective refraction, best-corrected visual acuities, and binocular balance."]
       },
       {
         icd10: "H52.03",
@@ -2052,36 +2355,110 @@
         procedures: [],
         pitfalls: ["Refraction non-covered."],
         docs: ["Document add power and working distance."]
+      },
+      {
+        icd10: "H52.31",
+        name: "Anisometropia",
+        category: "Refractive",
+        status: "AI_INFERRED",
+        citation: "CAUTION: AI-INFERRED CARE INTERVAL - NO DIRECT AAO/AOA MEDICAL PPP CODIFIED",
+        rtc: "12 Months",
+        examCpt: "92014",
+        examFee: 130.00,
+        examRationale: "Significant spherical equivalent difference between eyes (>1.00 D) causing aniseikonia risk.",
+        procedures: [],
+        pitfalls: ["Consider contact lenses to reduce aniseikonia before spectacle magnification creates diplopia."],
+        docs: ["Document refractive discrepancy and binocular fusion tolerance."]
       }
     ];
 
     let activeCondition = DATABASE[0];
+    let filteredList = [...DATABASE];
 
-    function renderList(items) {
+    function calculateTotalPossibleRevenue(condition) {
+      const exam = condition.examFee || 0;
+      const procs = condition.procedures.reduce((acc, p) => acc + (p.fee || 0), 0);
+      return exam + procs;
+    }
+
+    function filterAndSortDiagnoses() {
+      const search = document.getElementById("searchInput").value.toLowerCase();
+      const sortBy = document.getElementById("sortBy").value;
+      const category = document.getElementById("categoryFilter").value;
+      const procedureOnly = document.getElementById("procedureOnlyFilter").checked;
+      const verifiedOnly = document.getElementById("verifiedOnlyFilter").checked;
+
+      // Filter
+      filteredList = DATABASE.filter(c => {
+        const matchesSearch = c.icd10.toLowerCase().includes(search) || 
+                              c.name.toLowerCase().includes(search) ||
+                              c.category.toLowerCase().includes(search) ||
+                              c.procedures.some(p => p.name.toLowerCase().includes(search) || p.cpt.includes(search));
+        
+        const matchesCat = category === "all" || c.category === category;
+        const matchesProc = !procedureOnly || c.procedures.some(p => ["65855", "66761", "68761", "65222", "67820", "65435", "65778", "66821", "11900"].includes(p.cpt));
+        const matchesVerified = !verifiedOnly || c.status === "VERIFIED_PPP";
+
+        return matchesSearch && matchesCat && matchesProc && matchesVerified;
+      });
+
+      // Sort
+      filteredList.sort((a, b) => {
+        if (sortBy === "income-desc") {
+          return calculateTotalPossibleRevenue(b) - calculateTotalPossibleRevenue(a);
+        } else if (sortBy === "income-asc") {
+          return calculateTotalPossibleRevenue(a) - calculateTotalPossibleRevenue(b);
+        } else if (sortBy === "icd-asc") {
+          return a.icd10.localeCompare(b.icd10);
+        } else if (sortBy === "name-asc") {
+          return a.name.localeCompare(b.name);
+        }
+        return 0;
+      });
+
+      renderList();
+    }
+
+    function renderList() {
       const listEl = document.getElementById("diagnosisList");
       listEl.innerHTML = "";
-      document.getElementById("countBadge").innerText = items.length;
+      document.getElementById("countBadge").innerText = filteredList.length;
 
-      items.forEach(c => {
+      if (filteredList.length === 0) {
+        listEl.innerHTML = `<div class="p-6 text-center text-xs text-slate-400">No conditions match your criteria.</div>`;
+        return;
+      }
+
+      // If active condition was filtered out, select first available
+      if (!filteredList.some(c => c.icd10 === activeCondition.icd10)) {
+        activeCondition = filteredList[0];
+        loadCondition();
+      }
+
+      filteredList.forEach(c => {
         const isActive = c.icd10 === activeCondition.icd10;
+        const revenuePotential = calculateTotalPossibleRevenue(c);
+        const hasProcedure = c.procedures.some(p => ["65855", "66761", "68761", "65222", "67820", "65435", "65778", "66821"].includes(p.cpt));
+
         const btn = document.createElement("button");
-        btn.onclick = () => { activeCondition = c; loadCondition(); };
-        btn.className = `w-full text-left p-4 transition flex flex-col gap-1 border-l-4 ${isActive ? 'bg-blue-50/80 border-blue-600' : 'hover:bg-slate-50 border-transparent'}`;
+        btn.onclick = () => { activeCondition = c; loadCondition(); renderList(); };
+        btn.className = `w-full text-left p-3.5 transition flex flex-col gap-1 border-l-4 ${isActive ? 'bg-blue-50/80 border-blue-600' : 'hover:bg-slate-50 border-transparent'}`;
         btn.innerHTML = `
           <div class="flex items-center justify-between">
-            <span class="font-mono text-xs font-bold text-blue-700 bg-blue-100/60 px-1.5 py-0.5 rounded">${c.icd10}</span>
-            ${c.status === 'AI_INFERRED' ? '<span class="text-[9px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded border border-amber-200">AI INFERRED</span>' : `<span class="text-[10px] uppercase font-semibold text-slate-400">${c.category}</span>`}
+            <div class="flex items-center gap-1.5">
+              <span class="font-mono text-xs font-bold text-blue-700 bg-blue-100/60 px-1.5 py-0.5 rounded">${c.icd10}</span>
+              ${hasProcedure ? '<span class="text-[9px] bg-indigo-50 text-indigo-700 font-bold px-1.5 py-0.5 rounded border border-indigo-200">PROCEDURE</span>' : ''}
+            </div>
+            <span class="text-xs font-mono font-bold text-emerald-600">$${revenuePotential.toFixed(0)}</span>
           </div>
-          <span class="text-xs text-slate-800 line-clamp-2 leading-snug font-medium">${c.name}</span>
+          <span class="text-xs text-slate-800 line-clamp-2 leading-snug font-medium mt-0.5">${c.name}</span>
+          <div class="flex items-center justify-between mt-1 text-[10px] text-slate-400 font-semibold uppercase">
+            <span>${c.category}</span>
+            <span>${c.status === 'AI_INFERRED' ? '<span class="text-amber-700 font-bold">AI INFERRED</span>' : 'VERIFIED'}</span>
+          </div>
         `;
         listEl.appendChild(btn);
       });
-    }
-
-    function filterDiagnoses() {
-      const q = document.getElementById("searchInput").value.toLowerCase();
-      const filtered = DATABASE.filter(c => c.icd10.toLowerCase().includes(q) || c.name.toLowerCase().includes(q));
-      renderList(filtered);
     }
 
     function loadCondition() {
@@ -2119,7 +2496,7 @@
       const procEl = document.getElementById("proceduresList");
       procEl.innerHTML = "";
       if (activeCondition.procedures.length === 0) {
-        procEl.innerHTML = `<p class="text-xs text-slate-400">No specialized ancillary procedures indicated for this diagnosis.</p>`;
+        procEl.innerHTML = `<p class="text-xs text-slate-400">No specialized ancillary testing or surgical procedures indicated for routine presentation.</p>`;
       } else {
         activeCondition.procedures.forEach((p, idx) => {
           const row = document.createElement("div");
@@ -2150,7 +2527,6 @@
         });
       }
 
-      filterDiagnoses();
       updateCalculation();
       lucide.createIcons();
     }
@@ -2194,9 +2570,9 @@
       const payer = document.getElementById("payerSelect").value;
       const setting = document.getElementById("settingSelect").value;
       const total = document.getElementById("totalFeeDisplay").innerText;
-      const activeProcs = activeCondition.procedures.filter(p => p.checked).map(p => p.cpt).join(", ") || "None";
+      const activeProcs = activeCondition.procedures.filter(p => p.checked).map(p => `${p.cpt} (${p.name})`).join(", ") || "None";
 
-      const text = `EHR BILLING & CLINICAL SUMMARY:\nDiagnosis: ${activeCondition.name} (${activeCondition.icd10})\nProvenance: ${activeCondition.citation}\nFollow-Up (RTC): ${activeCondition.rtc}\nExam Code: ${activeCondition.examCpt}\nSelected Testing: ${activeProcs}\nTotal Allowable: ${total} (${payer.toUpperCase()} - ${setting.toUpperCase()})`;
+      const text = `EHR BILLING & CLINICAL SUMMARY:\nDiagnosis: ${activeCondition.name} (${activeCondition.icd10})\nCategory: ${activeCondition.category}\nProvenance: ${activeCondition.citation}\nFollow-Up (RTC): ${activeCondition.rtc}\nExam Code: ${activeCondition.examCpt}\nSelected Testing/Procedures: ${activeProcs}\nTotal Allowable: ${total} (${payer.toUpperCase()} - ${setting.toUpperCase()})\n\nAudit Documentation Checklist:\n${activeCondition.docs.map(d => `- ${d}`).join("\n")}`;
 
       navigator.clipboard.writeText(text);
       const btn = document.getElementById("copyBtnText");
@@ -2204,7 +2580,8 @@
       setTimeout(() => btn.innerText = "Copy Superbill", 2000);
     }
 
-    // Initialize
+    // Initialize Engine
+    filterAndSortDiagnoses();
     loadCondition();
   </script>
 </body>
