@@ -57,17 +57,17 @@
         <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
         <input type="text" id="searchInput" oninput="filterDb()" placeholder="Search ICD-10 or diagnosis..." class="w-full pl-9 pr-4 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white" />
       </div>
-      <select id="categoryFilter" onchange="filterDb()" class="...">
+      <select id="categoryFilter" onchange="filterDb()" class="w-full text-xs font-bold bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-700 dark:text-slate-300 outline-none">
         <option value="all">All Specialties</option>
         <option value="Glaucoma">Glaucoma</option>
         <option value="Retina">Retina & Macula</option>
         <option value="Cornea & OSD">Cornea & Ocular Surface</option>
-        <option value="Uveitis">Uveitis & Inflammatory</option>
+        <option value="Uveitis">Uveitis & Inflammation</option>
         <option value="Neuro">Neuro-Optometry</option>
         <option value="Peds">Pediatrics & Strabismus</option>
         <option value="Cataract">Cataract & Post-Op</option>
         <option value="High-Risk Rx">Systemic / High-Risk</option>
-    </select>
+      </select>
       <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm flex-1 flex flex-col max-h-[75vh]">
         <div id="diagnosisList" class="divide-y divide-slate-100 dark:divide-slate-700 overflow-y-auto"></div>
       </div>
@@ -228,7 +228,7 @@
               <li><strong class="text-red-500">The CC Rule:</strong> Never bill a medical exam if the Chief Complaint is "needs new glasses." Document a medical symptom or transition of care.</li>
               <li><strong class="text-red-500">I&R Mandate:</strong> Every single diagnostic test (OCT, VF, Photo, B-Scan) MUST have a distinct Interpretation & Report in the chart. "Test normal" is an automatic audit failure.</li>
               <li><strong class="text-red-500">Bilateral Trap:</strong> Codes 92250 (Photo), 76514 (Pach), and 92060 (Sensorimotor) are inherently bilateral. Never append -RT/-LT or bill 2 units.</li>
-              <li><strong class="text-red-500">Frequency Caps:</strong> Most MACs limit stable glaucoma OCT/VFs to once every 6 months. Billing < 6 months requires documented progression.</li>
+              <li><strong class="text-red-500">Frequency Caps:</strong> Most MACs limit stable glaucoma OCT/VFs to once every 6 months. Billing &lt; 6 months requires documented progression.</li>
             </ul>
           </div>
         </div>
@@ -542,10 +542,15 @@
       if(t==='cart') updateCart();
     }
 
+    // FIXED: Uses case-insensitive substring matching so values like "Retina" match "Retina & Macula"
     function filterDb() {
       const q = document.getElementById("searchInput").value.toLowerCase();
-      const cat = document.getElementById("categoryFilter").value;
-      filteredList = DB_RAW.filter(c => (c.i.toLowerCase().includes(q) || c.n.toLowerCase().includes(q)) && (cat === 'all' || c.c === cat));
+      const cat = document.getElementById("categoryFilter").value.toLowerCase();
+      filteredList = DB_RAW.filter(c => {
+        const matchesQuery = c.i.toLowerCase().includes(q) || c.n.toLowerCase().includes(q);
+        const matchesCategory = (cat === 'all') || (c.c && (c.c.toLowerCase().includes(cat) || cat.includes(c.c.toLowerCase())));
+        return matchesQuery && matchesCategory;
+      });
       renderDb();
     }
 
