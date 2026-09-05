@@ -1,178 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OptoCode Pro | Clinical Coding & Reimbursement</title>
-  <!-- Tailwind CSS CDN for instant, modern styling -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    body { font-family: 'Inter', sans-serif; }
-  </style>
-</head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
-
-  <!-- Header Navbar -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-6 py-4 shadow-sm">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-      <div>
-        <div class="flex items-center gap-2">
-          <span class="text-xl font-bold tracking-tight text-slate-900">OptoCode Pro</span>
-          <span class="text-[11px] bg-emerald-50 text-emerald-700 font-semibold px-2.5 py-0.5 rounded-full border border-emerald-200">
-            2026 CMS & NCCI Aligned
-          </span>
-        </div>
-        <p class="text-xs text-slate-500 mt-0.5">Clinical Follow-up Protocol, Procedure Linkage & Fee Engine</p>
-      </div>
-
-      <div class="flex items-center gap-3">
-        <!-- Payer Select -->
-        <select id="payerSelect" onchange="updateCalculation()" class="text-xs font-medium bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-700 outline-none hover:bg-slate-200/60 transition">
-          <option value="medicare">Medicare Part B (100%)</option>
-          <option value="commercial">Commercial Medical (+15%)</option>
-          <option value="vision">Vision Plan (Routine Only)</option>
-        </select>
-
-        <!-- Place of Service Select -->
-        <select id="settingSelect" onchange="updateCalculation()" class="text-xs font-medium bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-700 outline-none hover:bg-slate-200/60 transition">
-          <option value="private">Private Practice (POS 11)</option>
-          <option value="hospital">Hospital Outpatient (POS 22)</option>
-        </select>
-
-        <button onclick="copySuperbill()" class="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3.5 py-2 rounded-lg shadow-sm transition">
-          <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-          <span id="copyBtnText">Copy Superbill</span>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Main Container -->
-  <main class="max-w-7xl mx-auto w-full p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
-    
-    <!-- Sidebar: Search & Diagnosis List -->
-    <aside class="lg:col-span-4 flex flex-col gap-4">
-      <div class="relative">
-        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
-        <input 
-          type="text" 
-          id="searchInput" 
-          oninput="filterDiagnoses()" 
-          placeholder="Search ICD-10 or condition name..." 
-          class="w-full pl-9 pr-4 py-2 text-xs bg-white border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-        />
-      </div>
-
-      <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm flex-1 flex flex-col">
-        <div class="px-4 py-3 bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider flex justify-between items-center">
-          <span>Diagnoses</span>
-          <span id="countBadge" class="bg-slate-200 text-slate-700 rounded-full px-2 py-0.5 text-[10px]">0</span>
-        </div>
-        <div id="diagnosisList" class="divide-y divide-slate-100 overflow-y-auto max-h-[700px]">
-          <!-- Populated by JavaScript -->
-        </div>
-      </div>
-    </aside>
-
-    <!-- Content Area -->
-    <section class="lg:col-span-8 flex flex-col gap-6">
-      
-      <!-- Top Financial & Cadence Metric Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex items-center justify-between">
-          <div>
-            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Estimated Total Allowable</span>
-            <div id="totalFeeDisplay" class="text-3xl font-extrabold text-emerald-600 mt-1">$0.00</div>
-            <span id="feeSubtext" class="text-[11px] text-slate-400 font-medium">Medicare Part B • Non-Facility</span>
-          </div>
-          <div class="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
-            <i data-lucide="dollar-sign" class="w-6 h-6"></i>
-          </div>
-        </div>
-
-        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex items-center justify-between">
-          <div>
-            <span class="text-[11px] font-bold text-blue-600 uppercase tracking-wider block">Recommended Follow-Up</span>
-            <div id="rtcDisplay" class="text-2xl font-bold text-slate-800 mt-1">—</div>
-            <span class="text-[11px] text-slate-400 font-medium">Preferred Practice Pattern Cadence</span>
-          </div>
-          <div class="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
-            <i data-lucide="calendar" class="w-6 h-6"></i>
-          </div>
-        </div>
-      </div>
-
-      <!-- Provenance Ticker -->
-      <div id="provenanceContainer" class="p-4 rounded-xl border flex items-start gap-3 bg-emerald-50/70 border-emerald-200 text-emerald-900">
-        <i id="provenanceIcon" data-lucide="shield-check" class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5"></i>
-        <div class="text-xs">
-          <span class="font-bold block uppercase tracking-wider text-[10px]" id="provenanceLabel">Clinical Standard Provenance</span>
-          <span id="provenanceText">Loading guidelines...</span>
-        </div>
-      </div>
-
-      <!-- Diagnosis & Exam Level Card -->
-      <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col gap-4">
-        <div>
-          <span id="icdBadge" class="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200">ICD-10</span>
-          <h2 id="diagName" class="text-lg font-bold text-slate-900 mt-2">Select a condition</h2>
-        </div>
-
-        <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-start gap-3.5">
-          <div id="examCptBadge" class="bg-blue-600 text-white font-mono font-bold text-xs px-2.5 py-1 rounded-lg">CPT</div>
-          <div>
-            <div class="text-xs font-bold text-slate-800 flex items-center gap-2">
-              <span id="examTitle">Recommended Exam Level</span>
-              <span id="examFee" class="text-emerald-700 font-extrabold">$0.00</span>
-            </div>
-            <p id="examRationale" class="text-xs text-slate-500 mt-0.5 leading-relaxed"></p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Testing Procedures Card -->
-      <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col gap-3">
-        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Eligible Special Testing Procedures (Toggle to Include)</h3>
-        <div id="visionWarning" class="hidden p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-center gap-2">
-          <i data-lucide="alert-circle" class="w-4 h-4 text-amber-600 shrink-0"></i>
-          Routine Vision Plans do not cover medical diagnostic testing (OCT, VF, Photos). Cross-bill to medical plan.
-        </div>
-        <div id="proceduresList" class="space-y-2">
-          <!-- Populated by JavaScript -->
-        </div>
-      </div>
-
-      <!-- Compliance & NCCI Alerts -->
-      <div id="pitfallsContainer" class="bg-amber-50/70 border border-amber-200 rounded-2xl p-6 shadow-sm">
-        <h3 class="text-xs font-bold text-amber-800 uppercase tracking-wider flex items-center gap-1.5 mb-2.5">
-          <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i>
-          NCCI Bundling & Billing Pitfalls
-        </h3>
-        <ul id="pitfallsList" class="space-y-1.5 text-xs text-amber-900 list-disc list-inside">
-          <!-- Populated by JavaScript -->
-        </ul>
-      </div>
-
-      <!-- Audit Defense Checklist -->
-      <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 mb-3">
-          <i data-lucide="file-text" class="w-4 h-4 text-blue-600"></i>
-          Audit-Defense Chart Documentation Requirements
-        </h3>
-        <ul id="docsList" class="space-y-2 text-xs text-slate-700">
-          <!-- Populated by JavaScript -->
-        </ul>
-      </div>
-
-    </section>
-  </main>
-
-  <script>
-    // Full Clinical & Billing Dataset
+// Comprehensive Optometric ICD-10 Clinical & Billing Master Database
     const DATABASE = [
+      // ----------------- GLAUCOMA & HYPERTENSION -----------------
       {
         icd10: "H40.1132",
         name: "Primary open-angle glaucoma, bilateral, moderate stage",
@@ -187,11 +15,12 @@
           { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "Covered under LCD L33751", checked: true },
           { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Covered under LCD L34648", checked: true },
           { cpt: "92020", name: "Gonioscopy", fee: 28.00, lcd: "Annual baseline coverage", checked: false },
-          { cpt: "76514", name: "Corneal Pachymetry", fee: 12.00, lcd: "Once per lifetime baseline", checked: false }
+          { cpt: "76514", name: "Corneal Pachymetry", fee: 12.00, lcd: "Once per lifetime baseline", checked: false },
+          { cpt: "65855", name: "Selective Laser Trabeculoplasty (SLT)", fee: 245.00, lcd: "First-line or adjunctive therapy (Scope Permitting)", checked: false }
         ],
         pitfalls: [
-          "NCCI Edit: Billing 92133 (OCT) and 92250 (Photo) on same day is bundled without modifier -59/-XU and distinct pathology.",
-          "Alternate structural vs functional testing across follow-up visits rather than same-day billing."
+          "NCCI Edit: 92133 (OCT) and 92250 (Photo) bundled without modifier -59/-XU and distinct pathology.",
+          "Alternate structural vs functional testing across follow-ups rather than same-day billing."
         ],
         docs: [
           "Document target IOP vs current baseline IOP for each eye.",
@@ -200,15 +29,41 @@
         ]
       },
       {
+        icd10: "H40.1133",
+        name: "Primary open-angle glaucoma, bilateral, severe stage",
+        category: "Glaucoma",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Primary Open-Angle Glaucoma Guidelines (2026)",
+        rtc: "1 - 3 Months",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Severe chronic optic neuropathy with imminent threat to fixation; requires aggressive multi-agent IOP management.",
+        procedures: [
+          { cpt: "92083", name: "Visual Field (Humphrey 10-2 or 24-2)", fee: 65.00, lcd: "10-2 recommended when 24-2 defect threatens central 10°", checked: true },
+          { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "May exhibit 'floor effect' in severe stage", checked: false },
+          { cpt: "92020", name: "Gonioscopy", fee: 28.00, lcd: "Verify angle patency and rule out PAS", checked: true },
+          { cpt: "65855", name: "Selective Laser Trabeculoplasty (SLT)", fee: 245.00, lcd: "Adjunctive IOP lowering (Scope Permitting)", checked: false }
+        ],
+        pitfalls: [
+          "In severe end-stage POAG, RNFL thickness reaches floor effect (~50µm); rely on 10-2 visual fields rather than serial OCTs for progression.",
+          "Ensure modifier -25 is attached to exam if laser trabeculoplasty (65855) is performed on same date."
+        ],
+        docs: [
+          "Document split fixation status and central visual field preservation.",
+          "Explicitly record target IOP (typically ≤12 mmHg for severe stage).",
+          "Document adherence and side effects of topical hypotensive therapy."
+        ]
+      },
+      {
         icd10: "H40.013",
-        name: "Open angle with borderline findings, high risk, bilateral",
+        name: "Open angle with borderline findings, high risk, bilateral (Glaucoma Suspect)",
         category: "Glaucoma",
         status: "VERIFIED_PPP",
         citation: "AAO Preferred Practice Pattern: Glaucoma Suspect Guidelines",
         rtc: "6 Months",
         examCpt: "99214",
         examFee: 132.00,
-        examRationale: "Level 4 MDM due to multiple high-risk factors requiring active therapeutic consideration.",
+        examRationale: "Level 4 MDM due to multiple high-risk anatomical factors requiring comprehensive evaluation.",
         procedures: [
           { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "Covered baseline evaluation", checked: true },
           { cpt: "92083", name: "Visual Field (24-2)", fee: 65.00, lcd: "Covered baseline evaluation", checked: false },
@@ -219,6 +74,81 @@
         ],
         docs: [
           "Document family history, central corneal thickness (CCT), and baseline nerve appearance."
+        ]
+      },
+      {
+        icd10: "H40.1230",
+        name: "Low-tension glaucoma (Normal Tension Glaucoma), bilateral",
+        category: "Glaucoma",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Primary Open-Angle Glaucoma Guidelines (2026)",
+        rtc: "3 - 4 Months",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Chronic progressive optic neuropathy requiring target IOP reduction despite normal baseline pressures.",
+        procedures: [
+          { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "Covered under LCD L33751", checked: true },
+          { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Covered under LCD L34648", checked: true },
+          { cpt: "76514", name: "Corneal Pachymetry", fee: 12.00, lcd: "Verify thin CCT contributing to under-applanation", checked: false }
+        ],
+        pitfalls: [
+          "Rule out non-glaucomatous compressive or ischemic optic neuropathies if pallor exceeds cupping.",
+          "Check for nocturnal hypotension, vasospastic syndrome, or sleep apnea in chart history."
+        ],
+        docs: [
+          "Document diurnal IOP baseline range and thin CCT adjustments.",
+          "Record presence/absence of disc hemorrhages (Drance hemorrhages).",
+          "State aggressive target IOP reduction (at least 30% from peak recorded pressure)."
+        ]
+      },
+      {
+        icd10: "H40.033",
+        name: "Anatomical narrow angle, bilateral (Angle-Closure Suspect)",
+        category: "Glaucoma",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Primary Angle Closure Guidelines",
+        rtc: "1 - 3 Months (or Laser Referral)",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Occludable angles carry risk of acute pupillary block angle closure; warrants procedural decision making.",
+        procedures: [
+          { cpt: "92020", name: "Gonioscopy (Indentation)", fee: 28.00, lcd: "Diagnostic necessity for angle classification", checked: true },
+          { cpt: "92132", name: "Anterior Segment OCT (Angle Imaging)", fee: 38.00, lcd: "Documentation of iridotrabecular contact", checked: true },
+          { cpt: "66761", name: "Laser Peripheral Iridotomy (LPI)", fee: 320.00, lcd: "Prophylactic or therapeutic for pupillary block (Scope Permitting)", checked: false }
+        ],
+        pitfalls: [
+          "Do not dilate without documenting angle opening distance (AOD) or indentation gonioscopy confirming absence of total closure.",
+          "If performing prophylactic LPI (66761), document ≥180° of iridotrabecular contact (ITC)."
+        ],
+        docs: [
+          "Document gonioscopy grading in all 4 quadrants using Spaeth or Shaffer scale.",
+          "Record presence/absence of peripheral anterior synechiae (PAS) and iris contour (convex/plateau).",
+          "Document patient education regarding acute angle closure symptoms (halos, pain, nausea)."
+        ]
+      },
+
+      // ----------------- RETINA & MACULA -----------------
+      {
+        icd10: "E11.319",
+        name: "Type 2 diabetes with unspecified diabetic retinopathy without macular edema",
+        category: "Retina",
+        status: "VERIFIED_PPP",
+        citation: "AAO Diabetic Retinopathy Preferred Practice Pattern & CDC Surveillance Guidelines",
+        rtc: "12 Months (Annual DFE)",
+        examCpt: "92014",
+        examFee: 130.00,
+        examRationale: "Comprehensive dilated eye examination for annual diabetic surveillance.",
+        procedures: [
+          { cpt: "92250", name: "Fundus Photography (Bilateral)", fee: 54.00, lcd: "Baseline documentation of vascular changes", checked: true }
+        ],
+        pitfalls: [
+          "Routine fundus photos without documented retinopathy findings may be denied by commercial payers; document microaneurysms or early vascular changes.",
+          "92250 is inherently bilateral; do not bill as 2 units."
+        ],
+        docs: [
+          "Document dilated fundus exam findings in all quadrants.",
+          "Record patient's most recent HbA1c value and systemic medications.",
+          "Send formal consultative examination report to patient's primary care provider."
         ]
       },
       {
@@ -246,31 +176,196 @@
         ]
       },
       {
+        icd10: "H35.3130",
+        name: "Nonexudative age-related macular degeneration (Dry AMD), bilateral, stage unspecified",
+        category: "Retina",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Age-Related Macular Degeneration",
+        rtc: "6 - 12 Months",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Chronic progressive retinal disorder with risk of choroidal neovascularization conversion.",
+        procedures: [
+          { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Covered under Posterior Segment SCODI LCD", checked: true },
+          { cpt: "92250", name: "Fundus Photography", fee: 54.00, lcd: "Drusen progression baseline", checked: true }
+        ],
+        pitfalls: [
+          "Medicare LCDs allow OCT for dry AMD to monitor for subretinal fluid conversion, but excessive frequency without visual change triggers audit.",
+          "Bundle alert: 92134 and 92250 on same day require distinct justification."
+        ],
+        docs: [
+          "Document drusen classification (small, intermediate, large/confluent) and geographic atrophy.",
+          "Record AREDS-2 antioxidant supplementation recommendations.",
+          "Dispense home Amsler grid and document patient instructions for metamorphopsia."
+        ]
+      },
+      {
+        icd10: "H35.3210",
+        name: "Exudative age-related macular degeneration (Wet AMD), right eye, stage unspecified",
+        category: "Retina",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Age-Related Macular Degeneration",
+        rtc: "4 - 6 Weeks (Retina Anti-VEGF Co-management)",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Active choroidal neovascular membrane (CNVM) with immediate threat to central vision.",
+        procedures: [
+          { cpt: "92134", name: "OCT Macula (Retina)", fee: 42.00, lcd: "Serial tracking of subretinal and intraretinal fluid", checked: true },
+          { cpt: "92250", name: "Fundus Photography", fee: 54.00, lcd: "Documentation of subretinal hemorrhage", checked: false }
+        ],
+        pitfalls: [
+          "Urgent retina referral indicated for intravitreal anti-VEGF injection within 24-72 hours if newly discovered active fluid."
+        ],
+        docs: [
+          "Document presence of subretinal fluid (SRF), intraretinal cysts (IRF), or pigment epithelial detachment (PED).",
+          "Record retinal specialist co-management contact details and injection schedule."
+        ]
+      },
+      {
+        icd10: "H33.313",
+        name: "Horseshoe tear of retina without detachment, bilateral",
+        category: "Retina",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Posterior Vitreous Detachment, Retinal Breaks, and Lattice Degeneration",
+        rtc: "Same Day (Urgent Laser / Cryopexy Referral)",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Acute high-risk pathology requiring immediate procedural intervention to prevent rhegmatogenous retinal detachment.",
+        procedures: [
+          { cpt: "92228", name: "Extended Ophthalmoscopy (Peripheral Retinal Drawing)", fee: 32.00, lcd: "Medical necessity for detailed break localization", checked: true },
+          { cpt: "92250", name: "Fundus Photography (Widefield)", fee: 54.00, lcd: "Documentation of tear margins and vitreous traction", checked: true }
+        ],
+        pitfalls: [
+          "Extended ophthalmoscopy (92228) requires a detailed retinal diagram with clock hours and quadrants; billing without a drawing triggers clawback."
+        ],
+        docs: [
+          "Record exact clock-hour location, size of tear, presence of operculum or bridging vessel, and associated subretinal fluid.",
+          "Document immediate retinal specialist contact and emergency precautions given to patient."
+        ]
+      },
+
+      // ----------------- CORNEA, ANTERIOR SEGMENT & OSD -----------------
+      {
         icd10: "H04.123",
-        name: "Dry eye syndrome of bilateral lacrimal glands",
+        name: "Dry eye syndrome of bilateral lacrimal glands (Moderate-to-Severe OSD)",
         category: "Cornea & OSD",
         status: "VERIFIED_PPP",
         citation: "TFOS DEWS II Protocol & AOA Care of the Patient with Ocular Surface Disorders",
         rtc: "1 - 3 Months",
         examCpt: "99213",
         examFee: 92.00,
-        examRationale: "Low-to-moderate complexity acute/chronic exacerbation.",
+        examRationale: "Chronic ocular surface disease exacerbation requiring multi-tier therapeutic escalation.",
         procedures: [
-          { cpt: "92285", name: "External Ocular Photography", fee: 24.00, lcd: "Surface baseline documentation", checked: false },
-          { cpt: "68761", name: "Punctal Occlusion (per punctum)", fee: 115.00, lcd: "Requires failure of conservative topical drops", checked: true }
+          { cpt: "92285", name: "External Ocular Photography", fee: 24.00, lcd: "Surface baseline and staining documentation", checked: false },
+          { cpt: "68761", name: "Punctal Occlusion by Plug (per punctum)", fee: 115.00, lcd: "Requires documented failure of conservative drops", checked: true }
         ],
         pitfalls: [
           "Billing punctal occlusion (68761) on same day as exam requires Modifier -25 on E/M code (99213-25).",
-          "Medicare requires documented trial and failure of topical conservative therapy first."
+          "Medicare requires documented trial and failure of topical conservative therapy (lubricants/anti-inflammatories) prior to punctal plugs."
         ],
         docs: [
-          "Document TBUT, corneal fluorescein staining pattern, and meibomian expressibility.",
-          "Chart medical necessity stating failure of artificial tears and prescription drops."
+          "Document tear break-up time (TBUT), corneal/conjunctival fluorescein staining grade, and meibomian expression.",
+          "Chart medical necessity stating failure of conservative artificial tears and prescription drops."
         ]
       },
       {
+        icd10: "T15.01XA",
+        name: "Foreign body in cornea, right eye, initial encounter",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "AOA Clinical Practice Guideline: Care of the Patient with Eye Trauma",
+        rtc: "24 Hours (Next-day Re-evaluation)",
+        examCpt: "99213",
+        examFee: 92.00,
+        examRationale: "Acute corneal trauma requiring surgical foreign body extraction.",
+        procedures: [
+          { cpt: "65222", name: "Removal of Foreign Body, External Eye; Corneal with Slit Lamp", fee: 68.00, lcd: "Surgical removal (Zero global days)", checked: true },
+          { cpt: "92071", name: "Fitting of Contact Lens for Treatment of Ocular Surface Disease (Bandage CL)", fee: 38.00, lcd: "Therapeutic corneal protection post-removal", checked: false }
+        ],
+        pitfalls: [
+          "Append Modifier -25 to 99213 if a distinct exam was performed prior to corneal foreign body removal (65222).",
+          "Code 65222 is unilateral; must append -RT or -LT modifier on the claim."
+        ],
+        docs: [
+          "Document depth of foreign body (epithelium vs stroma), presence/absence of rust ring, and post-removal Seidel test status.",
+          "Record informed consent for removal and rust debridement.",
+          "Document topical prophylactic antibiotic therapy prescribed."
+        ]
+      },
+      {
+        icd10: "H16.001",
+        name: "Unspecified corneal ulcer, right eye",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Bacterial Keratitis Guidelines",
+        rtc: "24 Hours (Daily Monitoring until Re-epithelialized)",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Acute sight-threatening corneal infection requiring intensive topical antimicrobial therapy.",
+        procedures: [
+          { cpt: "92285", name: "External Ocular Photography", fee: 24.00, lcd: "Measurement and photographic tracking of infiltrate and epithelial defect", checked: true }
+        ],
+        pitfalls: [
+          "Do not patch an eye with an infectious corneal ulcer, especially in contact lens wearers (presume Pseudomonas).",
+          "Careful documentation required if culturing corneal scrape before broad-spectrum antibiotics."
+        ],
+        docs: [
+          "Document exact millimeter measurements of both the epithelial defect (staining) and stromal infiltrate.",
+          "Record anterior chamber reaction (cells/flare, presence of hypopyon).",
+          "Document intensive dosing frequency (e.g., fortified antibiotics or fluoroquinolones every 1-2 hours)."
+        ]
+      },
+      {
+        icd10: "H02.053",
+        name: "Trichiasis without entropion, bilateral",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "AOA Care of the Patient with Eyelid Disorders",
+        rtc: "1 - 3 Months PRN",
+        examCpt: "99212",
+        examFee: 62.00,
+        examRationale: "Minor mechanical corneal irritation.",
+        procedures: [
+          { cpt: "67820", name: "Correction of Trichiasis; Epilation by Forceps Only", fee: 48.00, lcd: "In-office mechanical epilation (Zero global days)", checked: true }
+        ],
+        pitfalls: [
+          "Code 67820 is billed per encounter, not per eyelash.",
+          "Append Modifier -25 to evaluation code if significant problem-oriented evaluation performed."
+        ],
+        docs: [
+          "Document specific lid margins and clock hours of misdirected lashes.",
+          "Record presence of corneal punctate keratitis or abrasion secondary to lash contact."
+        ]
+      },
+      {
+        icd10: "H18.603",
+        name: "Keratoconus, unspecified, bilateral",
+        category: "Cornea & OSD",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Corneal Ectasia & Keratoconus Guidelines",
+        rtc: "6 - 12 Months (or Crosslinking Referral)",
+        examCpt: "99214",
+        examFee: 132.00,
+        examRationale: "Progressive non-inflammatory corneal ectasia requiring topographic progression analysis and specialty rehabilitation.",
+        procedures: [
+          { cpt: "92025", name: "Computerized Corneal Topography", fee: 45.00, lcd: "Medical necessity for corneal curvature mapping and ectasia progression", checked: true },
+          { cpt: "76514", name: "Corneal Pachymetry", fee: 12.00, lcd: "Measurement of thinnest corneal point", checked: true },
+          { cpt: "92072", name: "Fitting of Contact Lens for Management of Keratoconus, Initial", fee: 165.00, lcd: "Specialty rigid gas permeable (RGP) or scleral lens fitting", checked: false }
+        ],
+        pitfalls: [
+          "Routine refraction (92015) is not covered by Medicare; specialty fitting codes (92072) do not include the lens materials (V-codes billed separately).",
+          "Assess corneal thickness for CXL (corneal collagen crosslinking) eligibility."
+        ],
+        docs: [
+          "Document K-max, thinnest pachymetry reading, and presence of Fleischer ring or Vogt's striae.",
+          "Record best contact lens corrected visual acuity vs spectacle acuity."
+        ]
+      },
+
+      // ----------------- HIGH-RISK SYSTEMIC MEDICATIONS -----------------
+      {
         icd10: "Z79.899",
-        name: "Long term use of high-risk agents (Plaquenil / Hydroxychloroquine)",
+        name: "Long term use of high-risk agents (Plaquenil / Hydroxychloroquine Toxicity Screening)",
         category: "High-Risk Rx",
         status: "VERIFIED_PPP",
         citation: "AAO Recommendations on Screening for Chloroquine & Hydroxychloroquine Retinopathy",
@@ -284,12 +379,87 @@
           { cpt: "92250", name: "Fundus Autofluorescence (FAF)", fee: 54.00, lcd: "Early screening coverage", checked: false }
         ],
         pitfalls: [
-          "A standard 24-2 visual field does not meet AAO screening guidelines; 10-2 testing required.",
+          "A standard 24-2 visual field does not meet AAO screening guidelines; 10-2 testing required (or wider 24-2C / 30-2 in Asian patients due to pericentral pattern).",
           "Cannot bill 92134 and 92250 on same date without modifier -59/-XU and distinct pathology."
         ],
         docs: [
           "Document daily dose in mg/kg/day based on real body weight (target < 5.0 mg/kg/day).",
-          "Record cumulative treatment duration and kidney function status."
+          "Record cumulative treatment duration and kidney function / GFR status.",
+          "Send clearance documentation letter to prescribing rheumatologist."
+        ]
+      },
+
+      // ----------------- NEURO-OPHTHALMIC & PUPILS -----------------
+      {
+        icd10: "H57.02",
+        name: "Horner's syndrome, bilateral / unspecified",
+        category: "Neuro-Optometry",
+        status: "VERIFIED_PPP",
+        citation: "AOA Clinical Practice Guideline: Care of the Patient with Amblyopia & Neuro-Ocular Disorders",
+        rtc: "Immediate (Urgent Stroke / Dissection Workup)",
+        examCpt: "99215",
+        examFee: 184.00,
+        examRationale: "High complexity decision making: acute painful Horner's syndrome is an internal carotid artery dissection until proven otherwise.",
+        procedures: [
+          { cpt: "92285", name: "External Ocular Photography", fee: 24.00, lcd: "Pupillometry and ptosis documentation", checked: true },
+          { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Neurological field defect localization", checked: false }
+        ],
+        pitfalls: [
+          "Acute painful Horner's requires immediate transfer to emergency department for CTA or MRA of head and neck.",
+          "Apraclonidine 0.5% pharmacologic testing will reverse anisocoria in Horner's (causes dilation of Horner's pupil and lid elevation)."
+        ],
+        docs: [
+          "Document degree of anisocoria in both light and dark, and confirm dilation lag.",
+          "Record presence of ipsilateral partial ptosis and facial anhidrosis.",
+          "Document urgent ED/radiology referral for neck/chest imaging."
+        ]
+      },
+      {
+        icd10: "H46.9",
+        name: "Unspecified optic neuritis",
+        category: "Neuro-Optometry",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Optic Neuritis Guidelines & Optic Neuritis Treatment Trial (ONTT)",
+        rtc: "Immediate (Urgent Neurology / MRI Workup)",
+        examCpt: "99215",
+        examFee: 184.00,
+        examRationale: "High complexity acute neurological condition carrying significant risk of multiple sclerosis conversion.",
+        procedures: [
+          { cpt: "92133", name: "OCT Optic Nerve (RNFL)", fee: 42.00, lcd: "Covered for optic nerve head edema or baseline axonal tracking", checked: true },
+          { cpt: "92083", name: "Visual Field (Humphrey 24-2)", fee: 65.00, lcd: "Essential for central/cecocentral scotoma mapping", checked: true }
+        ],
+        pitfalls: [
+          "Oral prednisone alone at standard doses is CONTRAINDICATED in acute demyelinating optic neuritis (ONTT showed oral steroids alone increased recurrence rates).",
+          "Order urgent Brain and Orbit MRI with and without gadolinium contrast."
+        ],
+        docs: [
+          "Document relative afferent pupillary defect (RAPD) presence and severity.",
+          "Record color vision (Ishihara plates or Farnsworth D-15) and red desaturation.",
+          "Document presence of pain with eye movement (present in >90% of optic neuritis)."
+        ]
+      },
+
+      // ----------------- CATARACT & REFRACTIVE -----------------
+      {
+        icd10: "H25.13",
+        name: "Age-related nuclear cataract, bilateral",
+        category: "Cataract",
+        status: "VERIFIED_PPP",
+        citation: "AAO Preferred Practice Pattern: Cataract in the Adult Eye",
+        rtc: "6 - 12 Months (or Cataract Surgery Referral)",
+        examCpt: "92014",
+        examFee: 130.00,
+        examRationale: "Comprehensive eye evaluation ideal for routine cataract monitoring and surgical decision making.",
+        procedures: [
+          { cpt: "92285", name: "Anterior Segment Photography", fee: 24.00, lcd: "Documentation of dense lens opacity prior to surgery", checked: false }
+        ],
+        pitfalls: [
+          "Medicare will deny visual fields (92083) or OCT (92134) billed solely for uncomplicated age-related cataracts without secondary pathology.",
+          "Refraction (92015) is not covered by Medicare Part B."
+        ],
+        docs: [
+          "Document best-corrected visual acuity and brightness acuity glare testing reduction (BAT).",
+          "Explicitly record subjective impairment of Activities of Daily Living (ADLs) such as night driving, reading, or computer work."
         ]
       },
       {
@@ -311,158 +481,3 @@
         ]
       }
     ];
-
-    let activeCondition = DATABASE[0];
-
-    function renderList(items) {
-      const listEl = document.getElementById("diagnosisList");
-      listEl.innerHTML = "";
-      document.getElementById("countBadge").innerText = items.length;
-
-      items.forEach(c => {
-        const isActive = c.icd10 === activeCondition.icd10;
-        const btn = document.createElement("button");
-        btn.onclick = () => { activeCondition = c; loadCondition(); };
-        btn.className = `w-full text-left p-4 transition flex flex-col gap-1 border-l-4 ${isActive ? 'bg-blue-50/80 border-blue-600' : 'hover:bg-slate-50 border-transparent'}`;
-        btn.innerHTML = `
-          <div class="flex items-center justify-between">
-            <span class="font-mono text-xs font-bold text-blue-700 bg-blue-100/60 px-1.5 py-0.5 rounded">${c.icd10}</span>
-            ${c.status === 'AI_INFERRED' ? '<span class="text-[9px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded border border-amber-200">AI INFERRED</span>' : `<span class="text-[10px] uppercase font-semibold text-slate-400">${c.category}</span>`}
-          </div>
-          <span class="text-xs text-slate-800 line-clamp-2 leading-snug font-medium">${c.name}</span>
-        `;
-        listEl.appendChild(btn);
-      });
-    }
-
-    function filterDiagnoses() {
-      const q = document.getElementById("searchInput").value.toLowerCase();
-      const filtered = DATABASE.filter(c => c.icd10.toLowerCase().includes(q) || c.name.toLowerCase().includes(q));
-      renderList(filtered);
-    }
-
-    function loadCondition() {
-      document.getElementById("icdBadge").innerText = activeCondition.icd10;
-      document.getElementById("diagName").innerText = activeCondition.name;
-      document.getElementById("rtcDisplay").innerText = activeCondition.rtc;
-      document.getElementById("examCptBadge").innerText = activeCondition.examCpt;
-      document.getElementById("examRationale").innerText = activeCondition.examRationale;
-
-      // Provenance Ticker
-      const provContainer = document.getElementById("provenanceContainer");
-      const provText = document.getElementById("provenanceText");
-      if (activeCondition.status === "VERIFIED_PPP") {
-        provContainer.className = "p-4 rounded-xl border flex items-start gap-3 bg-emerald-50/70 border-emerald-200 text-emerald-900";
-        provText.innerText = activeCondition.citation;
-      } else {
-        provContainer.className = "p-4 rounded-xl border flex items-start gap-3 bg-amber-50/70 border-amber-300 text-amber-900";
-        provText.innerText = activeCondition.citation;
-      }
-
-      // Documentation
-      const docsEl = document.getElementById("docsList");
-      docsEl.innerHTML = activeCondition.docs.map(d => `
-        <li class="flex items-start gap-2">
-          <span class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5 shrink-0"></span>
-          <span>${d}</span>
-        </li>
-      `).join("");
-
-      // Pitfalls
-      const pitfallsEl = document.getElementById("pitfallsList");
-      pitfallsEl.innerHTML = activeCondition.pitfalls.map(p => `<li>${p}</li>`).join("");
-
-      // Procedures Checklist
-      const procEl = document.getElementById("proceduresList");
-      procEl.innerHTML = "";
-      if (activeCondition.procedures.length === 0) {
-        procEl.innerHTML = `<p class="text-xs text-slate-400">No specialized ancillary procedures indicated for this diagnosis.</p>`;
-      } else {
-        activeCondition.procedures.forEach((p, idx) => {
-          const row = document.createElement("div");
-          row.className = "p-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-between cursor-pointer transition";
-          row.onclick = (e) => {
-            if (e.target.type !== "checkbox") {
-              const cb = document.getElementById(`proc-cb-${idx}`);
-              cb.checked = !cb.checked;
-              p.checked = cb.checked;
-            } else {
-              p.checked = e.target.checked;
-            }
-            updateCalculation();
-          };
-          row.innerHTML = `
-            <div class="flex items-center gap-3">
-              <input type="checkbox" id="proc-cb-${idx}" ${p.checked ? 'checked' : ''} class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer" />
-              <div>
-                <div class="text-xs font-semibold text-slate-800">
-                  <span class="font-mono text-blue-700 font-bold mr-1.5">${p.cpt}</span> ${p.name}
-                </div>
-                <span class="text-[10px] text-slate-400 font-medium">${p.lcd}</span>
-              </div>
-            </div>
-            <span class="text-xs font-bold text-emerald-700 font-mono" id="proc-fee-${idx}">+$${p.fee.toFixed(2)}</span>
-          `;
-          procEl.appendChild(row);
-        });
-      }
-
-      filterDiagnoses();
-      updateCalculation();
-      lucide.createIcons();
-    }
-
-    function updateCalculation() {
-      const payer = document.getElementById("payerSelect").value;
-      const setting = document.getElementById("settingSelect").value;
-      const visionWarning = document.getElementById("visionWarning");
-      const subtext = document.getElementById("feeSubtext");
-
-      const multiplier = payer === "commercial" ? 1.15 : 1.0;
-      const settingAdj = setting === "hospital" ? 0.75 : 1.0;
-
-      subtext.innerText = `${payer.toUpperCase()} • ${setting === "hospital" ? "FACILITY (POS 22)" : "NON-FACILITY (POS 11)"}`;
-
-      if (payer === "vision") {
-        visionWarning.classList.remove("hidden");
-        document.getElementById("totalFeeDisplay").innerText = "$55.00";
-        document.getElementById("examFee").innerText = "$55.00";
-        return;
-      } else {
-        visionWarning.classList.add("hidden");
-      }
-
-      const examTotal = activeCondition.examFee * multiplier * settingAdj;
-      document.getElementById("examFee").innerText = `$${examTotal.toFixed(2)}`;
-
-      let proceduresTotal = 0;
-      activeCondition.procedures.forEach((p, idx) => {
-        const feeVal = p.fee * multiplier;
-        const feeEl = document.getElementById(`proc-fee-${idx}`);
-        if (feeEl) feeEl.innerText = `+$${feeVal.toFixed(2)}`;
-        if (p.checked) proceduresTotal += feeVal;
-      });
-
-      const grandTotal = examTotal + proceduresTotal;
-      document.getElementById("totalFeeDisplay").innerText = `$${grandTotal.toFixed(2)}`;
-    }
-
-    function copySuperbill() {
-      const payer = document.getElementById("payerSelect").value;
-      const setting = document.getElementById("settingSelect").value;
-      const total = document.getElementById("totalFeeDisplay").innerText;
-      const activeProcs = activeCondition.procedures.filter(p => p.checked).map(p => p.cpt).join(", ") || "None";
-
-      const text = `EHR BILLING & CLINICAL SUMMARY:\nDiagnosis: ${activeCondition.name} (${activeCondition.icd10})\nProvenance: ${activeCondition.citation}\nFollow-Up (RTC): ${activeCondition.rtc}\nExam Code: ${activeCondition.examCpt}\nSelected Testing: ${activeProcs}\nTotal Allowable: ${total} (${payer.toUpperCase()} - ${setting.toUpperCase()})`;
-
-      navigator.clipboard.writeText(text);
-      const btn = document.getElementById("copyBtnText");
-      btn.innerText = "Copied!";
-      setTimeout(() => btn.innerText = "Copy Superbill", 2000);
-    }
-
-    // Initialize
-    loadCondition();
-  </script>
-</body>
-</html>
