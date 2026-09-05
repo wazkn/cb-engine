@@ -273,11 +273,11 @@
     </section>
   </main>
 
-  <script>
+<script>
     // UX #4: Dark Mode
     function toggleDarkMode() { document.documentElement.classList.toggle('dark'); }
 
-    // 1. GLOBAL CPT DICTIONARY (High-Detail Source of Truth)
+    // 1. GLOBAL CPT DICTIONARY
     const CPT_DICT = {
       "92133": { n: "Scanning Computerized Ophthalmic Diagnostic Imaging, Optic Nerve (OCT)", f: 42, g: 0, ir: "I&R REQUIRED: 1) Reliability/Signal Strength, 2) OD/OS Symmetry, 3) RNFL/GCC thickness vs baseline, 4) Clinical impact. INHERENTLY BILATERAL.", m: ["-59", "-XU"] },
       "92134": { n: "Scanning Computerized Ophthalmic Diagnostic Imaging, Retina (OCT Macula)", f: 42, g: 0, ir: "I&R REQUIRED: 1) Presence of intraretinal/subretinal fluid, 2) Central foveal thickness, 3) Comparison to prior. INHERENTLY BILATERAL.", m: ["-59", "-XU"] },
@@ -303,10 +303,11 @@
       "65205": { n: "Removal of Foreign Body, External Eye; Conjunctival Superficial", f: 45, g: 0, ir: "Operative Note: Location of concretion/FB and removal method.", m: ["-RT", "-LT"] },
       "68840": { n: "Probing of Lacrimal Canaliculi", f: 95, g: 10, ir: "Operative Note: Dilation of puncta, irrigation fluid path, resistance encountered.", m: ["-E1", "-E2", "-E3", "-E4"] },
       "67820": { n: "Correction of Trichiasis; Epilation, by forceps only", f: 48, g: 0, ir: "Operative Note: Location of misdirected lashes. Code is billed per encounter, NOT per lash.", m: ["-E1", "-E2", "-E3", "-E4"] },
-      "97530": { n: "Therapeutic Activities (Direct patient contact, each 15 mins)", f: 35, g: 0, ir: "Rehab Note: Document time spent training patient on low vision device and functional goal achieved.", m: [] }
+      "97530": { n: "Therapeutic Activities (Direct patient contact, each 15 mins)", f: 35, g: 0, ir: "Rehab Note: Document time spent training patient on low vision device and functional goal achieved.", m: [] },
+      "92285": { n: "External Ocular Photography with Interpretation and Report", f: 24, g: 0, ir: "I&R REQUIRED: Photographic documentation of anterior segment pathology to track size/density.", m: ["-59"] }
     };
 
-    // 2. MASTER DATABASE (155+ Conditions mapped to CPT_DICT)
+    // 2. MASTER DATABASE
     const DB_RAW = [
       {i:"H40.11", n:"Primary open-angle glaucoma", c:"Glaucoma", r:"3-4 Mos", s:"13774005", p:["92133","92083","65855","92020"]},
       {i:"H40.12", n:"Low-tension glaucoma (NTG)", c:"Glaucoma", r:"3-4 Mos", s:"42197000", p:["92133","92083"]},
@@ -483,7 +484,6 @@
       {i:"H54.8",  n:"Legal Blindness / Low Vision", c:"Refractive", r:"3 Mos", p:["97530"]}
     ];
 
-    // HYPER-DETAILED NOTE GENERATOR
     function getConditionDetails(c) {
       let pearl = "Align E/M with documented MDM complexity.";
       let pitfall = "Routine diagnoses (e.g., myopia) submitted to medical payers without -GY will cause denials.";
@@ -524,31 +524,45 @@
 
     function switchTab(t) {
       ['viewDb','viewCart','viewAcademy'].forEach(id => {
-        document.getElementById(id).classList.add('hidden');
-        document.getElementById(id).classList.remove('flex');
+        const el = document.getElementById(id);
+        if (el) {
+          el.classList.add('hidden');
+          el.classList.remove('flex');
+        }
       });
       ['btnTabDb','btnTabCart','btnTabAcademy'].forEach(id => {
-        document.getElementById(id).className = 'tab-inactive pb-2 text-sm font-bold flex items-center gap-1.5 whitespace-nowrap';
+        const el = document.getElementById(id);
+        if (el) el.className = 'tab-inactive pb-2 text-sm font-bold flex items-center gap-1.5 whitespace-nowrap';
       });
-      document.getElementById('sidebarPanel').classList.toggle('hidden', t === 'academy');
-      document.getElementById('mainContentPanel').className = t === 'academy' ? 'lg:col-span-12 flex flex-col gap-5 relative' : 'lg:col-span-8 flex flex-col gap-5 relative';
+      
+      const sidebar = document.getElementById('sidebarPanel');
+      const mainPanel = document.getElementById('mainContentPanel');
+      if (sidebar) sidebar.classList.toggle('hidden', t === 'academy');
+      if (mainPanel) mainPanel.className = t === 'academy' ? 'lg:col-span-12 flex flex-col gap-5 relative' : 'lg:col-span-8 flex flex-col gap-5 relative';
       
       let view = t==='db'?'viewDb':t==='cart'?'viewCart':'viewAcademy';
       let btn = t==='db'?'btnTabDb':t==='cart'?'btnTabCart':'btnTabAcademy';
       
-      document.getElementById(view).classList.remove('hidden');
-      document.getElementById(view).classList.add('flex');
-      document.getElementById(btn).className = 'tab-active pb-2 text-sm font-bold flex items-center gap-1.5 whitespace-nowrap';
-      if(t==='cart') updateCart();
+      const viewEl = document.getElementById(view);
+      const btnEl = document.getElementById(btn);
+      if (viewEl) {
+        viewEl.classList.remove('hidden');
+        viewEl.classList.add('flex');
+      }
+      if (btnEl) btnEl.className = 'tab-active pb-2 text-sm font-bold flex items-center gap-1.5 whitespace-nowrap';
+      if (t === 'cart') updateCart();
     }
 
-    // FIXED: Uses case-insensitive substring matching so values like "Retina" match "Retina & Macula"
     function filterDb() {
-      const q = document.getElementById("searchInput").value.toLowerCase();
-      const cat = document.getElementById("categoryFilter").value.toLowerCase();
+      const searchInput = document.getElementById("searchInput");
+      const categoryFilter = document.getElementById("categoryFilter");
+      const q = searchInput ? searchInput.value.toLowerCase().trim() : "";
+      const cat = categoryFilter ? categoryFilter.value.toLowerCase().trim() : "all";
+
       filteredList = DB_RAW.filter(c => {
-        const matchesQuery = c.i.toLowerCase().includes(q) || c.n.toLowerCase().includes(q);
-        const matchesCategory = (cat === 'all') || (c.c && (c.c.toLowerCase().includes(cat) || cat.includes(c.c.toLowerCase())));
+        const matchesQuery = !q || c.i.toLowerCase().includes(q) || c.n.toLowerCase().includes(q);
+        const condCat = (c.c || "").toLowerCase();
+        const matchesCategory = (cat === 'all') || condCat.includes(cat) || cat.includes(condCat);
         return matchesQuery && matchesCategory;
       });
       renderDb();
@@ -556,52 +570,76 @@
 
     function renderDb() {
       const el = document.getElementById("diagnosisList");
+      if (!el) return;
       el.innerHTML = "";
-      document.getElementById("dbCountBadge").innerText = filteredList.length;
+      
+      const countBadge = document.getElementById("dbCountBadge");
+      if (countBadge) countBadge.innerText = filteredList.length;
+
+      if (filteredList.length === 0) {
+        el.innerHTML = `<div class="p-4 text-xs text-slate-400 italic">No matching conditions found.</div>`;
+        return;
+      }
+
       filteredList.forEach(c => {
         el.innerHTML += `<button onclick="selDb('${c.i}')" class="w-full text-left p-3 hover:bg-slate-50 dark:hover:bg-slate-800 border-l-4 border-transparent focus:border-blue-500 transition border-b border-slate-100 dark:border-slate-700/50">
           <div class="flex justify-between items-center"><span class="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">${c.i}</span><span class="text-[9px] text-slate-400 uppercase font-bold">${c.c}</span></div>
           <div class="text-xs font-medium dark:text-slate-200 mt-1">${c.n}</div>
         </button>`;
       });
-      if(filteredList.length && (!activeCond || !filteredList.find(c=>c.i===activeCond.i))) selDb(filteredList[0].i);
+      
+      if (!activeCond || !filteredList.find(c => c.i === activeCond.i)) {
+        selDb(filteredList[0].i);
+      }
     }
 
     function selDb(icd) {
-      activeCond = filteredList.find(c => c.i === icd);
+      activeCond = filteredList.find(c => c.i === icd) || DB_RAW.find(c => c.i === icd);
       if(!activeCond) return;
-      document.getElementById("dbIcd").innerText = activeCond.i;
-      document.getElementById("dbName").innerText = activeCond.n;
-      document.getElementById("dbCat").innerText = activeCond.c;
-      document.getElementById("dbRtc").innerText = activeCond.r;
-      document.getElementById("dbSnomed").innerText = activeCond.s ? `SNOMED: ${activeCond.s}` : "SNOMED: Map Pending";
+
+      const dbIcd = document.getElementById("dbIcd");
+      const dbName = document.getElementById("dbName");
+      const dbCat = document.getElementById("dbCat");
+      const dbRtc = document.getElementById("dbRtc");
+      const dbSnomed = document.getElementById("dbSnomed");
+      const dbPearl = document.getElementById("dbPearl");
+      const dbPitfall = document.getElementById("dbPitfall");
+
+      if (dbIcd) dbIcd.innerText = activeCond.i;
+      if (dbName) dbName.innerText = activeCond.n;
+      if (dbCat) dbCat.innerText = activeCond.c;
+      if (dbRtc) dbRtc.innerText = activeCond.r;
+      if (dbSnomed) dbSnomed.innerText = activeCond.s ? `SNOMED: ${activeCond.s}` : "SNOMED: Map Pending";
       
       let details = getConditionDetails(activeCond);
-      document.getElementById("dbPearl").innerText = details.pearl;
-      document.getElementById("dbPitfall").innerText = details.pitfall;
+      if (dbPearl) dbPearl.innerText = details.pearl;
+      if (dbPitfall) dbPitfall.innerText = details.pitfall;
 
       const pEl = document.getElementById("dbProcs");
-      pEl.innerHTML = activeCond.p.length ? "" : '<p class="text-xs text-slate-400 italic">No specific specialized procedures indicated for routine presentation.</p>';
-      
-      activeCond.p.forEach(cptKey => {
-        let cpt = CPT_DICT[cptKey];
-        if(!cpt) return;
-        pEl.innerHTML += `
-          <div class="p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900/50 flex flex-col gap-2">
-            <div class="flex items-center justify-between">
-              <div>
-                <span class="font-mono text-sm font-bold text-slate-900 dark:text-white">${cptKey}</span> 
-                <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 ml-1">${cpt.n}</span>
-                ${cpt.g > 0 ? `<span class="text-[9px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-bold ml-2">${cpt.g}-Day Global</span>` : ''}
+      if (pEl) {
+        pEl.innerHTML = (activeCond.p && activeCond.p.length) ? "" : '<p class="text-xs text-slate-400 italic">No specific specialized procedures indicated for routine presentation.</p>';
+        
+        if (activeCond.p && activeCond.p.length) {
+          activeCond.p.forEach(cptKey => {
+            let cpt = CPT_DICT[cptKey] || { n: "Diagnostic Procedure", f: 0, g: 0, ir: "I&R documentation required.", m: [] };
+            pEl.innerHTML += `
+              <div class="p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900/50 flex flex-col gap-2">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <span class="font-mono text-sm font-bold text-slate-900 dark:text-white">${cptKey}</span> 
+                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 ml-1">${cpt.n}</span>
+                    ${cpt.g > 0 ? `<span class="text-[9px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-bold ml-2">${cpt.g}-Day Global</span>` : ''}
+                  </div>
+                  <span class="text-xs font-mono font-bold text-emerald-600">+$${cpt.f}</span>
+                </div>
+                <p class="text-[11px] text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700 pt-2"><span class="font-bold text-red-500">I&R Rule:</span> ${cpt.ir}</p>
+                ${(cpt.m && cpt.m.length > 0) ? `<div class="text-[10px] text-blue-600 dark:text-blue-400 font-bold">Applicable Modifiers: ${cpt.m.join(", ")}</div>` : ''}
               </div>
-              <span class="text-xs font-mono font-bold text-emerald-600">+$${cpt.f}</span>
-            </div>
-            <p class="text-[11px] text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700 pt-2"><span class="font-bold text-red-500">I&R Rule:</span> ${cpt.ir}</p>
-            ${cpt.m.length > 0 ? `<div class="text-[10px] text-blue-600 dark:text-blue-400 font-bold">Applicable Modifiers: ${cpt.m.join(", ")}</div>` : ''}
-          </div>
-        `;
-      });
-      if(document.getElementById("viewDb").classList.contains("hidden")) switchTab('db');
+            `;
+          });
+        }
+      }
+      lucide.createIcons();
     }
 
     function addToCart(c) {
@@ -615,74 +653,80 @@
     function setEm(l) { examLevel = l; updateCart(); }
 
     function updateCart() {
-      document.getElementById("cartBadge").innerText = cart.length;
-      const el = document.getElementById("cartItems");
-      el.innerHTML = "";
-      if (cart.length === 0) el.innerHTML = `<p class="text-xs text-slate-400 italic">Cart is empty. Add a diagnosis from the Database.</p>`;
+      const cartBadge = document.getElementById("cartBadge");
+      if (cartBadge) cartBadge.innerText = cart.length;
       
-      cart.forEach((x, i) => {
-        let fullIcd = x.c.i;
-        if(x.c.c === 'Glaucoma' && fullIcd.startsWith("H40.1")) fullIcd = `${fullIcd.slice(0,6)}${x.l}${x.st}`;
-        else if(["Glaucoma","Retina","Cornea & OSD"].includes(x.c.c)) fullIcd = `${fullIcd}.${x.l}`;
+      const el = document.getElementById("cartItems");
+      if (el) {
+        el.innerHTML = "";
+        if (cart.length === 0) el.innerHTML = `<p class="text-xs text-slate-400 italic">Cart is empty. Add a diagnosis from the Database.</p>`;
+        
+        cart.forEach((x, i) => {
+          let fullIcd = x.c.i;
+          if(x.c.c === 'Glaucoma' && fullIcd.startsWith("H40.1")) fullIcd = `${fullIcd.slice(0,6)}${x.l}${x.st}`;
+          else if(["Glaucoma","Retina","Cornea & OSD"].includes(x.c.c)) fullIcd = `${fullIcd}.${x.l}`;
 
-        let stgHtml = x.c.c === 'Glaucoma' ? `<select onchange="setStg(${i},this.value)" class="text-[10px] p-1 border rounded bg-white dark:bg-slate-800 dark:border-slate-600 outline-none"><option value="1" ${x.st==='1'?'selected':''}>Mild</option><option value="2" ${x.st==='2'?'selected':''}>Mod</option><option value="3" ${x.st==='3'?'selected':''}>Sev</option></select>` : '';
+          let stgHtml = x.c.c === 'Glaucoma' ? `<select onchange="setStg(${i},this.value)" class="text-[10px] p-1 border rounded bg-white dark:bg-slate-800 dark:border-slate-600 outline-none"><option value="1" ${x.st==='1'?'selected':''}>Mild</option><option value="2" ${x.st==='2'?'selected':''}>Mod</option><option value="3" ${x.st==='3'?'selected':''}>Sev</option></select>` : '';
 
-        el.innerHTML += `
-          <div class="flex justify-between items-start bg-slate-50 dark:bg-slate-700/50 p-3 rounded-xl border ${x.isP ? 'border-blue-400 dark:border-blue-500' : 'border-slate-200 dark:border-slate-600'}">
-            <div class="flex flex-col gap-1.5">
-              <div class="flex items-center gap-2">
-                <input type="radio" name="pri" onchange="setPri(${i})" ${x.isP?'checked':''} class="w-3.5 h-3.5 text-blue-600 cursor-pointer">
-                <span class="font-mono text-xs font-bold text-blue-700 dark:text-blue-400">${fullIcd}</span>
-                <span class="text-xs font-bold dark:text-white">${x.c.n}</span>
+          el.innerHTML += `
+            <div class="flex justify-between items-start bg-slate-50 dark:bg-slate-700/50 p-3 rounded-xl border ${x.isP ? 'border-blue-400 dark:border-blue-500' : 'border-slate-200 dark:border-slate-600'}">
+              <div class="flex flex-col gap-1.5">
+                <div class="flex items-center gap-2">
+                  <input type="radio" name="pri" onchange="setPri(${i})" ${x.isP?'checked':''} class="w-3.5 h-3.5 text-blue-600 cursor-pointer">
+                  <span class="font-mono text-xs font-bold text-blue-700 dark:text-blue-400">${fullIcd}</span>
+                  <span class="text-xs font-bold dark:text-white">${x.c.n}</span>
+                </div>
+                <div class="flex items-center gap-2 mt-1">
+                  <select onchange="setLat(${i},this.value)" class="text-[10px] p-1 border rounded bg-white dark:bg-slate-800 dark:border-slate-600 outline-none"><option value="3" ${x.l==='3'?'selected':''}>OU</option><option value="1" ${x.l==='1'?'selected':''}>OD</option><option value="2" ${x.l==='2'?'selected':''}>OS</option></select>
+                  ${stgHtml}
+                  ${x.isP ? '<span class="text-[9px] bg-blue-600 text-white font-bold px-1.5 py-0.5 rounded">PRIMARY (Line 1)</span>' : ''}
+                </div>
               </div>
-              <div class="flex items-center gap-2 mt-1">
-                <select onchange="setLat(${i},this.value)" class="text-[10px] p-1 border rounded bg-white dark:bg-slate-800 dark:border-slate-600 outline-none"><option value="3" ${x.l==='3'?'selected':''}>OU</option><option value="1" ${x.l==='1'?'selected':''}>OD</option><option value="2" ${x.l==='2'?'selected':''}>OS</option></select>
-                ${stgHtml}
-                ${x.isP ? '<span class="text-[9px] bg-blue-600 text-white font-bold px-1.5 py-0.5 rounded">PRIMARY (Line 1)</span>' : ''}
-              </div>
+              <button onclick="rmCart(${i})" class="text-slate-400 hover:text-red-500 transition p-1"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
-            <button onclick="rmCart(${i})" class="text-slate-400 hover:text-red-500 transition p-1"><i data-lucide="x" class="w-4 h-4"></i></button>
-          </div>
-        `;
-      });
+          `;
+        });
+      }
 
-      // Synchronize procedures without losing checkbox state
+      // Synchronize procedures
       let tempProcs = [];
       cart.forEach((x, i) => {
-        x.c.p.forEach(cptKey => {
-          let existing = cartProcedures.find(cp => cp.c === cptKey && cp.ptr === i);
-          if(existing) tempProcs.push(existing);
-          else tempProcs.push({c: cptKey, ptr: i, chk: false, mods: []});
-        });
+        if (x.c.p && Array.isArray(x.c.p)) {
+          x.c.p.forEach(cptKey => {
+            let existing = cartProcedures.find(cp => cp.c === cptKey && cp.ptr === i);
+            if(existing) tempProcs.push(existing);
+            else tempProcs.push({c: cptKey, ptr: i, chk: false, mods: []});
+          });
+        }
       });
       cartProcedures = tempProcs;
 
       const pEl = document.getElementById("cartProcs");
-      pEl.innerHTML = cartProcedures.length ? "" : '<p class="text-xs text-slate-400 italic">No procedures available.</p>';
-      
-      cartProcedures.forEach((p, i) => {
-        let cptInfo = CPT_DICT[p.c];
-        if(!cptInfo) return;
+      if (pEl) {
+        pEl.innerHTML = cartProcedures.length ? "" : '<p class="text-xs text-slate-400 italic">No procedures available.</p>';
         
-        let ptrOpts = cart.map((c,idx)=>`<option value="${idx}" ${p.ptr===idx?'selected':''}>Line ${idx+1}</option>`).join("");
-        let modOpts = cptInfo.m.map(m=>`<label class="cursor-pointer flex items-center gap-1 hover:text-blue-500"><input type="checkbox" onchange="mod(this,'${m}',${i})" ${p.mods.includes(m)?'checked':''} class="rounded w-3 h-3 text-blue-600">${m}</label>`).join(" ");
+        cartProcedures.forEach((p, i) => {
+          let cptInfo = CPT_DICT[p.c] || { n: "Diagnostic Procedure", f: 0, m: [] };
+          let ptrOpts = cart.map((c,idx)=>`<option value="${idx}" ${p.ptr===idx?'selected':''}>Line ${idx+1}</option>`).join("");
+          let modOpts = (cptInfo.m || []).map(m=>`<label class="cursor-pointer flex items-center gap-1 hover:text-blue-500"><input type="checkbox" onchange="mod(this,'${m}',${i})" ${p.mods.includes(m)?'checked':''} class="rounded w-3 h-3 text-blue-600">${m}</label>`).join(" ");
 
-        pEl.innerHTML += `
-          <div class="flex items-center justify-between p-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800">
-            <div class="flex items-start gap-3">
-              <input type="checkbox" onchange="chkP(${i},this.checked)" ${p.chk?'checked':''} class="w-4 h-4 text-blue-600 rounded cursor-pointer mt-0.5">
-              <div class="flex flex-col gap-1">
-                <div><span class="font-mono text-xs font-bold dark:text-white">${p.c}</span> <span class="text-[11px] font-medium dark:text-slate-300">${cptInfo.n}</span></div>
-                <div class="flex items-center gap-3 text-[10px] font-bold text-slate-500 dark:text-slate-400">
-                  <span class="bg-slate-100 dark:bg-slate-700 px-1 rounded flex items-center gap-1">Pointer: <select onchange="updateProcPtr(${i},this.value)" class="bg-transparent outline-none text-blue-600 dark:text-blue-400 cursor-pointer">${ptrOpts}</select></span>
-                  ${modOpts ? `<div class="flex items-center gap-2 text-purple-600 dark:text-purple-400">Mods: ${modOpts}</div>` : ''}
+          pEl.innerHTML += `
+            <div class="flex items-center justify-between p-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800">
+              <div class="flex items-start gap-3">
+                <input type="checkbox" onchange="chkP(${i},this.checked)" ${p.chk?'checked':''} class="w-4 h-4 text-blue-600 rounded cursor-pointer mt-0.5">
+                <div class="flex flex-col gap-1">
+                  <div><span class="font-mono text-xs font-bold dark:text-white">${p.c}</span> <span class="text-[11px] font-medium dark:text-slate-300">${cptInfo.n}</span></div>
+                  <div class="flex items-center gap-3 text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                    <span class="bg-slate-100 dark:bg-slate-700 px-1 rounded flex items-center gap-1">Pointer: <select onchange="updateProcPtr(${i},this.value)" class="bg-transparent outline-none text-blue-600 dark:text-blue-400 cursor-pointer">${ptrOpts}</select></span>
+                    ${modOpts ? `<div class="flex items-center gap-2 text-purple-600 dark:text-purple-400">Mods: ${modOpts}</div>` : ''}
+                  </div>
                 </div>
               </div>
+              <span class="text-xs font-mono font-bold text-emerald-600">+$${cptInfo.f}</span>
             </div>
-            <span class="text-xs font-mono font-bold text-emerald-600">+$${cptInfo.f}</span>
-          </div>
-        `;
-      });
+          `;
+        });
+      }
 
       calcTotals();
       generateMacro();
@@ -698,63 +742,94 @@
     function updateProcPtr(i, v) { cartProcedures[i].ptr = parseInt(v); generateMacro(); }
 
     function calcTotals() {
-      ['btn213','btn214','btn215'].forEach(id=>document.getElementById(id).classList.remove('bg-blue-50','border-blue-500','text-blue-700','dark:bg-blue-900/30'));
-      document.getElementById('btn'+examLevel.slice(2)).classList.add('bg-blue-50','border-blue-500','text-blue-700','dark:bg-blue-900/30');
+      ['btn213','btn214','btn215'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('bg-blue-50','border-blue-500','text-blue-700','dark:bg-blue-900/30');
+      });
+      const activeEmBtn = document.getElementById('btn'+examLevel.slice(2));
+      if (activeEmBtn) activeEmBtn.classList.add('bg-blue-50','border-blue-500','text-blue-700','dark:bg-blue-900/30');
 
-      let cf = parseFloat(document.getElementById("macSelect").value);
-      let pM = document.getElementById("payerSelect").value === "commercial" ? 1.15 : 1.0;
-      let sA = document.getElementById("settingSelect").value === "22" ? 0.75 : 1.0;
-      let isVis = document.getElementById("payerSelect").value === "vision";
-      let pos = document.getElementById("settingSelect").value;
+      const macSelect = document.getElementById("macSelect");
+      const payerSelect = document.getElementById("payerSelect");
+      const settingSelect = document.getElementById("settingSelect");
+      const timeInput = document.getElementById("timeInput");
 
-      let type = document.querySelector('input[name="codeType"]:checked').value;
+      let cf = macSelect ? parseFloat(macSelect.value) : 1.0;
+      let pM = (payerSelect && payerSelect.value === "commercial") ? 1.15 : 1.0;
+      let sA = (settingSelect && settingSelect.value === "22") ? 0.75 : 1.0;
+      let isVis = payerSelect && payerSelect.value === "vision";
+      let pos = settingSelect ? settingSelect.value : "11";
+
+      const codeTypeEl = document.getElementById("codeType");
+      let type = codeTypeEl ? codeTypeEl.value : '99';
       let eC = type === '99' ? examLevel : (examLevel==='99213'?'92012':'92014');
       let eF = eC === '99213' ? 92 : eC === '99214' ? 132 : eC === '99215' ? 184 : eC === '92012' ? 90 : 130;
       
       let eTotal = isVis ? 55 : (eF * cf * pM * sA);
-      document.getElementById("cartExamFee").innerText = `${eC} ($${eTotal.toFixed(2)})`;
+      const cartExamFee = document.getElementById("cartExamFee");
+      if (cartExamFee) cartExamFee.innerText = `${eC} ($${eTotal.toFixed(2)})`;
       
       let pTotal = 0;
       let alerts = [];
 
-      let time = parseInt(document.getElementById("timeInput").value) || 0;
+      let time = timeInput ? (parseInt(timeInput.value) || 0) : 0;
       let prolonged = (examLevel === '99215' && time >= 55 && type==='99');
-      document.getElementById("prolongedBadge").style.display = prolonged ? "block" : "none";
+      const prolongedBadge = document.getElementById("prolongedBadge");
+      if (prolongedBadge) prolongedBadge.style.display = prolonged ? "block" : "none";
       if(prolonged && !isVis) pTotal += (35 * cf * pM);
 
       cartProcedures.forEach(p => {
         if(p.chk && !isVis) {
-          let cInfo = CPT_DICT[p.c];
+          let cInfo = CPT_DICT[p.c] || { f: 0 };
           let f = cInfo.f * cf * pM;
-          if(p.mods.includes("-55")) f = f * 0.20; 
-          let eMods = p.mods.filter(m=>m.startsWith("-E"));
+          if(p.mods && p.mods.includes("-55")) f = f * 0.20; 
+          let eMods = (p.mods || []).filter(m=>m.startsWith("-E"));
           if(eMods.length) { f = f * eMods.length; if(eMods.length>1) f = f * 0.75; } 
           pTotal += f;
         }
       });
 
-      document.getElementById("cartTotal").innerText = `$${(eTotal + pTotal).toFixed(2)}`;
-      document.getElementById("oopTotal").innerText = isVis ? "$0.00" : `$${((eTotal+pTotal) * 0.20).toFixed(2)}`;
+      const cartTotal = document.getElementById("cartTotal");
+      const oopTotal = document.getElementById("oopTotal");
+      if (cartTotal) cartTotal.innerText = `$${(eTotal + pTotal).toFixed(2)}`;
+      if (oopTotal) oopTotal.innerText = isVis ? "$0.00" : `$${((eTotal+pTotal) * 0.20).toFixed(2)}`;
 
       // Audit Checks
       let checkedCpts = cartProcedures.filter(p=>p.chk).map(p=>p.c);
       if(checkedCpts.includes('92133') && checkedCpts.includes('92250')) alerts.push("⚠️ NCCI: 92133 + 92250 requires -59/-XU on one code.");
       if(pos === "02") alerts.push("ℹ️ Telehealth: Append -95 to E/M code.");
-      if(document.getElementById("payerSelect").value === "medicare" && cart.find(c=>c.c.c==="Refractive"&&c.isP)) document.getElementById("ccWarning").classList.remove("hidden"); else document.getElementById("ccWarning").classList.add("hidden");
       
-      let dosCheck = document.getElementById("dosCheck").value;
-      if(dosCheck && (checkedCpts.includes('92133') || checkedCpts.includes('92083'))) {
-        const diff = (new Date().getFullYear() - new Date(dosCheck).getFullYear())*12 + (new Date().getMonth() - new Date(dosCheck).getMonth());
-        if(diff < 6) document.getElementById("dosAlert").classList.remove("hidden");
-        else document.getElementById("dosAlert").classList.add("hidden");
-      } else document.getElementById("dosAlert").classList.add("hidden");
+      const ccWarning = document.getElementById("ccWarning");
+      if (ccWarning) {
+        if(payerSelect && payerSelect.value === "medicare" && cart.find(c=>c.c.c==="Refractive"&&c.isP)) ccWarning.classList.remove("hidden"); 
+        else ccWarning.classList.add("hidden");
+      }
+      
+      const dosCheck = document.getElementById("dosCheck");
+      const dosAlert = document.getElementById("dosAlert");
+      if(dosAlert) {
+        if(dosCheck && dosCheck.value && (checkedCpts.includes('92133') || checkedCpts.includes('92083'))) {
+          const diff = (new Date().getFullYear() - new Date(dosCheck.value).getFullYear())*12 + (new Date().getMonth() - new Date(dosCheck.value).getMonth());
+          if(diff < 6) dosAlert.classList.remove("hidden");
+          else dosAlert.classList.add("hidden");
+        } else {
+          dosAlert.classList.add("hidden");
+        }
+      }
 
-      document.getElementById("alertsContainer").innerHTML = alerts.map(a=>`<div class="text-[10px] bg-amber-100 text-amber-800 p-1.5 rounded font-bold border border-amber-200">${a}</div>`).join("");
+      const alertsContainer = document.getElementById("alertsContainer");
+      if (alertsContainer) {
+        alertsContainer.innerHTML = alerts.map(a=>`<div class="text-[10px] bg-amber-100 text-amber-800 p-1.5 rounded font-bold border border-amber-200">${a}</div>`).join("");
+      }
     }
 
     function generateMacro() {
       const ehr = document.getElementById("ehrOutput");
-      if(!cart.length) return ehr.innerText = "Add conditions to chart to generate macro.";
+      if (!ehr) return;
+      if (!cart.length) {
+        ehr.innerText = "Add conditions to chart to generate macro.";
+        return;
+      }
 
       let t = `=======================================================\nOPHTHALMIC ENCOUNTER SUMMARY & SUPERBILL\n=======================================================\n\nCHIEF COMPLAINT & MEDICAL NECESSITY:\nPatient presents for evaluation and management of chronic/acute ocular conditions.\n\nASSESSMENT & PLAN:\n`;
       
@@ -765,18 +840,22 @@
         t += `Line ${i+1}: ${icd} - ${x.c.n} ${x.isP?'[PRIMARY]':''}\n  Plan: ${getConditionDetails(x.c).note}\n  RTC: ${x.c.r}\n\n`;
       });
 
-      let type = document.querySelector('input[name="codeType"]:checked').value;
+      const codeTypeEl = document.getElementById("codeType");
+      let type = codeTypeEl ? codeTypeEl.value : '99';
       let eC = type === '99' ? examLevel : (examLevel==='99213'?'92012':'92014');
       let mdm = examLevel === '99213' ? "Low Complexity (1 stable chronic illness)" : examLevel === '99214' ? "Moderate Complexity (1 progressing illness or Rx drug management)" : "High Complexity (Severe threat to vision)";
-      t += `LEVEL OF SERVICE:\n- CPT: ${eC} ${document.getElementById("settingSelect").value==='02'?'-95 (Telehealth)':''}\n- MDM Rationale: ${mdm}\n`;
-      if(examLevel==='99215' && parseInt(document.getElementById("timeInput").value)>=55) t += `- CPT: 99417 (Prolonged Service >55 mins)\n`;
+      
+      const settingSelect = document.getElementById("settingSelect");
+      const timeInput = document.getElementById("timeInput");
+      t += `LEVEL OF SERVICE:\n- CPT: ${eC} ${settingSelect && settingSelect.value==='02'?'-95 (Telehealth)':''}\n- MDM Rationale: ${mdm}\n`;
+      if(examLevel==='99215' && timeInput && parseInt(timeInput.value)>=55) t += `- CPT: 99417 (Prolonged Service >55 mins)\n`;
 
       let checked = cartProcedures.filter(p=>p.chk);
       if(checked.length) {
         t += `\nPROCEDURES & INTERPRETATION AND REPORT (I&R):\n`;
         checked.forEach(p => {
-          let cInfo = CPT_DICT[p.c];
-          t += `- CPT: ${p.c} ${p.mods.join(" ")} (${cInfo.n})\n`;
+          let cInfo = CPT_DICT[p.c] || { n: "Diagnostic Procedure" };
+          t += `- CPT: ${p.c} ${(p.mods || []).join(" ")} (${cInfo.n})\n`;
           t += `  Pointer: Line ${p.ptr+1}\n`;
           t += `  I&R: Test performed for medical necessity tracking. Scan/Test quality reliable. Structural/functional analysis confirms disease status as charted in A/P. Results reviewed with patient. Continue management.\n\n`;
         });
@@ -786,7 +865,8 @@
 
     function exportData(type) {
       if(!cart.length) return alert("Cart is empty.");
-      let txt = document.getElementById("ehrOutput").innerText;
+      const ehr = document.getElementById("ehrOutput");
+      let txt = ehr ? ehr.innerText : "";
       if(type==='macro') { navigator.clipboard.writeText(txt); alert("Copied!"); return; }
       
       if(type==='cprs') txt = `VA CPRS CONSULT NOTE\n\n` + txt + `\n\nVA ATTESTATION:\nI have personally seen and examined the veteran. Findings discussed. Note forwarded to primary care.`;
@@ -794,18 +874,26 @@
       else if(type==='handout') txt = `<h2>Your Eye Health Summary</h2><p>Diagnosis: <strong>${cart[0].c.n}</strong></p><p>Please take your drops as prescribed and return in ${cart[0].c.r}. Call if your vision changes.</p>`;
       else if(type==='abn') txt = `<h2>Advance Beneficiary Notice (ABN)</h2><p>Medicare does not pay for everything, such as Refraction (92015).</p><p>Estimated Cost: $40.00 - $65.00</p><p>Sign: ___________________</p>`;
       else if(type==='superbill') {
+        const cartExamFee = document.getElementById("cartExamFee");
+        const examCodeText = cartExamFee ? cartExamFee.innerText.split(" ")[0] : examLevel;
         txt = `<h2>Superbill Summary</h2><table border="1" cellpadding="5"><tr><th>Code</th><th>Modifier</th></tr>`;
-        txt += `<tr><td>${document.getElementById("examOutputBadge").innerText.split(" ")[0]}</td><td></td></tr>`;
-        cartProcedures.filter(p=>p.chk).forEach(p=> txt+=`<tr><td>${p.c}</td><td>${p.mods.join(" ")}</td></tr>`);
+        txt += `<tr><td>${examCodeText}</td><td></td></tr>`;
+        cartProcedures.filter(p=>p.chk).forEach(p=> txt+=`<tr><td>${p.c}</td><td>${(p.mods || []).join(" ")}</td></tr>`);
         txt += `</table>`;
       }
       
-      let newWin = window.open("","_blank"); newWin.document.write(`<div style="font-family:sans-serif; max-width:800px; margin:auto;">${txt}</div>`); newWin.print();
+      let newWin = window.open("","_blank"); 
+      if (newWin) {
+        newWin.document.write(`<div style="font-family:sans-serif; max-width:800px; margin:auto;">${txt}</div>`); 
+        newWin.print();
+      }
     }
 
-    // Initialize
-    filterDb();
-    switchTab('db');
+    // Safe Initialization
+    window.addEventListener("DOMContentLoaded", () => {
+      filterDb();
+      switchTab('db');
+    });
   </script>
 </body>
 </html>
