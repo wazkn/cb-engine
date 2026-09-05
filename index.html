@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OptoCode Pro | Clinical Encounter & Billing Engine</title>
+  <title>OptoCode Pro | Clinical Encounter, Billing Engine & Coding Academy</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
@@ -19,44 +19,47 @@
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
   <!-- Header Navbar -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-6 py-3.5 shadow-sm">
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-6 py-3 shadow-sm">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
       <div>
         <div class="flex items-center gap-2">
           <span class="text-xl font-bold tracking-tight text-slate-900">OptoCode Pro</span>
-          <span class="text-[11px] bg-emerald-50 text-emerald-700 font-semibold px-2.5 py-0.5 rounded-full border border-emerald-200">Clinical Edition</span>
-          <span class="text-[11px] bg-indigo-50 text-indigo-700 font-semibold px-2.5 py-0.5 rounded-full border border-indigo-200">155+ Diagnoses</span>
+          <span class="text-[11px] bg-emerald-50 text-emerald-700 font-semibold px-2.5 py-0.5 rounded-full border border-emerald-200">2026 CMS & LCD Aligned</span>
+          <span class="text-[11px] bg-indigo-50 text-indigo-700 font-semibold px-2.5 py-0.5 rounded-full border border-indigo-200">255+ Conditions</span>
         </div>
-        <p class="text-xs text-slate-500 mt-0.5">Multi-Diagnosis Cart, CPT Pointers, MDM Leveling & Reimbursement Pearls</p>
+        <p class="text-xs text-slate-500 mt-0.5">Clinical Decision Support, CPT I&R Protocols, Modifiers & Encounter Cart</p>
       </div>
 
-      <div class="flex items-center gap-3">
-        <select id="macSelect" onchange="triggerUpdate()" class="text-xs font-medium bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-700 outline-none">
+      <div class="flex items-center gap-2.5">
+        <select id="macSelect" onchange="triggerUpdate()" class="text-xs font-medium bg-slate-100 border border-slate-300 rounded-lg px-2.5 py-1.5 text-slate-700 outline-none">
           <option value="NGS" selected>MAC: NGS (NY/NE/CT)</option>
           <option value="Novitas">MAC: Novitas (PA/NJ/MD)</option>
           <option value="Noridian">MAC: Noridian (CA/NV/FL)</option>
           <option value="WPS">MAC: WPS (IL/MI/MN)</option>
         </select>
-        <select id="payerSelect" onchange="triggerUpdate()" class="text-xs font-medium bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-700 outline-none">
+        <select id="payerSelect" onchange="triggerUpdate()" class="text-xs font-medium bg-slate-100 border border-slate-300 rounded-lg px-2.5 py-1.5 text-slate-700 outline-none">
           <option value="medicare">Medicare Part B</option>
           <option value="commercial">Commercial Medical (+15%)</option>
           <option value="vision">Vision Plan (Routine)</option>
         </select>
-        <select id="settingSelect" onchange="triggerUpdate()" class="text-xs font-medium bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-700 outline-none">
-          <option value="private">Private Practice (POS 11)</option>
-          <option value="hospital">Hospital Outpatient (POS 22)</option>
+        <select id="settingSelect" onchange="triggerUpdate()" class="text-xs font-medium bg-slate-100 border border-slate-300 rounded-lg px-2.5 py-1.5 text-slate-700 outline-none">
+          <option value="private">POS 11 (Office)</option>
+          <option value="hospital">POS 22 (Facility)</option>
         </select>
       </div>
     </div>
     
     <!-- TABS -->
-    <div class="max-w-7xl mx-auto flex gap-6 mt-4">
-      <button id="btnTabDb" onclick="switchTab('db')" class="tab-active pb-2 text-sm font-bold flex items-center gap-1.5 transition">
-        <i data-lucide="book-open" class="w-4 h-4"></i> Reference Database
+    <div class="max-w-7xl mx-auto flex gap-6 mt-3 border-t border-slate-100 pt-2">
+      <button id="btnTabDb" onclick="switchTab('db')" class="tab-active pb-2 text-xs md:text-sm font-bold flex items-center gap-1.5 transition">
+        <i data-lucide="book-open" class="w-4 h-4"></i> Clinical Reference Database
       </button>
-      <button id="btnTabCart" onclick="switchTab('cart')" class="tab-inactive pb-2 text-sm font-bold flex items-center gap-1.5 transition">
+      <button id="btnTabCart" onclick="switchTab('cart')" class="tab-inactive pb-2 text-xs md:text-sm font-bold flex items-center gap-1.5 transition">
         <i data-lucide="shopping-cart" class="w-4 h-4"></i> Encounter Cart 
         <span id="cartCountBadge" class="bg-blue-100 text-blue-800 text-[10px] px-1.5 py-0.5 rounded-full ml-1">0</span>
+      </button>
+      <button id="btnTabAcademy" onclick="switchTab('academy')" class="tab-inactive pb-2 text-xs md:text-sm font-bold flex items-center gap-1.5 transition">
+        <i data-lucide="graduation-cap" class="w-4 h-4"></i> Coding Academy & Modifier Guide
       </button>
     </div>
   </header>
@@ -64,82 +67,90 @@
   <!-- Main Container -->
   <main class="max-w-7xl mx-auto w-full p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
     
-    <!-- Sidebar: Search & Add to Cart -->
-    <aside class="lg:col-span-4 flex flex-col gap-3.5">
+    <!-- Sidebar: Search & Add to Cart (Visible on DB and Cart tabs) -->
+    <aside id="sidebarPanel" class="lg:col-span-4 flex flex-col gap-3.5">
       <div class="relative">
         <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
-        <input type="text" id="searchInput" oninput="filterDiagnoses()" placeholder="Search ICD-10 or name..." class="w-full pl-9 pr-4 py-2 text-xs bg-white border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <input type="text" id="searchInput" oninput="filterDiagnoses()" placeholder="Search ICD-10 code, disease, or procedure..." class="w-full pl-9 pr-4 py-2 text-xs bg-white border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
       </div>
 
       <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm grid grid-cols-2 gap-2">
         <div>
-          <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Category Filter</label>
-          <select id="categoryFilter" onchange="filterDiagnoses()" class="w-full text-[11px] font-medium bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 outline-none">
-            <option value="all">All</option>
+          <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Subspecialty Filter</label>
+          <select id="categoryFilter" onchange="filterDiagnoses()" class="w-full text-[11px] font-medium bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 outline-none">
+            <option value="all">All Categories</option>
             <option value="Glaucoma">Glaucoma</option>
-            <option value="Retina">Retina</option>
+            <option value="Retina">Retina & Macula</option>
             <option value="Cornea & OSD">Cornea & OSD</option>
-            <option value="Uveitis">Uveitis</option>
+            <option value="Uveitis">Uveitis & Inflammatory</option>
             <option value="Neuro">Neuro-Optometry</option>
-            <option value="Peds">Pediatrics</option>
+            <option value="Peds">Pediatrics & Strabismus</option>
+            <option value="Cataract">Cataract & Post-Op</option>
+            <option value="High-Risk Rx">Systemic & High-Risk Rx</option>
           </select>
         </div>
         <div class="flex items-center mt-4">
           <label class="flex items-center gap-1.5 text-[11px] font-medium text-slate-600 cursor-pointer">
             <input type="checkbox" id="procedureOnlyFilter" onchange="filterDiagnoses()" class="rounded w-3.5 h-3.5 text-blue-600 border-slate-300">
-            Has In-Office Proc.
+            Has Procedural CPT
           </label>
         </div>
       </div>
 
       <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm flex-1 flex flex-col">
         <div class="px-4 py-2.5 bg-slate-50/90 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase flex justify-between">
-          <span>Database</span><span id="dbCountBadge" class="bg-slate-200 text-slate-700 rounded-full px-2 py-0.5 text-[10px]">0</span>
+          <span>Ophthalmic Conditions</span><span id="dbCountBadge" class="bg-slate-200 text-slate-700 rounded-full px-2 py-0.5 text-[10px]">0</span>
         </div>
-        <div id="diagnosisList" class="divide-y divide-slate-100 overflow-y-auto max-h-[600px]"></div>
+        <div id="diagnosisList" class="divide-y divide-slate-100 overflow-y-auto max-h-[640px]"></div>
       </div>
     </aside>
 
     <!-- Content Area -->
-    <section class="lg:col-span-8 flex flex-col gap-5 relative">
+    <section id="mainContentPanel" class="lg:col-span-8 flex flex-col gap-5 relative">
       
       <!-- TAB 1: DB INSPECTOR -->
       <div id="viewDb" class="flex flex-col gap-5">
         
         <!-- Reimbursement Pearl Callout -->
-        <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-5 shadow-sm">
+        <div class="bg-indigo-50/80 border border-indigo-200 rounded-2xl p-5 shadow-sm">
           <div class="flex justify-between items-start gap-4">
             <div>
               <h4 class="text-xs font-bold text-indigo-800 uppercase flex items-center gap-1.5 mb-1.5">
-                <i data-lucide="lightbulb" class="w-4 h-4 text-indigo-600"></i> Clinical & Reimbursement Pearl
+                <i data-lucide="lightbulb" class="w-4 h-4 text-indigo-600"></i> Audit-Defense & Reimbursement Pearl
               </h4>
               <p id="reimbursementPearl" class="text-xs text-indigo-900 font-medium leading-relaxed"></p>
             </div>
-            <button onclick="addToCart(activeCondition)" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm flex items-center gap-2 transition whitespace-nowrap shrink-0">
+            <button onclick="addToCart(activeCondition)" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm flex items-center gap-1.5 transition whitespace-nowrap shrink-0">
               <i data-lucide="plus" class="w-4 h-4"></i> Add to Encounter
             </button>
           </div>
         </div>
 
         <!-- Details Card -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col gap-4">
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col gap-3">
           <div>
             <span id="ogIcdBadge" class="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200">ICD-10</span>
-            <h2 id="ogDiagName" class="text-lg font-bold text-slate-900 mt-2">Select a condition</h2>
+            <h2 id="ogDiagName" class="text-base font-bold text-slate-900 mt-2">Select a condition</h2>
           </div>
-          <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-start gap-3.5">
-            <div class="bg-blue-600 text-white font-mono font-bold text-xs px-2.5 py-1 rounded-lg">RTC</div>
-            <div>
-              <div class="text-xs font-bold text-slate-800" id="ogRtc"></div>
-              <p class="text-[10px] text-slate-500 mt-0.5">Recommended standard of care cadence.</p>
+          <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100">
+            <div class="p-3 bg-slate-50 rounded-xl">
+              <span class="text-[10px] font-bold text-slate-400 uppercase">Recommended Recall (RTC)</span>
+              <div class="text-xs font-bold text-slate-800 mt-0.5" id="ogRtc">—</div>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-xl">
+              <span class="text-[10px] font-bold text-slate-400 uppercase">Category</span>
+              <div class="text-xs font-bold text-slate-800 mt-0.5" id="ogCategory">—</div>
             </div>
           </div>
         </div>
 
-        <!-- Procedures List -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col gap-3">
-          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Eligible Testing & Procedures</h3>
-          <div id="ogProceduresList" class="space-y-2"></div>
+        <!-- Procedures List with Documentation Requirements -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col gap-3">
+          <div>
+            <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Eligible CPT Codes & Documentation Rules</h3>
+            <p class="text-[11px] text-slate-400 mt-0.5">Click any procedure below to review mandated LCD, I&R, and audit documentation requirements.</p>
+          </div>
+          <div id="ogProceduresList" class="space-y-2.5"></div>
         </div>
 
       </div>
@@ -150,15 +161,15 @@
         <!-- Financial Top Bar -->
         <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex items-center justify-between">
           <div>
-            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Encounter Total Allowable</span>
-            <div id="totalFeeDisplay" class="text-3xl font-extrabold text-emerald-600 mt-1">$0.00</div>
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Estimated Total Allowable</span>
+            <div id="totalFeeDisplay" class="text-3xl font-extrabold text-emerald-600 mt-0.5">$0.00</div>
           </div>
           <div class="text-right flex flex-col items-end">
             <button onclick="copyEhrMacro()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm flex items-center gap-2 transition mb-2">
               <i data-lucide="clipboard-check" class="w-4 h-4"></i> Copy Note & Superbill
             </button>
             <div id="ccWarning" class="hidden text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 px-2 py-1 rounded">
-              <i data-lucide="alert-triangle" class="w-3 h-3 inline"></i> CC Mismatch Risk!
+              <i data-lucide="alert-triangle" class="w-3 h-3 inline"></i> Chief Complaint Mismatch Risk!
             </div>
           </div>
         </div>
@@ -166,31 +177,34 @@
         <!-- Active Patient Cart -->
         <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
           <h3 class="text-xs font-bold text-slate-700 uppercase mb-3 flex items-center gap-1.5">
-            <i data-lucide="users" class="w-4 h-4 text-blue-600"></i> Active Patient Encounter (Cart)
+            <i data-lucide="users" class="w-4 h-4 text-blue-600"></i> Active Encounter Diagnoses (ICD-10)
           </h3>
           <div id="cartList" class="flex flex-col gap-3">
-            <p class="text-xs text-slate-400 italic" id="emptyCartMsg">Search and click "Add to Encounter" to build a chart.</p>
+            <p class="text-xs text-slate-400 italic" id="emptyCartMsg">Search and click "Add to Encounter" from the Reference Database to build a claim.</p>
           </div>
         </div>
 
         <!-- MDM Exam Leveler -->
         <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
           <h3 class="text-xs font-bold text-slate-700 uppercase mb-3 flex items-center gap-1.5">
-            <i data-lucide="stethoscope" class="w-4 h-4 text-emerald-600"></i> Medical Decision Making (MDM) Leveler
+            <i data-lucide="stethoscope" class="w-4 h-4 text-emerald-600"></i> Evaluation & Management (E/M) Decision Support
           </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-            <label class="flex items-center gap-2 text-xs font-medium"><input type="radio" name="codeType" value="99" checked onchange="triggerUpdate()"> E/M Codes (992XX)</label>
-            <label class="flex items-center gap-2 text-xs font-medium"><input type="radio" name="codeType" value="92" onchange="triggerUpdate()"> Eye Codes (920XX)</label>
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <label class="flex items-center gap-2 text-xs font-medium cursor-pointer"><input type="radio" name="codeType" value="99" checked onchange="triggerUpdate()"> E/M Codes (992XX - MDM Based)</label>
+            <label class="flex items-center gap-2 text-xs font-medium cursor-pointer"><input type="radio" name="codeType" value="92" onchange="triggerUpdate()"> Eye Codes (920XX - Exam Element Based)</label>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
             <button onclick="setExamLevel('stable')" id="btnStable" class="p-3 border rounded-xl text-left hover:bg-slate-50 transition">
               <span class="block text-xs font-bold text-slate-800">Stable (99213 / 92012)</span>
+              <span class="block text-[10px] text-slate-500 mt-1">1 stable chronic illness, low complexity risk.</span>
             </button>
             <button onclick="setExamLevel('moderate')" id="btnMod" class="p-3 border rounded-xl text-left hover:bg-slate-50 transition border-blue-500 bg-blue-50">
               <span class="block text-xs font-bold text-blue-800">Progressing / Rx (99214 / 92014)</span>
+              <span class="block text-[10px] text-blue-600 mt-1">1 chronic illness progressing OR prescription drug management.</span>
             </button>
             <button onclick="setExamLevel('severe')" id="btnSev" class="p-3 border rounded-xl text-left hover:bg-slate-50 transition">
-              <span class="block text-xs font-bold text-slate-800">Severe / ER (99215)</span>
+              <span class="block text-xs font-bold text-slate-800">Severe Threat (99215)</span>
+              <span class="block text-[10px] text-slate-500 mt-1">Severe exacerbation, acute vision loss, emergency stroke code.</span>
             </button>
           </div>
           <div class="mt-3 flex items-center gap-3">
@@ -202,12 +216,15 @@
         <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
           <div class="flex justify-between items-center mb-3">
             <h3 class="text-xs font-bold text-slate-700 uppercase flex items-center gap-1.5">
-              <i data-lucide="check-square" class="w-4 h-4 text-purple-600"></i> Procedures & Pointers
+              <i data-lucide="check-square" class="w-4 h-4 text-purple-600"></i> Testing, In-Office Procedures & ICD Pointers
             </h3>
-            <input type="date" id="dosCheck" onchange="triggerUpdate()" class="text-[10px] p-1 border rounded" title="Last Date of Service" />
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] text-slate-400 font-bold uppercase">Prior Test DOS:</span>
+              <input type="date" id="dosCheck" onchange="triggerUpdate()" class="text-[10px] p-1 border rounded" />
+            </div>
           </div>
-          <div id="dosAlert" class="hidden p-2 mb-3 bg-red-50 text-red-700 text-[10px] border border-red-200 rounded font-bold">⚠️ Warning: Selected DOS is < 6 months. High risk of frequency cap denial for OCT/VF.</div>
-          <div id="ncciAlert" class="hidden p-2 mb-3 bg-amber-50 text-amber-800 text-[10px] border border-amber-200 rounded font-bold">⚠️ NCCI Edit: Mutually exclusive procedures selected. Append -59/-XU.</div>
+          <div id="dosAlert" class="hidden p-2 mb-3 bg-red-50 text-red-700 text-[10px] border border-red-200 rounded font-bold">⚠️ Warning: Selected prior DOS is within 6 months. High risk of frequency cap denial for serial OCT/VF.</div>
+          <div id="ncciAlert" class="hidden p-2 mb-3 bg-amber-50 text-amber-800 text-[10px] border border-amber-200 rounded font-bold">⚠️ NCCI Edit: Bundled mutually exclusive procedures (OCT + Photo). Append modifier -59/-XU if justified.</div>
           <div id="cartProceduresList" class="space-y-2">
             <p class="text-xs text-slate-400 italic">Add conditions to cart to reveal procedures.</p>
           </div>
@@ -215,109 +232,220 @@
 
         <!-- EHR Macro Output -->
         <div class="bg-slate-900 border border-slate-700 rounded-2xl p-5 shadow-sm">
-          <h3 class="text-xs font-bold text-slate-300 uppercase flex items-center gap-1.5 mb-2">
-            <i data-lucide="terminal" class="w-4 h-4 text-emerald-400"></i> Generated EHR Macro
-          </h3>
-          <pre id="ehrOutput" class="text-[10px] text-emerald-400 font-mono whitespace-pre-wrap leading-relaxed select-all">Add conditions to cart.</pre>
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-xs font-bold text-slate-300 uppercase flex items-center gap-1.5">
+              <i data-lucide="terminal" class="w-4 h-4 text-emerald-400"></i> Generated EHR Macro & Superbill Export
+            </h3>
+            <span class="text-[10px] text-emerald-500 font-mono">Format: Epic / RevolutionEHR / EyecareAdvantage</span>
+          </div>
+          <pre id="ehrOutput" class="text-[11px] text-emerald-400 font-mono whitespace-pre-wrap leading-relaxed select-all">Add conditions to cart.</pre>
         </div>
+      </div>
+
+      <!-- TAB 3: CODING ACADEMY & GUIDE -->
+      <div id="viewAcademy" class="hidden flex-col gap-6">
+        
+        <!-- Welcome Banner -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl p-6 shadow-md">
+          <h2 class="text-xl font-extrabold flex items-center gap-2">
+            <i data-lucide="graduation-cap" class="w-6 h-6"></i> Optometric Billing & Coding Academy
+          </h2>
+          <p class="text-xs text-blue-100 mt-1 max-w-2xl leading-relaxed">
+            A comprehensive, beginner-friendly clinical primer explaining evaluation codes, medical decision making, modifiers, and audit defense for optometrists.
+          </p>
+        </div>
+
+        <!-- Section 1: 99XXX vs 92XXX -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col gap-4">
+          <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
+            <i data-lucide="split" class="w-4 h-4 text-blue-600"></i> 1. E/M Codes (992XX) vs. Eye Codes (920XX)
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <span class="font-bold text-blue-800 text-sm block mb-1">E/M Codes (99202–99215)</span>
+              <p class="text-slate-600 leading-relaxed mb-2">Governed by AMA/CMS 2021/2026 guidelines. Scored purely by <strong>Medical Decision Making (MDM)</strong> OR <strong>Total Provider Time</strong> on the date of encounter.</p>
+              <ul class="list-disc list-inside space-y-1 text-slate-700 font-medium">
+                <li><strong>99213:</strong> Low MDM. 1 stable chronic illness or 1 acute uncomplicated illness.</li>
+                <li><strong>99214:</strong> Moderate MDM. 1 chronic illness progressing OR prescription drug management (e.g. initiating, refilling, or adjusting glaucoma/dry eye drops).</li>
+                <li><strong>99215:</strong> High MDM. Acute threat to vision or life (e.g. retinal tear, stroke risk, acute angle closure).</li>
+              </ul>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <span class="font-bold text-indigo-800 text-sm block mb-1">Eye Codes (92002–92014)</span>
+              <p class="text-slate-600 leading-relaxed mb-2">Unique to ophthalmology and optometry. Not scored by MDM, but by specific mandatory exam elements documented in the chart.</p>
+              <ul class="list-disc list-inside space-y-1 text-slate-700 font-medium">
+                <li><strong>92004 / 92014 (Comprehensive):</strong> Complete examination of both eyes, dilated fundus exam, visual fields screening, motility, and initiation of a diagnostic/treatment program.</li>
+                <li><strong>92002 / 92012 (Intermediate):</strong> Evaluation of external eye and ocular adnexa, biomicroscopy, with new or existing treatment plan.</li>
+                <li><strong>Pro-Tip:</strong> Some commercial plans reimburse 92014 higher than 99214, whereas Medicare generally reimburses 99214 higher.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Modifiers Deep Dive -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col gap-4">
+          <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
+            <i data-lucide="tag" class="w-4 h-4 text-purple-600"></i> 2. The Ophthalmic Modifier Decoder
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div class="p-3 border rounded-xl bg-slate-50">
+              <span class="font-bold text-slate-900 font-mono text-sm block">-25 (Significant, Separate E/M)</span>
+              <p class="text-slate-600 mt-1">Appended to an evaluation code (e.g. 99213-25) when a distinct clinical exam is performed on the same date as a minor surgical procedure (e.g. 65222 Foreign Body Removal or 68761 Plugs).</p>
+            </div>
+            <div class="p-3 border rounded-xl bg-slate-50">
+              <span class="font-bold text-slate-900 font-mono text-sm block">-59 / -XU (Distinct Procedural Service)</span>
+              <p class="text-slate-600 mt-1">Appended to bypass NCCI bundle edits when two tests are performed on the same day for distinct pathologies (e.g. OCT Macula 92134 for wet AMD and Fundus Photo 92250-59 for peripheral choroidal nevus).</p>
+            </div>
+            <div class="p-3 border rounded-xl bg-slate-50">
+              <span class="font-bold text-slate-900 font-mono text-sm block">-55 (Postoperative Co-Management Only)</span>
+              <p class="text-slate-600 mt-1">Used when an OD assumes post-op care following surgery (e.g. 66984-55 for cataract). Must include transfer of care dates in Box 19 of the CMS-1500 claim.</p>
+            </div>
+            <div class="p-3 border rounded-xl bg-slate-50">
+              <span class="font-bold text-slate-900 font-mono text-sm block">-79 (Unrelated Procedure in Global Period)</span>
+              <p class="text-slate-600 mt-1">Used if you perform an in-office procedure (like punctal occlusion) while the patient is still in a 90-day post-op surgical global window from another unrelated surgery.</p>
+            </div>
+            <div class="p-3 border rounded-xl bg-slate-50">
+              <span class="font-bold text-slate-900 font-mono text-sm block">-E1, -E2, -E3, -E4 (Lid Modifiers)</span>
+              <p class="text-slate-600 mt-1">Mandatory for punctal occlusion (68761): E1 = Upper Right, E2 = Lower Right, E3 = Upper Left, E4 = Lower Left.</p>
+            </div>
+            <div class="p-3 border rounded-xl bg-slate-50">
+              <span class="font-bold text-slate-900 font-mono text-sm block">-GY (Statutorily Excluded Service)</span>
+              <p class="text-slate-600 mt-1">Appended to routine refractions (92015-GY) when billing Medicare Part B so that Medicare generates an official denial, pushing the balance automatically to secondary insurance.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: The 4 Commandments of Audit Defense -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col gap-4">
+          <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
+            <i data-lucide="shield-alert" class="w-4 h-4 text-emerald-600"></i> 3. The Four Commandments of Surviving a Clinical Audit
+          </h3>
+          <ol class="list-decimal list-inside space-y-2 text-xs text-slate-700 leading-relaxed font-medium">
+            <li><strong>Medical Chief Complaint Rule:</strong> You cannot bill a medical plan (Medicare/commercial) with a routine chief complaint such as "needs new glasses" or "annual checkup". Document a medical complaint (e.g. eye irritation, blurred vision, diabetes check) or chart a documented transition from routine to medical.</li>
+            <li><strong>The 4-Part I&R Mandate:</strong> Any diagnostic test (OCT, Visual Field, B-Scan, Photo) requires a dedicated <em>Interpretation & Report</em> in the chart containing: (1) Order with medical necessity, (2) Reliability/quality of scan, (3) Structural findings & comparison to prior baseline, (4) Impact on clinical management plan.</li>
+            <li><strong>Bilateral Code Watchdog:</strong> Fundus photography (92250) and Pachymetry (76514) are inherently bilateral codes. Billing them with -RT/-LT or 2 units triggers an immediate auto-denial and audit flag.</li>
+            <li><strong>Frequency Cap Discipline:</strong> CMS contractors (NGS, Noridian, Novitas) strictly enforce frequency caps on serial OCTs and VFs (typically once every rolling 6 months for stable glaucoma). Documenting clinical progression or treatment failure is required to justify more frequent testing.</li>
+          </ol>
+        </div>
+
       </div>
 
     </section>
   </main>
 
   <script>
-    // MASSIVE COMPREHENSIVE DATABASE: 155+ Optometric Conditions
+    // MASSIVE MASTER DATABASE: 255+ Diagnoses with Dedicated CPT & Pearl Logic
     const DB_RAW = [
-      { icd: "H40.11", n: "Primary open-angle glaucoma", cat: "Glaucoma", rtc: "3 - 4 Months", p: [{c: "92133", n: "OCT ON", f: 42}, {c: "92083", n: "VF 24-2", f: 65}, {c: "65855", n: "SLT", f: 245, g: 10}] },
-      { icd: "H40.12", n: "Low-tension glaucoma (NTG)", cat: "Glaucoma", rtc: "3 - 4 Months", p: [{c: "92133", n: "OCT ON", f: 42}, {c: "92083", n: "VF 24-2", f: 65}] },
-      { icd: "H40.14", n: "Capsular glaucoma (PXG)", cat: "Glaucoma", rtc: "2 - 3 Months", p: [{c: "92133", n: "OCT ON", f: 42}, {c: "92083", n: "VF 24-2", f: 65}, {c: "65855", n: "SLT", f: 245, g: 10}] },
-      { icd: "H40.13", n: "Pigmentary glaucoma", cat: "Glaucoma", rtc: "3 - 4 Months", p: [{c: "92133", n: "OCT ON", f: 42}, {c: "92083", n: "VF 24-2", f: 65}, {c: "66761", n: "LPI", f: 320, g: 10}] },
-      { icd: "H40.21", n: "Acute angle-closure attack", cat: "Glaucoma", rtc: "1 Day", p: [{c: "92020", n: "Gonio", f: 28}, {c: "66761", n: "LPI", f: 320, g: 10}] },
-      { icd: "H40.03", n: "Anatomical narrow angle (Suspect)", cat: "Glaucoma", rtc: "3 Months", p: [{c: "92020", n: "Gonio", f: 28}, {c: "66761", n: "LPI", f: 320, g: 10}] },
-      { icd: "H40.51", n: "Angle recession glaucoma", cat: "Glaucoma", rtc: "3 Months", p: [{c: "92020", n: "Gonio", f: 28}, {c: "92133", n: "OCT ON", f: 42}] },
-      { icd: "H40.52", n: "Neovascular Glaucoma", cat: "Glaucoma", rtc: "Immediate", p: [{c: "92020", n: "Gonio", f: 28}] },
-      { icd: "H40.53", n: "Uveitic Glaucoma", cat: "Glaucoma", rtc: "1 Week", p: [{c: "92133", n: "OCT ON", f: 42}] },
-      { icd: "H40.89", n: "Steroid-induced glaucoma", cat: "Glaucoma", rtc: "2 Weeks", p: [{c: "92133", n: "OCT ON", f: 42}] },
-      { icd: "H40.01", n: "Open angle suspect, high risk", cat: "Glaucoma", rtc: "6 Months", p: [{c: "92133", n: "OCT ON", f: 42}, {c: "76514", n: "Pachymetry", f: 12}] },
-      { icd: "H40.05", n: "Ocular hypertension", cat: "Glaucoma", rtc: "6 Months", p: [{c: "92133", n: "OCT ON", f: 42}, {c: "76514", n: "Pachymetry", f: 12}] },
-      { icd: "H40.4",  n: "Glaucoma 2/2 lens inflammation (Phacolytic)", cat: "Glaucoma", rtc: "1 Day", p: [] },
-      { icd: "H40.22", n: "Chronic angle-closure glaucoma", cat: "Glaucoma", rtc: "3 Months", p: [{c: "92133", n: "OCT ON", f: 42}, {c: "66761", n: "LPI", f: 320, g: 10}] },
-      { icd: "H42",    n: "Glaucoma in diseases classified elsewhere", cat: "Glaucoma", rtc: "3 Months", p: [{c: "92133", n: "OCT ON", f: 42}] },
-      { icd: "H40.6",  n: "Glaucoma 2/2 intraocular tumor", cat: "Glaucoma", rtc: "Urgent", p: [{c: "76512", n: "B-Scan", f: 78}] },
-      { icd: "H40.15", n: "Residual stage POAG", cat: "Glaucoma", rtc: "3 Months", p: [{c: "92083", n: "VF 10-2", f: 65}] },
-      { icd: "H40.23", n: "Intermittent angle-closure", cat: "Glaucoma", rtc: "1 Month", p: [{c: "92020", n: "Gonio", f: 28}, {c: "66761", n: "LPI", f: 320, g: 10}] },
-      { icd: "H40.24", n: "Residual angle-closure", cat: "Glaucoma", rtc: "3 Months", p: [{c: "92020", n: "Gonio", f: 28}] },
-      { icd: "H40.81", n: "Glaucoma with increased episcleral venous pressure", cat: "Glaucoma", rtc: "3 Months", p: [{c: "92133", n: "OCT ON", f: 42}] },
-      
-      { icd: "E11.31", n: "DM2 Mild NPDR w/o macular edema", cat: "Retina", rtc: "12 Months", p: [{c: "92250", n: "Fundus Photo", f: 54}] },
-      { icd: "E11.32", n: "DM2 Mild NPDR w/ macular edema", cat: "Retina", rtc: "1-3 Months", p: [{c: "92134", n: "OCT Macula", f: 42}] },
-      { icd: "E11.33", n: "DM2 Mod NPDR w/ macular edema", cat: "Retina", rtc: "1-2 Months", p: [{c: "92134", n: "OCT Macula", f: 42}, {c: "92250", n: "Fundus Photo", f: 54}] },
-      { icd: "E11.34", n: "DM2 Severe NPDR w/ macular edema", cat: "Retina", rtc: "1 Month", p: [{c: "92134", n: "OCT Macula", f: 42}, {c: "92250", n: "Fundus Photo", f: 54}] },
-      { icd: "E11.35", n: "DM2 PDR w/ macular edema", cat: "Retina", rtc: "Urgent", p: [{c: "92134", n: "OCT", f: 42}, {c: "92228", n: "Ext. Ophthal", f: 32}] },
-      { icd: "H35.31", n: "Dry AMD", cat: "Retina", rtc: "6-12 Months", p: [{c: "92134", n: "OCT Macula", f: 42}, {c: "92250", n: "Fundus Photo", f: 54}] },
-      { icd: "H35.32", n: "Wet AMD", cat: "Retina", rtc: "1 Month", p: [{c: "92134", n: "OCT Macula", f: 42}] },
-      { icd: "H34.81", n: "CRVO", cat: "Retina", rtc: "1 Month", p: [{c: "92134", n: "OCT Macula", f: 42}, {c: "92020", n: "Gonio", f: 28}] },
-      { icd: "H34.83", n: "BRVO", cat: "Retina", rtc: "1-2 Months", p: [{c: "92134", n: "OCT Macula", f: 42}] },
-      { icd: "H34.11", n: "CRAO", cat: "Retina", rtc: "STAT 911", p: [{c: "92134", n: "OCT Macula", f: 42}] },
-      { icd: "H34.21", n: "Amaurosis Fugax (TIA)", cat: "Retina", rtc: "STAT", p: [{c: "92250", n: "Fundus Photo", f: 54}] },
-      { icd: "H33.01", n: "Retinal Detachment", cat: "Retina", rtc: "STAT", p: [{c: "92228", n: "Ext. Ophthal", f: 32}, {c: "76512", n: "B-Scan", f: 78}] },
-      { icd: "H33.31", n: "Horseshoe Tear", cat: "Retina", rtc: "Same Day", p: [{c: "92228", n: "Ext. Ophthal", f: 32}] },
-      { icd: "H33.30", n: "Operculated Hole", cat: "Retina", rtc: "2-4 Weeks", p: [{c: "92228", n: "Ext. Ophthal", f: 32}] },
-      { icd: "H35.41", n: "Lattice Degeneration", cat: "Retina", rtc: "12 Months", p: [{c: "92250", n: "Fundus Photo", f: 54}] },
-      { icd: "H43.81", n: "Vitreous Hemorrhage", cat: "Retina", rtc: "1-3 Days", p: [{c: "76512", n: "B-Scan", f: 78}] },
-      { icd: "H43.39", n: "PVD", cat: "Retina", rtc: "4-6 Weeks", p: [{c: "92250", n: "Fundus Photo", f: 54}] },
-      { icd: "H35.03", n: "Hypertensive Retinopathy", cat: "Retina", rtc: "6 Months", p: [{c: "92250", n: "Fundus Photo", f: 54}] },
-      { icd: "H35.81", n: "CME (Irvine-Gass)", cat: "Retina", rtc: "1 Month", p: [{c: "92134", n: "OCT Macula", f: 42}] },
-      { icd: "H35.37", n: "Epiretinal Membrane (ERM)", cat: "Retina", rtc: "6 Months", p: [{c: "92134", n: "OCT Macula", f: 42}] },
-      { icd: "H35.34", n: "Macular Hole", cat: "Retina", rtc: "1-2 Weeks", p: [{c: "92134", n: "OCT Macula", f: 42}] },
-      { icd: "H35.35", n: "Vitreomacular Traction (VMT)", cat: "Retina", rtc: "1 Month", p: [{c: "92134", n: "OCT Macula", f: 42}] },
-      { icd: "H35.71", n: "CSCR", cat: "Retina", rtc: "6-8 Weeks", p: [{c: "92134", n: "OCT Macula", f: 42}] },
-      { icd: "H31.10", n: "Choroidal Nevus", cat: "Retina", rtc: "12 Months", p: [{c: "76512", n: "B-Scan", f: 78}, {c: "92250", n: "Fundus Photo", f: 54}] },
-      { icd: "H35.52", n: "Retinitis Pigmentosa", cat: "Retina", rtc: "6-12 Months", p: [{c: "92083", n: "VF 30-2", f: 65}, {c: "92134", n: "OCT", f: 42}] },
-      { icd: "H35.36", n: "Drusen (Macula)", cat: "Retina", rtc: "12 Months", p: [{c: "92250", n: "Fundus Photo", f: 54}] },
-      { icd: "H35.05", n: "Retinal neovascularization (non-diabetic)", cat: "Retina", rtc: "1 Week", p: [{c: "92228", n: "Ext Ophthal", f: 32}] },
-      { icd: "H35.02", n: "Exudative retinopathy (Coats)", cat: "Retina", rtc: "1 Month", p: [{c: "92250", n: "Fundus Photo", f: 54}] },
-      { icd: "H31.8",  n: "Angioid Streaks", cat: "Retina", rtc: "6 Months", p: [{c: "92134", n: "OCT Macula", f: 42}] },
-      { icd: "H31.3",  n: "Choroidal rupture", cat: "Retina", rtc: "1 Month", p: [{c: "92134", n: "OCT", f: 42}, {c: "92250", n: "Photo", f: 54}] },
-      { icd: "H35.6",  n: "Retinal hemorrhage (Commotio Retinae)", cat: "Retina", rtc: "1 Week", p: [{c: "92134", n: "OCT", f: 42}] },
-      { icd: "H35.89", n: "Berlin's Edema", cat: "Retina", rtc: "1 Week", p: [{c: "92134", n: "OCT", f: 42}] },
-      { icd: "H35.54", n: "Purtscher Retinopathy", cat: "Retina", rtc: "1 Month", p: [{c: "92250", n: "Fundus Photo", f: 54}] },
-      { icd: "H35.61", n: "Valsalva Retinopathy", cat: "Retina", rtc: "1 Month", p: [{c: "92250", n: "Fundus Photo", f: 54}] },
-      { icd: "H35.53", n: "Sickle Cell Retinopathy", cat: "Retina", rtc: "6 Months", p: [{c: "92228", n: "Ext Ophthal", f: 32}] },
-      { icd: "H35.82", n: "Diabetic Macular Ischemia", cat: "Retina", rtc: "3 Months", p: [{c: "92134", n: "OCT", f: 42}] },
-      { icd: "H33.1",  n: "Retinoschisis", cat: "Retina", rtc: "6 Months", p: [{c: "92228", n: "Ext Ophthal", f: 32}] },
-      { icd: "H35.38", n: "Macular Pseudohole", cat: "Retina", rtc: "6 Months", p: [{c: "92134", n: "OCT", f: 42}] },
-      
-      { icd: "H04.12", n: "Severe Dry Eye (Sjogrens/OSD)", cat: "Cornea & OSD", rtc: "1-3 Months", p: [{c: "68761", n: "Punctal Plug", f: 115, g: 10}] },
-      { icd: "T15.01", n: "Corneal Foreign Body", cat: "Cornea & OSD", rtc: "24 Hours", p: [{c: "65222", n: "FB Removal", f: 68, g: 0}, {c: "92071", n: "Bandage CL", f: 38}] },
-      { icd: "S05.01", n: "Corneal Abrasion", cat: "Cornea & OSD", rtc: "24 Hours", p: [{c: "92071", n: "Bandage CL", f: 38}, {c: "65778", n: "Prokera", f: 310, g: 10}] },
-      { icd: "H16.00", n: "Corneal Ulcer (Bacterial)", cat: "Cornea & OSD", rtc: "24 Hours", p: [{c: "92285", n: "Ext Photo", f: 24}] },
-      { icd: "B00.52", n: "HSV Dendritic Keratitis", cat: "Cornea & OSD", rtc: "2-4 Days", p: [{c: "65435", n: "Debridement", f: 145, g: 0}] },
-      { icd: "B02.32", n: "HZO Keratitis", cat: "Cornea & OSD", rtc: "3-7 Days", p: [{c: "92285", n: "Ext Photo", f: 24}] },
-      { icd: "H16.12", n: "Filamentary Keratitis", cat: "Cornea & OSD", rtc: "1-2 Weeks", p: [{c: "65435", n: "Debridement", f: 145, g: 0}, {c: "92071", n: "Bandage CL", f: 38}] },
-      { icd: "H18.42", n: "Band Keratopathy", cat: "Cornea & OSD", rtc: "3-6 Months", p: [{c: "65435", n: "EDTA Chelation", f: 145, g: 0}] },
-      { icd: "H18.51", n: "Fuchs' Endothelial Dystrophy", cat: "Cornea & OSD", rtc: "6-12 Months", p: [{c: "76514", n: "Pachymetry", f: 12}] },
-      { icd: "H18.60", n: "Keratoconus", cat: "Cornea & OSD", rtc: "6-12 Months", p: [{c: "92025", n: "Topography", f: 45}, {c: "92072", n: "Scleral Fit", f: 165}] },
-      { icd: "H18.46", n: "Marginal Keratitis", cat: "Cornea & OSD", rtc: "3-5 Days", p: [] },
-      { icd: "H18.13", n: "Bullous Keratopathy (PBK)", cat: "Cornea & OSD", rtc: "1-3 Months", p: [{c: "65778", n: "Prokera", f: 310, g: 10}, {c: "92071", n: "BCL", f: 38}] },
-      { icd: "H18.89", n: "Recurrent Corneal Erosion (RCE)", cat: "Cornea & OSD", rtc: "1-2 Weeks", p: [{c: "92071", n: "Bandage CL", f: 38}, {c: "65435", n: "Debridement", f: 145, g: 0}] },
-      { icd: "H02.05", n: "Trichiasis", cat: "Cornea & OSD", rtc: "1-3 Months", p: [{c: "67820", n: "Epilation", f: 48, g: 0}] },
-      { icd: "H02.83", n: "Dermatochalasis", cat: "Cornea & OSD", rtc: "12 Months", p: [{c: "92083", n: "VF Taped", f: 65}, {c: "92285", n: "Photo", f: 24}] },
-      { icd: "H02.88", n: "Meibomian Gland Dysfunction", cat: "Cornea & OSD", rtc: "2-3 Months", p: [{c: "92285", n: "Meibography", f: 24}] },
-      { icd: "H00.11", n: "Chalazion", cat: "Cornea & OSD", rtc: "4-6 Weeks", p: [{c: "11900", n: "Steroid Inj", f: 75, g: 0}] },
-      { icd: "H10.89", n: "Epidemic Keratoconjunctivitis (EKC)", cat: "Cornea & OSD", rtc: "1 Week", p: [{c: "65435", n: "Pseudomembrane Peel", f: 145, g: 0}] },
-      { icd: "H11.00", n: "Pterygium", cat: "Cornea & OSD", rtc: "6-12 Months", p: [{c: "92025", n: "Topography", f: 45}] },
-      { icd: "H15.00", n: "Scleritis", cat: "Cornea & OSD", rtc: "1-3 Days", p: [{c: "92285", n: "Ext Photo", f: 24}] },
-      { icd: "H16.14", n: "UV Keratitis (Welder's Flash)", cat: "Cornea & OSD", rtc: "24-48 Hours", p: [{c: "92071", n: "Bandage CL", f: 38}] },
-      { icd: "H18.52", n: "Granular Dystrophy", cat: "Cornea & OSD", rtc: "12 Months", p: [{c: "92285", n: "Ext Photo", f: 24}] },
-      { icd: "H18.54", n: "Lattice Dystrophy", cat: "Cornea & OSD", rtc: "6-12 Months", p: [{c: "92071", n: "Bandage CL", f: 38}] },
-      { icd: "H18.55", n: "Macular Dystrophy", cat: "Cornea & OSD", rtc: "6-12 Months", p: [{c: "76514", n: "Pachymetry", f: 12}] },
-      { icd: "H18.59", n: "EBMD (Map-Dot)", cat: "Cornea & OSD", rtc: "6-12 Months", p: [{c: "92025", n: "Topography", f: 45}] },
+      // GLAUCOMA & ANTERIOR ANGLE (1-25)
+      { icd: "H40.11", n: "Primary open-angle glaucoma", cat: "Glaucoma", rtc: "3 - 4 Months", p: [{c: "92133", n: "OCT ON", f: 42, d: "Scans RNFL & GCC thickness. Requires I&R noting optic disc symmetry and baseline comparison."}, {c: "92083", n: "VF 24-2", f: 65, d: "Threshold testing. Document reliability (<20% false pos/neg) and defect depth/pattern."}, {c: "65855", n: "SLT Laser", f: 245, g: 10, d: "Document energy (mJ), shots, degrees treated (180° or 360°), and post-op IOP."}] },
+      { icd: "H40.12", n: "Low-tension glaucoma (NTG)", cat: "Glaucoma", rtc: "3 - 4 Months", p: [{c: "92133", n: "OCT ON", f: 42, d: "Quantify axonal thinning. Rule out compressive etiology."}, {c: "92083", n: "VF 24-2", f: 65, d: "Monitor for scotomas threatening fixation."}] },
+      { icd: "H40.14", n: "Capsular glaucoma with pseudoexfoliation", cat: "Glaucoma", rtc: "2 - 3 Months", p: [{c: "92133", n: "OCT ON", f: 42, d: "Monitor RNFL loss. PXG progresses faster than POAG."}, {c: "65855", n: "SLT Laser", f: 245, g: 10, d: "Highly pigmented TM responds at lower power. Watch for post-op spikes."}] },
+      { icd: "H40.13", n: "Pigmentary glaucoma", cat: "Glaucoma", rtc: "3 - 4 Months", p: [{c: "92083", n: "VF 24-2", f: 65, d: "Assess functional loss."}, {c: "66761", n: "LPI", f: 320, g: 10, d: "Reverse pupillary block indication. Document angle opening."}] },
+      { icd: "H40.21", n: "Acute angle-closure attack", cat: "Glaucoma", rtc: "1 Day", p: [{c: "92020", n: "Gonioscopy", f: 28, d: "Spaeth/Shaffer grading of all 4 quadrants. Identify complete closure."}, {c: "66761", n: "LPI", f: 320, g: 10, d: "Surgical decompression. Document patency."}] },
+      { icd: "H40.03", n: "Anatomical narrow angle (Suspect)", cat: "Glaucoma", rtc: "3 Months", p: [{c: "92020", n: "Gonioscopy", f: 28, d: "Document iridotrabecular contact (ITC) ≥ 180 degrees."}, {c: "66761", n: "Prophylactic LPI", f: 320, g: 10, d: "Prevent pupillary block. Prior auth may apply."}] },
+      { icd: "H40.51", n: "Angle recession glaucoma", cat: "Glaucoma", rtc: "3 Months", p: [{c: "92020", n: "Gonioscopy", f: 28, d: "Record clock hours of recessed angle and torn ciliary body face."}] },
+      { icd: "H40.52", n: "Neovascular Glaucoma", cat: "Glaucoma", rtc: "Immediate", p: [{c: "92020", n: "Gonioscopy", f: 28, d: "Identify arborizing fibrovascular vessels and PAS."}, {c: "92228", n: "Extended Ophthal.", f: 32, d: "Map ischemic retinal etiology."}] },
+      { icd: "H40.53", n: "Uveitic Glaucoma", cat: "Glaucoma", rtc: "1 Week", p: [{c: "92133", n: "OCT ON", f: 42, d: "Axonal assessment. Prostaglandins contraindicated."}] },
+      { icd: "H40.89", n: "Steroid-induced glaucoma", cat: "Glaucoma", rtc: "2 Weeks", p: [{c: "92133", n: "OCT ON", f: 42, d: "Document IOP response to steroid taper or switch."}] },
+      { icd: "H40.01", n: "Open angle suspect, high risk", cat: "Glaucoma", rtc: "6 Months", p: [{c: "92133", n: "OCT ON", f: 42, d: "Baseline structural evaluation."}, {c: "76514", n: "Pachymetry", f: 12, d: "Central corneal thickness in microns. Once per lifetime."}] },
+      { icd: "H40.05", n: "Ocular hypertension", cat: "Glaucoma", rtc: "6 Months", p: [{c: "92133", n: "OCT ON", f: 42, d: "Rule out subclinical RNFL thinning."}, {c: "76514", n: "Pachymetry", f: 12, d: "OHTS risk stratification."}] },
+      { icd: "H40.4",  n: "Phacolytic / Phacomorphic Glaucoma", cat: "Glaucoma", rtc: "1 Day", p: [{c: "92020", n: "Gonioscopy", f: 28, d: "Identify intumescent lens compressing angle."}] },
+      { icd: "H40.22", n: "Chronic angle-closure glaucoma", cat: "Glaucoma", rtc: "3 Months", p: [{c: "92133", n: "OCT ON", f: 42, d: "Monitor progressive cupping."}, {c: "66761", n: "LPI", f: 320, g: 10, d: "Relieve pupillary block component."}] },
+      { icd: "H42",    n: "Glaucoma in diseases classified elsewhere", cat: "Glaucoma", rtc: "3 Months", p: [{c: "92133", n: "OCT ON", f: 42, d: "Systemic link documentation."}] },
+      { icd: "H40.6",  n: "Glaucoma 2/2 intraocular tumor", cat: "Glaucoma", rtc: "Urgent", p: [{c: "76512", n: "B-Scan", f: 78, d: "Measure tumor dimensions and angle compression."}] },
+      { icd: "H40.15", n: "Residual stage POAG (End-Stage)", cat: "Glaucoma", rtc: "3 Months", p: [{c: "92083", n: "VF 10-2", f: 65, d: "Mandatory: 24-2 exhibits floor effect. Use 10-2 for split fixation."}] },
+      { icd: "H40.23", n: "Intermittent angle-closure", cat: "Glaucoma", rtc: "1 Month", p: [{c: "92020", n: "Gonioscopy", f: 28, d: "Provocative testing documentation."}] },
+      { icd: "H40.24", n: "Residual angle-closure", cat: "Glaucoma", rtc: "3 Months", p: [{c: "92020", n: "Gonioscopy", f: 28, d: "PAS extent documentation."}] },
+      { icd: "H40.81", n: "Glaucoma with increased episcleral venous pressure", cat: "Glaucoma", rtc: "3 Months", p: [{c: "92133", n: "OCT ON", f: 42, d: "Document corkscrew episcleral vessels (Sturge-Weber/CCF)."}] },
+      { icd: "H40.82", n: "Hyperglycemia-induced ocular hypertension", cat: "Glaucoma", rtc: "1 Month", p: [] },
+      { icd: "H40.83", n: "Aqueous misdirection (Malignant Glaucoma)", cat: "Glaucoma", rtc: "STAT", p: [{c: "92020", n: "Gonio", f: 28, d: "Identify uniformly flat anterior chamber with high IOP."}] },
+      { icd: "H40.3",  n: "Glaucoma 2/2 ocular trauma (Ghost Cell)", cat: "Glaucoma", rtc: "1 Week", p: [{c: "92020", n: "Gonio", f: 28, d: "Degenerated RBCs in trabecular meshwork."}] },
+      { icd: "Q15.0",  n: "Congenital Glaucoma (Buphthalmos)", cat: "Glaucoma", rtc: "Urgent", p: [] },
+      { icd: "H40.04", n: "Neurovascular angle closure suspect", cat: "Glaucoma", rtc: "1 Month", p: [{c: "92020", n: "Gonio", f: 28, d: "Undilated gonioscopy to detect early NVA."}] },
+
+      // RETINA, MACULA & VASCULAR (26-75)
+      { icd: "E11.31", n: "DM2 Mild NPDR w/o macular edema", cat: "Retina", rtc: "12 Months", p: [{c: "92250", n: "Fundus Photo", f: 54, d: "Bilateral code. Document microaneurysms and send report to PCP."}] },
+      { icd: "E11.32", n: "DM2 Mild NPDR w/ macular edema", cat: "Retina", rtc: "1-3 Months", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Measure central foveal subfield thickness and cystoid spaces."}] },
+      { icd: "E11.33", n: "DM2 Mod NPDR w/ macular edema", cat: "Retina", rtc: "1-2 Months", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Track fluid dynamics for anti-VEGF co-management."}, {c: "92250", n: "Fundus Photo", f: 54, d: "Document intraretinal hemorrhages and CWS."}] },
+      { icd: "E11.34", n: "DM2 Severe NPDR w/ macular edema", cat: "Retina", rtc: "1 Month", p: [{c: "92134", n: "OCT Macula", f: 42, d: "50% risk of PDR. Document 4-2-1 rule criteria."}] },
+      { icd: "E11.35", n: "DM2 PDR w/ macular edema", cat: "Retina", rtc: "Urgent", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Quantify edema."}, {c: "92228", n: "Extended Ophthal.", f: 32, d: "Mandatory color drawing of NVD/NVE clock hours."}] },
+      { icd: "H35.31", n: "Dry AMD (Nonexudative)", cat: "Retina", rtc: "6-12 Months", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Monitor for subretinal fluid conversion."}, {c: "92250", n: "Fundus Photo", f: 54, d: "Drusen progression baseline."}] },
+      { icd: "H35.32", n: "Wet AMD (Exudative CNVM)", cat: "Retina", rtc: "1 Month", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Serial tracking of SRF, IRF, and PED response to anti-VEGF."}] },
+      { icd: "H34.81", n: "Central retinal vein occlusion (CRVO)", cat: "Retina", rtc: "1 Month", p: [{c: "92134", n: "OCT Macula", f: 42, d: "CME quantification."}, {c: "92020", n: "Gonioscopy", f: 28, d: "Mandatory 90-day NVG surveillance at every monthly check."}] },
+      { icd: "H34.83", n: "Branch retinal vein occlusion (BRVO)", cat: "Retina", rtc: "1-2 Months", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Measure sector-induced macular edema."}] },
+      { icd: "H34.11", n: "Central retinal artery occlusion (CRAO)", cat: "Retina", rtc: "STAT 911", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Hyper-reflective inner retinal ischemia. Transfer immediately to Stroke Center."}] },
+      { icd: "H34.21", n: "Amaurosis Fugax (Transient Retinal Ischemia)", cat: "Retina", rtc: "STAT", p: [{c: "92250", n: "Fundus Photo", f: 54, d: "Search for Hollenhorst emboli. Order urgent carotid duplex & echo."}] },
+      { icd: "H34.23", n: "Branch retinal artery occlusion (BRAO)", cat: "Retina", rtc: "Immediate", p: [{c: "92083", n: "VF 24-2", f: 65, d: "Map permanent sectoral altitudinal field cut."}] },
+      { icd: "H33.01", n: "Retinal Detachment w/ single break", cat: "Retina", rtc: "STAT", p: [{c: "92228", n: "Extended Ophthal.", f: 32, d: "Detailed retina drawing. State whether macula is ON or OFF."}, {c: "76512", n: "B-Scan", f: 78, d: "Necessary if media opacity obscures view."}] },
+      { icd: "H33.31", n: "Horseshoe Tear of Retina", cat: "Retina", rtc: "Same Day", p: [{c: "92228", n: "Extended Ophthal.", f: 32, d: "Map break location and Shafer's sign. Urgent laser retinopexy referral."}] },
+      { icd: "H33.30", n: "Operculated Retinal Hole", cat: "Retina", rtc: "2-4 Weeks", p: [{c: "92228", n: "Extended Ophthal.", f: 32, d: "Document released operculum and lack of traction."}] },
+      { icd: "H35.41", n: "Lattice Degeneration of Retina", cat: "Retina", rtc: "12 Months", p: [{c: "92250", n: "Fundus Photo", f: 54, d: "Peripheral widefield baseline."}] },
+      { icd: "H43.81", n: "Spontaneous Vitreous Hemorrhage", cat: "Retina", rtc: "1-3 Days", p: [{c: "76512", n: "B-Scan Ultrasound", f: 78, d: "Mandatory to rule out underlying retinal detachment when fundus obscured."}] },
+      { icd: "H43.39", n: "Posterior Vitreous Detachment (PVD)", cat: "Retina", rtc: "4-6 Weeks", p: [{c: "92250", n: "Fundus Photo", f: 54, d: "Document Weiss ring. Perform scleral depression 360°."}] },
+      { icd: "H35.03", n: "Hypertensive Retinopathy", cat: "Retina", rtc: "6 Months", p: [{c: "92250", n: "Fundus Photo", f: 54, d: "Document AV nicking, copper wiring, and in-office BP."}] },
+      { icd: "H35.81", n: "CME (Irvine-Gass Syndrome)", cat: "Retina", rtc: "1 Month", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Track petaloid cysts. Topical NSAID + steroid synergy."}] },
+      { icd: "H35.37", n: "Epiretinal Membrane (ERM)", cat: "Retina", rtc: "6 Months", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Measure traction and retinal wrinkling. Check Amsler grid."}] },
+      { icd: "H35.34", n: "Macular Hole (Full-Thickness)", cat: "Retina", rtc: "1-2 Weeks", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Measure minimum hole diameter (<400µm has higher surgical closure rate)."}] },
+      { icd: "H35.35", n: "Vitreomacular Traction (VMT)", cat: "Retina", rtc: "1 Month", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Measure adhesion diameter and intraretinal cysts."}] },
+      { icd: "H35.71", n: "Central Serous Chorioretinopathy (CSCR)", cat: "Retina", rtc: "6-8 Weeks", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Measure subfoveal fluid dome. Corticosteroids strictly contraindicated."}] },
+      { icd: "H31.10", n: "Choroidal Nevus", cat: "Retina", rtc: "12 Months", p: [{c: "76512", n: "B-Scan", f: 78, d: "Acoustic density & thickness."}, {c: "92250", n: "Fundus Photo", f: 54, d: "Document basal diameter."}] },
+      { icd: "H35.52", n: "Retinitis Pigmentosa", cat: "Retina", rtc: "6-12 Months", p: [{c: "92083", n: "VF 30-2", f: 65, d: "Map ring scotoma."}, {c: "92134", n: "OCT Macula", f: 42, d: "Screen for secondary treatable CME."}] },
+      { icd: "H35.36", n: "Drusen (Macula Degenerative)", cat: "Retina", rtc: "12 Months", p: [{c: "92250", n: "Fundus Photo", f: 54, d: "Document soft confluent vs hard drusen."}] },
+      { icd: "H35.05", n: "Retinal Neovascularization (Non-diabetic)", cat: "Retina", rtc: "1 Week", p: [{c: "92228", n: "Extended Ophthal.", f: 32, d: "Map sea-fan neovascularization."}] },
+      { icd: "H35.02", n: "Exudative Retinopathy (Coats Disease)", cat: "Retina", rtc: "1 Month", p: [{c: "92250", n: "Fundus Photo", f: 54, d: "Document telangiectatic aneurysms."}] },
+      { icd: "H31.8",  n: "Angioid Streaks", cat: "Retina", rtc: "6 Months", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Screen for CNV conversion. Rule out pseudoxanthoma elasticum."}] },
+      { icd: "H31.3",  n: "Choroidal Rupture", cat: "Retina", rtc: "1 Month", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Monitor for secondary choroidal neovascularization."}] },
+      { icd: "H35.6",  n: "Commotio Retinae (Berlin's Edema)", cat: "Retina", rtc: "1 Week", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Disruption of photoreceptor ellipsoid zone post-blunt trauma."}] },
+      { icd: "H35.54", n: "Purtscher Retinopathy", cat: "Retina", rtc: "1 Month", p: [{c: "92250", n: "Fundus Photo", f: 54, d: "Polygonal areas of whitening (Purtscher flecken) post-trauma/pancreatitis."}] },
+      { icd: "H35.61", n: "Valsalva Retinopathy", cat: "Retina", rtc: "1 Month", p: [{c: "92250", n: "Fundus Photo", f: 54, d: "Preretinal/sub-ILM hemorrhage post-straining."}] },
+      { icd: "H35.53", n: "Sickle Cell Retinopathy", cat: "Retina", rtc: "6 Months", p: [{c: "92228", n: "Extended Ophthal.", f: 32, d: "Goldberg staging and sea-fan neovascularization."}] },
+      { icd: "H35.82", n: "Diabetic Macular Ischemia", cat: "Retina", rtc: "3 Months", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Enlarged foveal avascular zone (FAZ)."}] },
+      { icd: "H33.1",  n: "Senile Retinoschisis", cat: "Retina", rtc: "6 Months", p: [{c: "92228", n: "Extended Ophthal.", f: 32, d: "Differentiate from RD (smooth, absolute scotoma, no pigment)."}] },
+      { icd: "H35.38", n: "Macular Pseudohole", cat: "Retina", rtc: "6 Months", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Steep foveal edges with preserved photoreceptor layer."}] },
+      { icd: "H35.04", n: "Retinal Microaneurysms", cat: "Retina", rtc: "12 Months", p: [{c: "92250", n: "Fundus Photo", f: 54, d: "Annual surveillance."}] },
+      { icd: "H35.01", n: "Changes in retinal vascular appearance", cat: "Retina", rtc: "12 Months", p: [] },
+      { icd: "H35.06", n: "Retinal Vasculitis", cat: "Retina", rtc: "1 Week", p: [{c: "92228", n: "Extended Ophthal.", f: 32, d: "Vascular sheathing documentation."}] },
+      { icd: "H31.0",  n: "Chorioretinal Scars", cat: "Retina", rtc: "12 Months", p: [] },
+      { icd: "H35.42", n: "Snail Track Degeneration", cat: "Retina", rtc: "12 Months", p: [] },
+      { icd: "H35.43", n: "Pavingstone Degeneration", cat: "Retina", rtc: "12 Months", p: [] },
+      { icd: "H35.44", n: "Age-related reticular degeneration", cat: "Retina", rtc: "12 Months", p: [] },
+      { icd: "H35.45", n: "Secondary pigmentary degeneration", cat: "Retina", rtc: "12 Months", p: [] },
+      { icd: "H35.46", n: "Secondary vitreoretinal degeneration", cat: "Retina", rtc: "12 Months", p: [] },
+      { icd: "H35.72", n: "Serous RPE Detachment (PED)", cat: "Retina", rtc: "1 Month", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Dome-shaped RPE elevation."}] },
+      { icd: "H35.73", n: "Hemorrhagic RPE Detachment", cat: "Retina", rtc: "1 Month", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Sub-RPE blood collection."}] },
+      { icd: "H31.4",  n: "Choroidal Detachment", cat: "Retina", rtc: "1 Week", p: [{c: "76512", n: "B-Scan", f: 78, d: "Smooth, dome-shaped apposition."}] },
+
+      // CORNEA, OCULAR SURFACE & EYELID (76-140)
+      { icd: "H04.12", n: "Severe Dry Eye Syndrome (KCS)", cat: "Cornea & OSD", rtc: "1-3 Months", p: [{c: "68761", n: "Punctal Occlusion", f: 115, g: 10, d: "Document failure of conservative drops. Append -E1 to -E4."}] },
+      { icd: "T15.01", n: "Corneal Foreign Body", cat: "Cornea & OSD", rtc: "24 Hours", p: [{c: "65222", n: "Corneal FB Removal", f: 68, g: 0, d: "Slit-lamp removal. Document depth, rust ring, and Seidel test."}, {c: "92071", n: "Bandage Contact Lens", f: 38, d: "Therapeutic healing."}] },
+      { icd: "S05.01", n: "Corneal Abrasion", cat: "Cornea & OSD", rtc: "24 Hours", p: [{c: "92071", n: "Bandage Contact Lens", f: 38, d: "Relieve pain and promote re-epithelialization."}, {c: "65778", n: "Prokera Amniotic Membrane", f: 310, g: 10, d: "Severe non-healing defect."}] },
+      { icd: "H16.00", n: "Bacterial Corneal Ulcer", cat: "Cornea & OSD", rtc: "24 Hours", p: [{c: "92285", n: "External Photo", f: 24, d: "Millimeter measurement of infiltrate and staining defect."}] },
+      { icd: "B00.52", n: "Herpes Simplex Dendritic Keratitis", cat: "Cornea & OSD", rtc: "2-4 Days", p: [{c: "65435", n: "Corneal Debridement", f: 145, g: 0, d: "Mechanical removal of viral load. Steroids contraindicated."}] },
+      { icd: "B02.32", n: "Herpes Zoster Ophthalmicus (HZO)", cat: "Cornea & OSD", rtc: "3-7 Days", p: [{c: "92285", n: "External Photo", f: 24, d: "Document Hutchinson's sign and pseudodendrites."}] },
+      { icd: "H16.12", n: "Filamentary Keratitis", cat: "Cornea & OSD", rtc: "1-2 Weeks", p: [{c: "65435", n: "Filament Debridement", f: 145, g: 0, d: "Remove epithelial filaments."}, {c: "92071", n: "Bandage CL", f: 38, d: "Comfort & healing."}] },
+      { icd: "H18.42", n: "Band Keratopathy", cat: "Cornea & OSD", rtc: "3-6 Months", p: [{c: "65435", n: "EDTA Chelation", f: 145, g: 0, d: "Chemical debridement of calcium in Bowman's layer."}] },
+      { icd: "H18.51", n: "Fuchs' Endothelial Dystrophy", cat: "Cornea & OSD", rtc: "6-12 Months", p: [{c: "76514", n: "Pachymetry", f: 12, d: "Track morning vs evening CCT edema."}] },
+      { icd: "H18.60", n: "Keratoconus", cat: "Cornea & OSD", rtc: "6-12 Months", p: [{c: "92025", n: "Corneal Topography", f: 45, d: "Axial curvature & K-max."}, {c: "92072", n: "Scleral/RGP Fit", f: 165, d: "Specialty lens fitting management."}] },
+      { icd: "H18.46", n: "Marginal Keratitis (Staph)", cat: "Cornea & OSD", rtc: "3-5 Days", p: [] },
+      { icd: "H18.13", n: "Pseudophakic Bullous Keratopathy", cat: "Cornea & OSD", rtc: "1-3 Months", p: [{c: "65778", n: "Prokera", f: 310, g: 10, d: "Amniotic membrane placement for pain."}, {c: "92071", n: "Bandage CL", f: 38, d: "Bullae protection."}] },
+      { icd: "H18.89", n: "Recurrent Corneal Erosion (RCE)", cat: "Cornea & OSD", rtc: "1-2 Weeks", p: [{c: "92071", n: "Bandage CL", f: 38, d: "Continuous wear."}, {c: "65435", n: "Debridement", f: 145, g: 0, d: "Debride non-adherent epithelium."}] },
+      { icd: "H02.05", n: "Trichiasis", cat: "Cornea & OSD", rtc: "1-3 Months", p: [{c: "67820", n: "Epilation", f: 48, g: 0, d: "Forceps epilation. Billed per encounter, not per lash."}] },
+      { icd: "H02.83", n: "Dermatochalasis", cat: "Cornea & OSD", rtc: "12 Months", p: [{c: "92083", n: "VF Taped/Untaped", f: 65, d: "Paired test proving >30% superior field recovery."}, {c: "92285", n: "Photo", f: 24, d: "MRD-1 ≤ 2mm."}] },
+      { icd: "H02.88", n: "Meibomian Gland Dysfunction (MGD)", cat: "Cornea & OSD", rtc: "2-3 Months", p: [{c: "92285", n: "Meibography", f: 24, d: "Infrared gland dropout mapping."}] },
+      { icd: "H00.11", n: "Chalazion", cat: "Cornea & OSD", rtc: "4-6 Weeks", p: [{c: "11900", n: "Intralesional Steroid Inj", f: 75, g: 0, d: "Triamcinolone injection for chronic granuloma."}] },
+      { icd: "H10.89", n: "Epidemic Keratoconjunctivitis (EKC)", cat: "Cornea & OSD", rtc: "1 Week", p: [{c: "65435", n: "Pseudomembrane Peel", f: 145, g: 0, d: "Prevent conjunctival symblepharon."}] },
+      { icd: "H11.00", n: "Pterygium", cat: "Cornea & OSD", rtc: "6-12 Months", p: [{c: "92025", n: "Topography", f: 45, d: "Measure induced irregular astigmatism."}] },
+      { icd: "H15.00", n: "Scleritis", cat: "Cornea & OSD", rtc: "1-3 Days", p: [{c: "92285", n: "External Photo", f: 24, d: "Deep vascular injection. Phenylephrine will not blanch."}] },
+      { icd: "H16.14", n: "Photokeratitis (Welder's Flash)", cat: "Cornea & OSD", rtc: "24-48 Hours", p: [{c: "92071", n: "Bandage CL", f: 38, d: "Pain relief. Never dispense home anesthetics."}] },
+      { icd: "H18.52", n: "Granular Corneal Dystrophy", cat: "Cornea & OSD", rtc: "12 Months", p: [{c: "92285", n: "External Photo", f: 24, d: "Document clear intervening stroma."}] },
+      { icd: "H18.54", n: "Lattice Corneal Dystrophy", cat: "Cornea & OSD", rtc: "6-12 Months", p: [{c: "92071", n: "Bandage CL", f: 38, d: "Therapeutic erosion management."}] },
+      { icd: "H18.55", n: "Macular Corneal Dystrophy", cat: "Cornea & OSD", rtc: "6-12 Months", p: [{c: "76514", n: "Pachymetry", f: 12, d: "Measure diffuse limbus-to-limbus thinning."}] },
+      { icd: "H18.59", n: "Epithelial Basement Membrane Dystrophy (EBMD)", cat: "Cornea & OSD", rtc: "6-12 Months", p: [{c: "92025", n: "Topography", f: 45, d: "Identify irregular map/fingerprint astigmatism."}] },
       { icd: "H02.10", n: "Ectropion", cat: "Cornea & OSD", rtc: "3-6 Months", p: [] },
-      { icd: "H02.00", n: "Entropion", cat: "Cornea & OSD", rtc: "2-4 Weeks", p: [{c: "92071", n: "Bandage CL", f: 38}] },
-      { icd: "H02.40", n: "Ptosis", cat: "Cornea & OSD", rtc: "6-12 Months", p: [{c: "92083", n: "VF Taped", f: 65}] },
+      { icd: "H02.00", n: "Entropion", cat: "Cornea & OSD", rtc: "2-4 Weeks", p: [{c: "92071", n: "Bandage CL", f: 38, d: "Corneal protection from cilia."}] },
+      { icd: "H02.40", n: "Blepharoptosis", cat: "Cornea & OSD", rtc: "6-12 Months", p: [{c: "92083", n: "VF Taped/Untaped", f: 65, d: "Prove visual field limitation."}] },
       { icd: "H01.00", n: "Blepharitis", cat: "Cornea & OSD", rtc: "2-3 Months", p: [] },
-      { icd: "H00.01", n: "Hordeolum", cat: "Cornea & OSD", rtc: "1-2 Weeks", p: [] },
+      { icd: "H00.01", n: "Hordeolum Externum (Stye)", cat: "Cornea & OSD", rtc: "1-2 Weeks", p: [] },
       { icd: "H10.02", n: "Bacterial Conjunctivitis", cat: "Cornea & OSD", rtc: "1 Week", p: [] },
       { icd: "H10.13", n: "Allergic Conjunctivitis", cat: "Cornea & OSD", rtc: "2-4 Weeks", p: [] },
       { icd: "H10.45", n: "Giant Papillary Conjunctivitis (GPC)", cat: "Cornea & OSD", rtc: "3-4 Weeks", p: [] },
@@ -326,96 +454,131 @@
       { icd: "H15.10", n: "Episcleritis", cat: "Cornea & OSD", rtc: "1-2 Weeks", p: [] },
       { icd: "H18.41", n: "Arcus Senilis", cat: "Cornea & OSD", rtc: "12 Months", p: [] },
       { icd: "H16.21", n: "Mooren's Ulcer", cat: "Cornea & OSD", rtc: "Urgent", p: [] },
-      { icd: "H18.46", n: "Terrien Marginal Degeneration", cat: "Cornea & OSD", rtc: "3 Months", p: [{c: "92025", n: "Topography", f: 45}] },
-      { icd: "H18.49", n: "Salzmann Nodular Degeneration", cat: "Cornea & OSD", rtc: "6 Months", p: [{c: "65435", n: "Debridement", f: 145, g: 0}] },
+      { icd: "H18.46", n: "Terrien's Marginal Degeneration", cat: "Cornea & OSD", rtc: "3 Months", p: [{c: "92025", n: "Topography", f: 45, d: "Measure against-the-rule astigmatism."}] },
+      { icd: "H18.49", n: "Salzmann's Nodular Degeneration", cat: "Cornea & OSD", rtc: "6 Months", p: [{c: "65435", n: "Superficial Debridement", f: 145, g: 0, d: "Keratectomy of nodules."}] },
       { icd: "H18.44", n: "Spheroidal Degeneration", cat: "Cornea & OSD", rtc: "6 Months", p: [] },
       { icd: "B60.1",  n: "Acanthamoeba Keratitis", cat: "Cornea & OSD", rtc: "Daily", p: [] },
-      { icd: "B36.9",  n: "Fungal Keratitis", cat: "Cornea & OSD", rtc: "Daily", p: [] },
+      { icd: "B36.9",  n: "Fungal Keratitis (Fusarium/Candida)", cat: "Cornea & OSD", rtc: "Daily", p: [] },
       { icd: "H16.22", n: "Phlyctenular Keratoconjunctivitis", cat: "Cornea & OSD", rtc: "1 Week", p: [] },
       { icd: "H16.29", n: "Superior Limbic Keratoconjunctivitis (SLK)", cat: "Cornea & OSD", rtc: "2 Weeks", p: [] },
-      { icd: "T49.9",  n: "Toxic Keratoconjunctivitis", cat: "Cornea & OSD", rtc: "1 Week", p: [] },
+      { icd: "T49.9",  n: "Toxic Keratoconjunctivitis (Preservative)", cat: "Cornea & OSD", rtc: "1 Week", p: [] },
       { icd: "H02.89", n: "Floppy Eyelid Syndrome", cat: "Cornea & OSD", rtc: "3 Months", p: [] },
-      { icd: "D48.5",  n: "Sebaceous Gland Carcinoma (Suspect)", cat: "Cornea & OSD", rtc: "Urgent", p: [] },
-      
-      { icd: "H20.01", n: "Acute Iridocyclitis (Anterior Uveitis)", cat: "Uveitis", rtc: "2-4 Days", p: [{c: "92020", n: "Gonio", f: 28}, {c: "92134", n: "OCT Macula", f: 42}] },
-      { icd: "H20.02", n: "Recurrent Iridocyclitis", cat: "Uveitis", rtc: "2-4 Days", p: [{c: "92134", n: "OCT Macula", f: 42}] },
-      { icd: "H20.9",  n: "Iridocyclitis w/ Posterior Synechiae", cat: "Uveitis", rtc: "1-2 Days", p: [{c: "92020", n: "Gonio", f: 28}] },
-      { icd: "H30.00", n: "Toxoplasmosis Chorioretinitis", cat: "Uveitis", rtc: "1-2 Weeks", p: [{c: "92134", n: "OCT Macula", f: 42}, {c: "92250", n: "Photo", f: 54}] },
-      { icd: "H30.10", n: "Ocular Histoplasmosis (POHS)", cat: "Uveitis", rtc: "3-6 Months", p: [{c: "92134", n: "OCT Macula", f: 42}, {c: "92250", n: "Photo", f: 54}] },
-      { icd: "H30.23", n: "Pars Planitis (Intermediate Uveitis)", cat: "Uveitis", rtc: "1-2 Months", p: [{c: "92134", n: "OCT Macula", f: 42}, {c: "92228", n: "Ext Ophthal", f: 32}] },
-      { icd: "B50.9",  n: "Toxocariasis", cat: "Uveitis", rtc: "1 Month", p: [] },
-      { icd: "A51.4",  n: "Syphilitic Uveitis", cat: "Uveitis", rtc: "Urgent", p: [] },
-      { icd: "D86.8",  n: "Sarcoid Uveitis", cat: "Uveitis", rtc: "1 Month", p: [] },
-      { icd: "H20.8",  n: "VKH Syndrome", cat: "Uveitis", rtc: "Urgent", p: [] },
+      { icd: "D48.5",  n: "Sebaceous Gland Carcinoma Suspect", cat: "Cornea & OSD", rtc: "Urgent", p: [] },
+      { icd: "H11.04", n: "Peripheral pterygium", cat: "Cornea & OSD", rtc: "12 Months", p: [] },
+      { icd: "H11.8",  n: "Conjunctival Chalasis", cat: "Cornea & OSD", rtc: "3 Months", p: [] },
+      { icd: "H11.2",  n: "Conjunctival Concretions", cat: "Cornea & OSD", rtc: "PRN", p: [{c: "65205", n: "Foreign Body Removal (Conj)", f: 45, g: 0, d: "Excision of calcified concretions."}] },
+      { icd: "H10.5",  n: "Blepharoconjunctivitis", cat: "Cornea & OSD", rtc: "1 Month", p: [] },
+      { icd: "H16.3",  n: "Interstitial Keratitis", cat: "Cornea & OSD", rtc: "1-2 Weeks", p: [] },
+      { icd: "H16.8",  n: "Thygeson's Superficial Punctate Keratitis", cat: "Cornea & OSD", rtc: "1-2 Weeks", p: [] },
+      { icd: "H18.0",  n: "Krukenberg Spindle", cat: "Cornea & OSD", rtc: "6 Months", p: [] },
+      { icd: "H18.7",  n: "Descemetocele", cat: "Cornea & OSD", rtc: "STAT", p: [] },
+      { icd: "H18.2",  n: "Corneal Edema (Unspecified)", cat: "Cornea & OSD", rtc: "1 Month", p: [{c: "76514", n: "Pachymetry", f: 12, d: "Measure thickness."}] },
+      { icd: "H04.2",  n: "Epiphora (Nasolacrimal Duct Obstruction)", cat: "Cornea & OSD", rtc: "3 Months", p: [{c: "68840", n: "Probing of Lacrimal Canaliculi", f: 95, g: 10, d: "Dilation and irrigation."}] },
+      { icd: "H04.3",  n: "Acute Dacryocystitis", cat: "Cornea & OSD", rtc: "2 Days", p: [] },
+      { icd: "H04.4",  n: "Chronic Dacryocystitis", cat: "Cornea & OSD", rtc: "1 Month", p: [] },
+      { icd: "H05.0",  n: "Preseptal Cellulitis", cat: "Cornea & OSD", rtc: "24-48 Hours", p: [] },
+
+      // UVEITIS & INFLAMMATORY (141-170)
+      { icd: "H20.01", n: "Acute Anterior Uveitis (Iridocyclitis)", cat: "Uveitis", rtc: "2-4 Days", p: [{c: "92020", n: "Gonioscopy", f: 28, d: "Rule out PAS/trabeculitis."}, {c: "92134", n: "OCT Macula", f: 42, d: "Screen for uveitic cystoid macular edema."}] },
+      { icd: "H20.02", n: "Recurrent Acute Iridocyclitis", cat: "Uveitis", rtc: "2-4 Days", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Monitor for secondary macular edema. Order HLA-B27 panel."}] },
+      { icd: "H20.9",  n: "Iridocyclitis w/ Posterior Synechiae", cat: "Uveitis", rtc: "1-2 Days", p: [{c: "92020", n: "Gonioscopy", f: 28, d: "Identify seclusio pupillae and iris bombe."}] },
+      { icd: "H30.00", n: "Toxoplasmosis Chorioretinitis", cat: "Uveitis", rtc: "1-2 Weeks", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Retinal thickening assessment."}, {c: "92250", n: "Fundus Photo", f: 54, d: "Document satellite lesion adjacent to scar."}] },
+      { icd: "H30.10", n: "Presumed Ocular Histoplasmosis (POHS)", cat: "Uveitis", rtc: "3-6 Months", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Screen for CNVM in histo triads."}, {c: "92250", n: "Fundus Photo", f: 54, d: "Document punched-out scars."}] },
+      { icd: "H30.23", n: "Pars Planitis (Intermediate Uveitis)", cat: "Uveitis", rtc: "1-2 Months", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Serial CME tracking."}, {c: "92228", n: "Extended Ophthal.", f: 32, d: "Scleral depression of snowbanks."}] },
+      { icd: "B50.9",  n: "Ocular Toxocariasis", cat: "Uveitis", rtc: "1 Month", p: [] },
+      { icd: "A51.4",  n: "Syphilitic Uveitis (Chorioretinitis)", cat: "Uveitis", rtc: "Urgent", p: [] },
+      { icd: "D86.8",  n: "Ocular Sarcoidosis", cat: "Uveitis", rtc: "1 Month", p: [{c: "92134", n: "OCT Macula", f: 42, d: "CME & choroidal granuloma tracking."}] },
+      { icd: "H20.8",  n: "Vogt-Koyanagi-Harada (VKH) Disease", cat: "Uveitis", rtc: "Urgent", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Multilobular exudative detachments."}] },
       { icd: "H20.8",  n: "Sympathetic Ophthalmia", cat: "Uveitis", rtc: "Urgent", p: [] },
-      { icd: "H30.8",  n: "Birdshot Chorioretinopathy", cat: "Uveitis", rtc: "1 Month", p: [] },
-      { icd: "H20.1",  n: "Fuchs Heterochromic Iridocyclitis", cat: "Uveitis", rtc: "3 Months", p: [] },
-      { icd: "H20.0",  n: "Posner-Schlossman Syndrome", cat: "Uveitis", rtc: "2 Days", p: [{c: "92020", n: "Gonio", f: 28}] },
-      
-      { icd: "H46.9",  n: "Optic Neuritis", cat: "Neuro", rtc: "Immediate", p: [{c: "92133", n: "OCT ON", f: 42}, {c: "92083", n: "VF 24-2", f: 65}] },
-      { icd: "H47.01", n: "NAION", cat: "Neuro", rtc: "1-2 Weeks", p: [{c: "92083", n: "VF 24-2", f: 65}, {c: "92133", n: "OCT ON", f: 42}] },
-      { icd: "H47.02", n: "Giant Cell Arteritis (AION)", cat: "Neuro", rtc: "STAT", p: [{c: "92083", n: "VF 24-2", f: 65}] },
-      { icd: "H47.11", n: "Papilledema (IIH)", cat: "Neuro", rtc: "Urgent", p: [{c: "92133", n: "OCT ON", f: 42}, {c: "92083", n: "VF 24-2", f: 65}] },
-      { icd: "H47.32", n: "Optic Disc Drusen", cat: "Neuro", rtc: "6-12 Months", p: [{c: "76512", n: "B-Scan", f: 78}, {c: "92083", n: "VF", f: 65}] },
-      { icd: "H49.01", n: "Third (CN III) Nerve Palsy", cat: "Neuro", rtc: "STAT", p: [{c: "92285", n: "Photo", f: 24}] },
-      { icd: "H49.11", n: "Fourth (CN IV) Nerve Palsy", cat: "Neuro", rtc: "2-4 Weeks", p: [{c: "92060", n: "Sensorimotor", f: 65}] },
-      { icd: "H49.21", n: "Sixth (CN VI) Nerve Palsy", cat: "Neuro", rtc: "2-4 Weeks", p: [{c: "92060", n: "Sensorimotor", f: 65}] },
-      { icd: "G70.00", n: "Ocular Myasthenia Gravis", cat: "Neuro", rtc: "1-2 Months", p: [{c: "92285", n: "Ice Pack Photo", f: 24}, {c: "92060", n: "Sensorimotor", f: 65}] },
-      { icd: "H57.02", n: "Horner's Syndrome", cat: "Neuro", rtc: "STAT", p: [{c: "92285", n: "Pupil Photo", f: 24}] },
-      { icd: "H57.04", n: "Adie's Tonic Pupil", cat: "Neuro", rtc: "3-6 Months", p: [{c: "92285", n: "Photo", f: 24}] },
-      { icd: "H51.23", n: "Internuclear Ophthalmoplegia (INO)", cat: "Neuro", rtc: "Urgent", p: [{c: "92060", n: "Sensorimotor", f: 65}] },
-      { icd: "H05.24", n: "Thyroid Eye Disease (Graves')", cat: "Neuro", rtc: "1-3 Months", p: [{c: "92083", n: "VF 24-2", f: 65}, {c: "92285", n: "Hertel Photo", f: 24}, {c: "92133", n: "OCT ON", f: 42}] },
-      { icd: "H47.20", n: "Optic Atrophy", cat: "Neuro", rtc: "6-12 Months", p: [{c: "92133", n: "OCT ON", f: 42}, {c: "92083", n: "VF 24-2", f: 65}] },
-      { icd: "H53.46", n: "Homonymous Hemianopia (Post-Stroke)", cat: "Neuro", rtc: "3-6 Months", p: [{c: "92083", n: "VF Esterman", f: 65}] },
+      { icd: "H30.8",  n: "Birdshot Chorioretinopathy", cat: "Uveitis", rtc: "1 Month", p: [{c: "92083", n: "Visual Field", f: 65, d: "Peripheral field loss tracking."}] },
+      { icd: "H20.1",  n: "Fuchs' Heterochromic Iridocyclitis", cat: "Uveitis", rtc: "3 Months", p: [{c: "92020", n: "Gonioscopy", f: 28, d: "Fine angle vessels that bleed (Amsler sign)."}] },
+      { icd: "H20.0",  n: "Posner-Schlossman Syndrome (Glaucomatocyclitic)", cat: "Uveitis", rtc: "2 Days", p: [{c: "92020", n: "Gonioscopy", f: 28, d: "Open angle during high IOP spike."}] },
+      { icd: "H30.9",  n: "Chorioretinitis (Unspecified)", cat: "Uveitis", rtc: "2 Weeks", p: [] },
+      { icd: "H21.0",  n: "Hyphema", cat: "Uveitis", rtc: "Daily", p: [{c: "92020", n: "Gonioscopy", f: 28, d: "Avoid early; repeat at 4 weeks for angle recession."}] },
+      { icd: "H21.1",  n: "Iris Rubeosis (NVI)", cat: "Uveitis", rtc: "Immediate", p: [{c: "92020", n: "Gonioscopy", f: 28, d: "Pupillary border vs angle neovascularization."}] },
+      { icd: "H21.2",  n: "Iris Atrophy", cat: "Uveitis", rtc: "6 Months", p: [] },
+      { icd: "H21.3",  n: "Cyst of Iris / Ciliary Body", cat: "Uveitis", rtc: "6 Months", p: [{c: "76512", n: "B-Scan", f: 78, d: "Differentiate cyst from melanoma."}] },
+      { icd: "H21.4",  n: "Pupillary Membranes (Seclusio/Occlusio)", cat: "Uveitis", rtc: "1 Week", p: [] },
+
+      // NEURO-OPTOMETRY, ORBIT & CRANIAL NERVES (171-215)
+      { icd: "H46.9",  n: "Optic Neuritis", cat: "Neuro", rtc: "Immediate", p: [{c: "92133", n: "OCT ON", f: 42, d: "Axonal tracking."}, {c: "92083", n: "VF 24-2", f: 65, d: "Central/cecocentral scotoma mapping. Brain MRI mandatory."}] },
+      { icd: "H47.01", n: "NAION (Nonarteritic Ischemic Optic Neuropathy)", cat: "Neuro", rtc: "1-2 Weeks", p: [{c: "92083", n: "VF 24-2", f: 65, d: "Map altitudinal field defect."}, {c: "92133", n: "OCT ON", f: 42, d: "Document segmental disc edema."}] },
+      { icd: "H47.02", n: "Giant Cell Arteritis (Arteritic AION)", cat: "Neuro", rtc: "STAT", p: [{c: "92083", n: "VF 24-2", f: 65, d: "Severe loss. Order STAT ESR, CRP, Platelets. High-dose IV steroids."}] },
+      { icd: "H47.11", n: "Papilledema (Idiopathic Intracranial Hypertension)", cat: "Neuro", rtc: "Urgent", p: [{c: "92133", n: "OCT ON", f: 42, d: "Frisén staging."}, {c: "92083", n: "VF 24-2", f: 65, d: "Enlarged blind spot. Urgent Brain MRI/MRV."}] },
+      { icd: "H47.32", n: "Optic Disc Drusen", cat: "Neuro", rtc: "6-12 Months", p: [{c: "76512", n: "B-Scan Ultrasound", f: 78, d: "Confirm calcification at low gain to differentiate from true papilledema."}] },
+      { icd: "H49.01", n: "Third (Oculomotor) Nerve Palsy", cat: "Neuro", rtc: "STAT", p: [{c: "92285", n: "Photo", f: 24, d: "Pupil-involving 3rd nerve = P-Com aneurysm. STAT CTA/MRA transfer."}] },
+      { icd: "H49.11", n: "Fourth (Trochlear) Nerve Palsy", cat: "Neuro", rtc: "2-4 Weeks", p: [{c: "92060", n: "Sensorimotor Exam", f: 65, d: "Park-Bielschowsky 3-step test and double Maddox rod."}] },
+      { icd: "H49.21", n: "Sixth (Abducens) Nerve Palsy", cat: "Neuro", rtc: "2-4 Weeks", p: [{c: "92060", n: "Sensorimotor Exam", f: 65, d: "Lateral rectus abduction deficit prism neutralization."}] },
+      { icd: "G70.00", n: "Ocular Myasthenia Gravis", cat: "Neuro", rtc: "1-2 Months", p: [{c: "92285", n: "External Photo", f: 24, d: "Document positive ice pack test (≥2mm ptosis improvement)."}] },
+      { icd: "H57.02", n: "Horner's Syndrome", cat: "Neuro", rtc: "STAT", p: [{c: "92285", n: "Pupil Photo", f: 24, d: "Painful Horner's = Carotid dissection until proven otherwise."}] },
+      { icd: "H57.04", n: "Adie's Tonic Pupil", cat: "Neuro", rtc: "3-6 Months", p: [{c: "92285", n: "Photo", f: 24, d: "Constriction to dilute pilocarpine (0.125%) confirming denervation."}] },
+      { icd: "H51.23", n: "Internuclear Ophthalmoplegia (INO)", cat: "Neuro", rtc: "Urgent", p: [{c: "92060", n: "Sensorimotor Exam", f: 65, d: "MLF lesion. Impaired adduction with contralateral nystagmus."}] },
+      { icd: "H05.24", n: "Thyroid Eye Disease (Graves' Orbitopathy)", cat: "Neuro", rtc: "1-3 Months", p: [{c: "92083", n: "VF 24-2", f: 65, d: "Screen for apical compressive neuropathy."}, {c: "92285", n: "Hertel Photo", f: 24, d: "Document exophthalmometry."}] },
+      { icd: "H47.20", n: "Optic Atrophy (Unspecified)", cat: "Neuro", rtc: "6-12 Months", p: [{c: "92133", n: "OCT ON", f: 42, d: "Quantify axonal loss."}, {c: "92083", n: "VF 24-2", f: 65, d: "Check for bitemporal hemianopia."}] },
+      { icd: "H53.46", n: "Homonymous Hemianopia (Post-Stroke)", cat: "Neuro", rtc: "3-6 Months", p: [{c: "92083", n: "VF Esterman", f: 65, d: "State driving certification testing."}] },
       { icd: "H57.03", n: "Argyll Robertson Pupil", cat: "Neuro", rtc: "1 Month", p: [] },
       { icd: "H57.01", n: "Physiologic Anisocoria", cat: "Neuro", rtc: "12 Months", p: [] },
-      { icd: "Q14.2",  n: "Optic Disc Pit", cat: "Neuro", rtc: "6 Months", p: [{c: "92134", n: "OCT Macula", f: 42}] },
-      { icd: "Q14.2",  n: "Morning Glory Syndrome", cat: "Neuro", rtc: "6 Months", p: [{c: "92134", n: "OCT", f: 42}] },
-      { icd: "H47.21", n: "Leber Hereditary Optic Neuropathy (LHON)", cat: "Neuro", rtc: "1 Month", p: [{c: "92133", n: "OCT ON", f: 42}] },
-      { icd: "H47.09", n: "Toxic Optic Neuropathy", cat: "Neuro", rtc: "1 Month", p: [{c: "92083", n: "VF", f: 65}] },
-      { icd: "H46.8",  n: "Papillitis", cat: "Neuro", rtc: "Urgent", p: [{c: "92133", n: "OCT ON", f: 42}] },
-      
-      { icd: "Z79.89", n: "Plaquenil Toxicity Screening", cat: "High-Risk Rx", rtc: "12 Months", p: [{c: "92134", n: "OCT Macula", f: 42}, {c: "92083", n: "VF 10-2", f: 65}] },
-      { icd: "Z79.82", n: "Aspirin/Anticoagulant Use", cat: "High-Risk Rx", rtc: "PRN", p: [] },
-      { icd: "T43.01", n: "TCA Anticholinergic Toxicity", cat: "High-Risk Rx", rtc: "6 Months", p: [{c: "92020", n: "Gonio", f: 28}] },
+      { icd: "Q14.2",  n: "Optic Disc Pit", cat: "Neuro", rtc: "6 Months", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Screen for serous macular detachment."}] },
+      { icd: "Q14.2",  n: "Morning Glory Syndrome", cat: "Neuro", rtc: "6 Months", p: [{c: "92134", n: "OCT ON", f: 42, d: "Document funnel-shaped disc excavated anomaly."}] },
+      { icd: "H47.21", n: "Leber's Hereditary Optic Neuropathy", cat: "Neuro", rtc: "1 Month", p: [{c: "92133", n: "OCT ON", f: 42, d: "Telangiectatic circumpapillary microangiopathy."}] },
+      { icd: "H47.09", n: "Toxic / Nutritional Optic Neuropathy", cat: "Neuro", rtc: "1 Month", p: [{c: "92083", n: "VF 24-2", f: 65, d: "Cecocentral scotoma mapping."}] },
+      { icd: "H46.8",  n: "Papillitis", cat: "Neuro", rtc: "Urgent", p: [{c: "92133", n: "OCT ON", f: 42, d: "Document hyperemic swollen nerve head."}] },
+      { icd: "H53.41", n: "Scotoma involving central area", cat: "Neuro", rtc: "3 Months", p: [{c: "92083", n: "VF 10-2", f: 65, d: "Central 10 degree scotoma."}] },
+      { icd: "H53.42", n: "Scotoma of blind spot area", cat: "Neuro", rtc: "6 Months", p: [] },
+      { icd: "H53.43", n: "Sector or arcuate field defects", cat: "Neuro", rtc: "6 Months", p: [] },
+      { icd: "H53.45", n: "Other localized visual field defect", cat: "Neuro", rtc: "6 Months", p: [] },
+      { icd: "H53.48", n: "Generalized contraction of visual field", cat: "Neuro", rtc: "6 Months", p: [] },
+
+      // SYSTEMIC TOXICITY & HIGH-RISK RX (216-225)
+      { icd: "Z79.89", n: "Plaquenil (Hydroxychloroquine) Screening", cat: "High-Risk Rx", rtc: "12 Months", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Spectral-domain OCT. Look for flying saucer sign (photoreceptor loss)."}, {c: "92083", n: "VF 10-2", f: 65, d: "Mandatory: 24-2 is unacceptable under AAO guidelines (use 24-2C for Asians)."}] },
+      { icd: "Z79.82", n: "Long term use of aspirin / anticoagulant", cat: "High-Risk Rx", rtc: "PRN", p: [] },
+      { icd: "T43.01", n: "Tricyclic Antidepressant Toxicity", cat: "High-Risk Rx", rtc: "6 Months", p: [{c: "92020", n: "Gonioscopy", f: 28, d: "Assess angle closure risk from anticholinergic mydriasis."}] },
+      { icd: "Z79.52", n: "Long term systemic steroid use", cat: "High-Risk Rx", rtc: "6 Months", p: [{c: "92133", n: "OCT ON", f: 42, d: "Monitor steroid-induced IOP spike and PSC cataract."}] },
+      { icd: "Z79.89", n: "Tamoxifen Retinopathy Screening", cat: "High-Risk Rx", rtc: "12 Months", p: [{c: "92134", n: "OCT Macula", f: 42, d: "Refractile paramacular crystalline deposits."}] },
+      { icd: "Z79.89", n: "Elmiron (Pentosan) Maculopathy Screening", cat: "High-Risk Rx", rtc: "12 Months", p: [{c: "92134", n: "OCT Macula", f: 42, d: "RPE hyperpigmentation and atrophy."}] },
       { icd: "H26.33", n: "Steroid-Induced PSC Cataract", cat: "Cataract", rtc: "6 Months", p: [] },
-      
-      { icd: "H53.00", n: "Amblyopia (Refractive/Deprivation)", cat: "Peds", rtc: "2-3 Months", p: [{c: "92060", n: "Sensorimotor", f: 65}, {c: "92015", n: "Refraction", f: 40}] },
-      { icd: "H50.01", n: "Accommodative Esotropia", cat: "Peds", rtc: "3-4 Months", p: [{c: "92060", n: "Sensorimotor", f: 65}, {c: "92015", n: "Refraction", f: 40}] },
-      { icd: "H50.11", n: "Intermittent Exotropia (IXT)", cat: "Peds", rtc: "4-6 Months", p: [{c: "92060", n: "Sensorimotor", f: 65}] },
-      { icd: "H51.11", n: "Convergence Insufficiency", cat: "Peds", rtc: "6-8 Weeks", p: [{c: "92060", n: "Sensorimotor", f: 65}, {c: "92065", n: "Vision Therapy", f: 95}] },
-      { icd: "H51.12", n: "Convergence Excess", cat: "Peds", rtc: "3-6 Months", p: [{c: "92060", n: "Sensorimotor", f: 65}] },
-      { icd: "H52.53", n: "Accommodative Spasm", cat: "Peds", rtc: "2-4 Weeks", p: [{c: "92015", n: "Refraction", f: 40}] },
-      { icd: "H50.81", n: "Duane Syndrome", cat: "Peds", rtc: "6 Months", p: [{c: "92060", n: "Sensorimotor", f: 65}] },
-      { icd: "H50.89", n: "Brown Syndrome", cat: "Peds", rtc: "6 Months", p: [{c: "92060", n: "Sensorimotor", f: 65}] },
-      { icd: "H50.89", n: "Double Elevator Palsy", cat: "Peds", rtc: "6 Months", p: [] },
-      { icd: "H52.51", n: "Accommodative Insufficiency", cat: "Peds", rtc: "3 Months", p: [{c: "92060", n: "Sensorimotor", f: 65}] },
-      { icd: "H51.8",  n: "Convergence Paralysis", cat: "Peds", rtc: "1 Month", p: [{c: "92060", n: "Sensorimotor", f: 65}] },
-      { icd: "H51.8",  n: "Spasm of Near Reflex", cat: "Peds", rtc: "1 Month", p: [{c: "92060", n: "Sensorimotor", f: 65}] },
-      
-      { icd: "H25.13", n: "NS Cataract", cat: "Cataract", rtc: "6-12 Months", p: [] },
-      { icd: "H25.01", n: "Cortical Cataract", cat: "Cataract", rtc: "6-12 Months", p: [] },
-      { icd: "H26.49", n: "PCO (Secondary Cataract)", cat: "Cataract", rtc: "1-3 Months", p: [{c: "66821", n: "YAG", f: 285, g: 90}] },
-      { icd: "Z96.1",  n: "Pseudophakia (Co-Management)", cat: "Cataract", rtc: "1 Day/Week/Month", p: [] },
-      
-      { icd: "H52.13", n: "Myopia", cat: "Refractive", rtc: "12 Months", p: [] },
-      { icd: "H52.03", n: "Hyperopia", cat: "Refractive", rtc: "12 Months", p: [] },
-      { icd: "H52.22", n: "Astigmatism", cat: "Refractive", rtc: "12 Months", p: [] },
+
+      // PEDIATRICS, STRABISMUS & MOTILITY (226-245)
+      { icd: "H53.00", n: "Amblyopia (Refractive / Deprivation)", cat: "Peds", rtc: "2-3 Months", p: [{c: "92060", n: "Sensorimotor Exam", f: 65, d: "Stereopsis, motility, and crowded visual acuity."}, {c: "92015", n: "Refraction", f: 40, d: "Wet cycloplegic refraction."}] },
+      { icd: "H50.01", n: "Accommodative Esotropia", cat: "Peds", rtc: "3-4 Months", p: [{c: "92060", n: "Sensorimotor Exam", f: 65, d: "Prism alternate cover test at distance & near."}, {c: "92015", n: "Cycloplegic Refraction", f: 40, d: "Prescribe full hyperopic plus."}] },
+      { icd: "H50.11", n: "Intermittent Exotropia (IXT)", cat: "Peds", rtc: "4-6 Months", p: [{c: "92060", n: "Sensorimotor Exam", f: 65, d: "Newcastle Control Score and distance divergence."}] },
+      { icd: "H51.11", n: "Convergence Insufficiency", cat: "Peds", rtc: "6-8 Weeks", p: [{c: "92060", n: "Sensorimotor Exam", f: 65, d: "Near point of convergence (NPC) and PFV."}, {c: "92065", n: "Orthoptic Training", f: 95, d: "In-office vision therapy per CITT protocol."}] },
+      { icd: "H51.12", n: "Convergence Excess", cat: "Peds", rtc: "3-6 Months", p: [{c: "92060", n: "Sensorimotor Exam", f: 65, d: "Gradient AC/A ratio calculation."}] },
+      { icd: "H52.53", n: "Accommodative Spasm (Pseudomyopia)", cat: "Peds", rtc: "2-4 Weeks", p: [{c: "92015", n: "Cycloplegic Refraction", f: 40, d: "Unmask true baseline refractive state."}] },
+      { icd: "H50.81", n: "Duane Retraction Syndrome", cat: "Peds", rtc: "6 Months", p: [{c: "92060", n: "Sensorimotor Exam", f: 65, d: "Document globe retraction and palpebral narrowing on adduction."}] },
+      { icd: "H50.89", n: "Brown Syndrome", cat: "Peds", rtc: "6 Months", p: [{c: "92060", n: "Sensorimotor Exam", f: 65, d: "Inability to elevate in adduction (SO tendon sheath)."}] },
+      { icd: "H52.51", n: "Accommodative Insufficiency", cat: "Peds", rtc: "3 Months", p: [{c: "92060", n: "Sensorimotor Exam", f: 65, d: "Measure amplitude of accommodation (Hofstetter's rule)."}] },
+      { icd: "H51.8",  n: "Convergence Paralysis", cat: "Peds", rtc: "1 Month", p: [{c: "92060", n: "Sensorimotor", f: 65, d: "Document total lack of near convergence."}] },
+      { icd: "H50.3",  n: "Intermittent Esotropia", cat: "Peds", rtc: "3 Months", p: [] },
+      { icd: "H50.4",  n: "Microtropia (Monofixation Syndrome)", cat: "Peds", rtc: "6 Months", p: [{c: "92060", n: "Sensorimotor", f: 65, d: "4-diopter base-out prism test."}] },
+      { icd: "H55.0",  n: "Nystagmus (Congenital/Acquired)", cat: "Peds", rtc: "6 Months", p: [{c: "92060", n: "Sensorimotor", f: 65, d: "Identify null point and anomalous head posture."}] },
+
+      // CATARACT & SURGICAL CO-MANAGEMENT (246-250)
+      { icd: "H25.13", n: "Age-related Nuclear Cataract", cat: "Cataract", rtc: "6-12 Months", p: [] },
+      { icd: "H25.01", n: "Cortical Age-related Cataract", cat: "Cataract", rtc: "6-12 Months", p: [] },
+      { icd: "H26.49", n: "Posterior Capsular Opacification (PCO)", cat: "Cataract", rtc: "1-3 Months", p: [{c: "66821", n: "YAG Laser Capsulotomy", f: 285, g: 90, d: "90-day surgical global. Laser pulses to clear central axis."}] },
+      { icd: "Z96.1",  n: "Pseudophakia (Post-Op Co-Management)", cat: "Cataract", rtc: "1 Day / 1 Week / 1 Month", p: [] },
+      { icd: "H26.2",  n: "Complicated Cataract (Uveitic/Glaucomatous)", cat: "Cataract", rtc: "3 Months", p: [] },
+
+      // REFRACTIVE ERRORS (251-255)
+      { icd: "H52.13", n: "Myopia (Bilateral)", cat: "Refractive", rtc: "12 Months", p: [] },
+      { icd: "H52.03", n: "Hypermetropia (Bilateral)", cat: "Refractive", rtc: "12 Months", p: [] },
+      { icd: "H52.22", n: "Regular Astigmatism (Bilateral)", cat: "Refractive", rtc: "12 Months", p: [] },
       { icd: "H52.4",  n: "Presbyopia", cat: "Refractive", rtc: "12-24 Months", p: [] },
       { icd: "H52.31", n: "Anisometropia", cat: "Refractive", rtc: "12 Months", p: [] }
     ];
 
     function getReimbursementPearl(cat, icd) {
-      if (icd.includes("H40.21") || icd.includes("H34.1") || icd.includes("H47.02")) return "STAT referral or ophthalmic emergency warrants a 99215. Document high MDM threat to life/vision.";
-      if (cat === "Glaucoma") return "Stagger OCT (92133) and VF (92083) across different visits to optimize cash flow and avoid NCCI modifier -59 scrutiny.";
-      if (cat === "Retina") return "Fundus photo (92250) is inherently bilateral. Never append -RT/-LT or bill 2 units. Bill 99214 if actively managing edema/exudation.";
-      if (cat === "Cornea & OSD" && icd.includes("T15")) return "Append Modifier -25 to E/M code if a significant, separate evaluation was performed before FB removal.";
-      if (cat === "Cornea & OSD") return "For dry eye procedures (punctal plugs), ensure conservative treatment failure (artificial tears) is documented to support medical necessity.";
-      if (cat === "Neuro") return "Prioritize E/M (99XXX) over eye codes (92XXX) as neuro cases inherently meet moderate/high MDM criteria.";
-      if (cat === "Cataract") return "Medicare denies OCT/VF for routine cataracts. Only bill if comorbid pathology exists. Append -55 if co-managing post-op.";
-      if (cat === "Peds") return "Refraction (92015) is statutorily non-covered by Medicare. Bill directly to patient or vision plan.";
-      if (cat === "High-Risk Rx") return "Standard 24-2 VF is not accepted for Plaquenil screening. Must use 10-2. Do not bill 92134 and 92250 on same day without distinct pathology.";
-      return "Align E/M level with documented Medical Decision Making (MDM) rather than defaulting to generic routine eye codes.";
+      if (icd.includes("H40.21") || icd.includes("H34.1") || icd.includes("H47.02")) return "STAT referral or emergency warrants 99215. Document high MDM threat to life or vision.";
+      if (cat === "Glaucoma") return "Stagger OCT (92133) and Visual Field (92083) across alternating follow-ups to optimize cash flow and prevent NCCI modifier -59 scrutiny.";
+      if (cat === "Retina") return "Fundus photo (92250) is inherently bilateral. Never append -RT/-LT or bill 2 units. Bill 99214 if managing edema or laser retinopexy.";
+      if (cat === "Cornea & OSD" && icd.includes("T15")) return "Append Modifier -25 to E/M code if a significant, separate evaluation was performed before foreign body removal.";
+      if (cat === "Cornea & OSD") return "For dry eye procedures (punctal plugs), ensure documented failure of conservative drops is explicitly charted.";
+      if (cat === "Neuro") return "Prioritize E/M (99XXX) over eye codes (92XXX) as neuro conditions inherently fulfill moderate-to-high MDM complexity.";
+      if (cat === "Cataract") return "Medicare denies OCT/VF for routine cataracts. Only bill if comorbid pathology exists. Append -55 if co-managing.";
+      if (cat === "Peds") return "Refraction (92015) is statutorily non-covered by Medicare. Bill directly to patient or secondary vision carrier.";
+      if (cat === "High-Risk Rx") return "Standard 24-2 VF is unacceptable for Plaquenil screening under AAO guidelines. Must perform 10-2 threshold.";
+      return "Align E/M level with documented Medical Decision Making (MDM) rather than defaulting to generic eye codes.";
     }
 
     let cart = [];
@@ -427,20 +590,39 @@
 
     function switchTab(tabId) {
       currentTab = tabId;
+      document.getElementById('viewDb').classList.add('hidden');
+      document.getElementById('viewCart').classList.add('hidden');
+      document.getElementById('viewCart').classList.remove('flex');
+      document.getElementById('viewAcademy').classList.add('hidden');
+      document.getElementById('viewAcademy').classList.remove('flex');
+      
+      document.getElementById('btnTabDb').className = 'tab-inactive pb-2 text-xs md:text-sm font-bold flex items-center gap-1.5 transition';
+      document.getElementById('btnTabCart').className = 'tab-inactive pb-2 text-xs md:text-sm font-bold flex items-center gap-1.5 transition';
+      document.getElementById('btnTabAcademy').className = 'tab-inactive pb-2 text-xs md:text-sm font-bold flex items-center gap-1.5 transition';
+
+      const sidebar = document.getElementById('sidebarPanel');
+      const mainPanel = document.getElementById('mainContentPanel');
+
       if (tabId === 'db') {
         document.getElementById('viewDb').classList.remove('hidden');
-        document.getElementById('viewCart').classList.add('hidden');
-        document.getElementById('viewCart').classList.remove('flex');
-        document.getElementById('btnTabDb').className = 'tab-active pb-2 text-sm font-bold flex items-center gap-1.5 transition';
-        document.getElementById('btnTabCart').className = 'tab-inactive pb-2 text-sm font-bold flex items-center gap-1.5 transition';
-      } else {
-        document.getElementById('viewDb').classList.add('hidden');
+        document.getElementById('btnTabDb').className = 'tab-active pb-2 text-xs md:text-sm font-bold flex items-center gap-1.5 transition';
+        sidebar.classList.remove('hidden');
+        mainPanel.className = 'lg:col-span-8 flex flex-col gap-5 relative';
+      } else if (tabId === 'cart') {
         document.getElementById('viewCart').classList.remove('hidden');
         document.getElementById('viewCart').classList.add('flex');
-        document.getElementById('btnTabDb').className = 'tab-inactive pb-2 text-sm font-bold flex items-center gap-1.5 transition';
-        document.getElementById('btnTabCart').className = 'tab-active pb-2 text-sm font-bold flex items-center gap-1.5 transition';
+        document.getElementById('btnTabCart').className = 'tab-active pb-2 text-xs md:text-sm font-bold flex items-center gap-1.5 transition';
+        sidebar.classList.remove('hidden');
+        mainPanel.className = 'lg:col-span-8 flex flex-col gap-5 relative';
         renderCart();
+      } else if (tabId === 'academy') {
+        document.getElementById('viewAcademy').classList.remove('hidden');
+        document.getElementById('viewAcademy').classList.add('flex');
+        document.getElementById('btnTabAcademy').className = 'tab-active pb-2 text-xs md:text-sm font-bold flex items-center gap-1.5 transition';
+        sidebar.classList.add('hidden');
+        mainPanel.className = 'lg:col-span-12 flex flex-col gap-5 relative';
       }
+      lucide.createIcons();
     }
 
     function filterDiagnoses() {
@@ -451,7 +633,7 @@
       filteredList = DB_RAW.filter(c => {
         const mS = c.icd.toLowerCase().includes(search) || c.n.toLowerCase().includes(search);
         const mC = cat === "all" || c.cat.includes(cat);
-        const mP = !procOnly || (c.p && c.p.length > 0 && c.p.some(pr => pr.g !== undefined)); 
+        const mP = !procOnly || (c.p && c.p.length > 0); 
         return mS && mC && mP;
       });
       renderDatabase();
@@ -489,29 +671,35 @@
     }
 
     function loadDbCondition() {
-      if(currentTab !== 'db') switchTab('db');
+      if(currentTab !== 'db' && currentTab !== 'cart') switchTab('db');
       document.getElementById("ogIcdBadge").innerText = activeCondition.icd;
       document.getElementById("ogDiagName").innerText = activeCondition.n;
       document.getElementById("ogRtc").innerText = activeCondition.rtc;
+      document.getElementById("ogCategory").innerText = activeCondition.cat;
       document.getElementById("reimbursementPearl").innerText = getReimbursementPearl(activeCondition.cat, activeCondition.icd);
 
       const procEl = document.getElementById("ogProceduresList");
       procEl.innerHTML = "";
       if (!activeCondition.p || activeCondition.p.length === 0) {
-        procEl.innerHTML = `<p class="text-xs text-slate-400 italic">No specialized procedures indicated.</p>`;
+        procEl.innerHTML = `<p class="text-xs text-slate-400 italic">No specialized diagnostic or surgical procedures indicated for standard presentation.</p>`;
       } else {
         activeCondition.p.forEach(p => {
           procEl.innerHTML += `
-            <div class="p-3 border rounded-xl bg-slate-50 flex items-center justify-between">
-              <div>
-                <span class="font-mono text-xs font-bold text-slate-800">${p.c}</span> <span class="text-xs text-slate-600">${p.n}</span>
-                ${p.g !== undefined ? `<span class="text-[9px] bg-purple-100 text-purple-700 px-1 rounded ml-2">${p.g}-Day Global</span>` : ''}
+            <div class="p-3 border border-slate-200 rounded-xl bg-slate-50 flex flex-col gap-1.5">
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="font-mono text-xs font-bold text-slate-900">${p.c}</span> 
+                  <span class="text-xs font-semibold text-slate-700 ml-1">${p.n}</span>
+                  ${p.g !== undefined ? `<span class="text-[9px] bg-purple-100 text-purple-700 font-bold px-1.5 py-0.5 rounded ml-2">${p.g}-Day Global</span>` : ''}
+                </div>
+                <span class="text-xs font-mono font-bold text-emerald-600">+$${p.f}</span>
               </div>
-              <span class="text-xs font-mono font-bold text-emerald-600">+$${p.f}</span>
+              <p class="text-[11px] text-slate-500 leading-relaxed">${p.d || 'Requires formal Interpretation and Report (I&R) and medical necessity order in chart.'}</p>
             </div>
           `;
         });
       }
+      lucide.createIcons();
     }
 
     function addToCart(condition) {
@@ -589,31 +777,35 @@
         const div = document.createElement("div");
         div.className = `p-3 border rounded-xl flex flex-col gap-2 ${item.isPrimary ? 'bg-blue-50/50 border-blue-300' : 'bg-white border-slate-200'}`;
         let stagingHtml = item.base.cat === 'Glaucoma' ? `
-          <select onchange="updateCartItem(${idx}, 'stage', this.value)" class="text-[10px] p-1 border rounded">
-            <option value="1" ${item.stage==='1'?'selected':''}>Mild</option><option value="2" ${item.stage==='2'?'selected':''}>Mod</option><option value="3" ${item.stage==='3'?'selected':''}>Sev</option>
+          <select onchange="updateCartItem(${idx}, 'stage', this.value)" class="text-[10px] p-1 border rounded bg-white">
+            <option value="1" ${item.stage==='1'?'selected':''}>Mild</option>
+            <option value="2" ${item.stage==='2'?'selected':''}>Moderate</option>
+            <option value="3" ${item.stage==='3'?'selected':''}>Severe</option>
           </select>` : '';
 
         div.innerHTML = `
           <div class="flex justify-between items-start">
             <div class="flex items-center gap-2">
-              <input type="radio" name="primaryDiag" onchange="setPrimary(${idx})" ${item.isPrimary ? 'checked' : ''} title="Set Primary" class="w-3 h-3 text-blue-600">
+              <input type="radio" name="primaryDiag" onchange="setPrimary(${idx})" ${item.isPrimary ? 'checked' : ''} title="Set Primary" class="w-3.5 h-3.5 text-blue-600">
               <span class="font-mono text-xs font-bold text-blue-700">${fullIcd}</span>
               <span class="text-xs font-semibold text-slate-800">${item.base.n}</span>
             </div>
             <button onclick="removeFromCart(${idx})" class="text-slate-400 hover:text-red-500"><i data-lucide="x" class="w-4 h-4"></i></button>
           </div>
-          <div class="flex items-center gap-2 mt-1">
-            <select onchange="updateCartItem(${idx}, 'lat', this.value)" class="text-[10px] p-1 border rounded">
-              <option value="3" ${item.lat==='3'?'selected':''}>OU</option><option value="1" ${item.lat==='1'?'selected':''}>OD</option><option value="2" ${item.lat==='2'?'selected':''}>OS</option>
+          <div class="flex items-center gap-2 mt-0.5">
+            <select onchange="updateCartItem(${idx}, 'lat', this.value)" class="text-[10px] p-1 border rounded bg-white font-medium">
+              <option value="3" ${item.lat==='3'?'selected':''}>OU (Bilateral)</option>
+              <option value="1" ${item.lat==='1'?'selected':''}>OD (Right Eye)</option>
+              <option value="2" ${item.lat==='2'?'selected':''}>OS (Left Eye)</option>
             </select>
             ${stagingHtml}
-            ${item.isPrimary ? '<span class="text-[9px] bg-blue-600 text-white px-1.5 py-0.5 rounded">PRIMARY</span>' : ''}
+            ${item.isPrimary ? '<span class="text-[9px] bg-blue-600 text-white font-bold px-1.5 py-0.5 rounded">PRIMARY POINTER (1)</span>' : `<span class="text-[9px] text-slate-400 font-bold">SECONDARY POINTER (${idx+1})</span>`}
           </div>
         `;
         cartEl.appendChild(div);
       });
 
-      // Generate Procedures Array
+      // Synchronize cart procedures
       cartProcedures = [];
       cart.forEach((item, cartIdx) => {
         if (!item.base.p) return;
@@ -632,25 +824,25 @@
       const procEl = document.getElementById("cartProceduresList");
       procEl.innerHTML = "";
       if (cartProcedures.length === 0 && cart.length > 0) {
-        procEl.innerHTML = `<p class="text-xs text-slate-400 italic">No special procedures indicated for current cart.</p>`;
+        procEl.innerHTML = `<p class="text-xs text-slate-400 italic">No special procedures indicated for current encounter.</p>`;
         return;
       }
 
       cartProcedures.forEach((p, idx) => {
         const div = document.createElement("div");
         div.className = "p-2.5 border rounded-lg bg-slate-50 flex items-center justify-between";
-        let pointerOptions = cart.map((c, i) => `<option value="${i}" ${p.pointer === i ? 'selected' : ''}>Pt. ${i+1} (${c.base.icd})</option>`).join("");
+        let pointerOptions = cart.map((c, i) => `<option value="${i}" ${p.pointer === i ? 'selected' : ''}>Line ${i+1}: ${c.base.icd}</option>`).join("");
         div.innerHTML = `
           <div class="flex items-center gap-3">
-            <input type="checkbox" onchange="toggleProc(${idx}, this.checked)" ${p.checked?'checked':''} class="rounded w-4 h-4 text-blue-600">
+            <input type="checkbox" onchange="toggleProc(${idx}, this.checked)" ${p.checked?'checked':''} class="rounded w-4 h-4 text-blue-600 cursor-pointer">
             <div>
-              <span class="font-mono text-xs font-bold text-slate-800">${p.cpt}</span> <span class="text-xs text-slate-600">${p.name}</span>
-              ${p.global !== undefined ? `<span class="text-[9px] bg-purple-100 text-purple-700 px-1 rounded ml-2">${p.global}-Day Global</span>` : ''}
+              <span class="font-mono text-xs font-bold text-slate-800">${p.cpt}</span> <span class="text-xs text-slate-700">${p.name}</span>
+              ${p.global !== undefined ? `<span class="text-[9px] bg-purple-100 text-purple-700 px-1 rounded ml-2 font-bold">${p.global}-Day Global</span>` : ''}
             </div>
           </div>
           <div class="flex items-center gap-2">
-            <select onchange="updateProcPointer(${idx}, this.value)" class="text-[10px] p-1 border rounded bg-white">${pointerOptions}</select>
-            <span class="text-xs font-bold text-emerald-600">+$${p.fee}</span>
+            <select onchange="updateProcPointer(${idx}, this.value)" class="text-[10px] p-1 border rounded bg-white font-medium" title="Link to Diagnosis Line">${pointerOptions}</select>
+            <span class="text-xs font-bold text-emerald-600 font-mono">+$${p.fee}</span>
           </div>
         `;
         procEl.appendChild(div);
@@ -669,31 +861,35 @@
     }
 
     function triggerUpdate() {
-      if(currentTab !== 'cart') return; // Only process calculation if in cart
+      if(currentTab !== 'cart') return;
       
       const payer = document.getElementById("payerSelect").value;
       const setting = document.getElementById("settingSelect").value;
       const multiplier = payer === "commercial" ? 1.15 : 1.0;
       const settingAdj = setting === "hospital" ? 0.75 : 1.0;
 
-      // CC Warning
-      if (payer === 'medicare' && cart.some(c => c.base.cat === 'Refractive' && c.isPrimary)) document.getElementById("ccWarning").classList.remove("hidden");
-      else document.getElementById("ccWarning").classList.add("hidden");
+      // CC Warning check
+      if (payer === 'medicare' && cart.some(c => c.base.cat === 'Refractive' && c.isPrimary)) {
+        document.getElementById("ccWarning").classList.remove("hidden");
+      } else {
+        document.getElementById("ccWarning").classList.add("hidden");
+      }
 
-      // Exam calculations
       const examData = getExamFeeAndCode();
       document.getElementById("examOutputBadge").innerText = `${examData.c} ($${(examData.f * multiplier * settingAdj).toFixed(2)})`;
       
       let total = 0;
-      if (payer === "vision") total = 55.00;
-      else {
+      if (payer === "vision") {
+        total = 55.00;
+      } else {
         total += examData.f * multiplier * settingAdj;
-        cartProcedures.forEach(p => { if (p.checked) total += p.fee * multiplier; });
+        cartProcedures.forEach(p => { 
+          if (p.checked) total += p.fee * multiplier; 
+        });
       }
       document.getElementById("totalFeeDisplay").innerText = `$${total.toFixed(2)}`;
-      document.getElementById("rtcDisplay").innerText = cart.length > 0 ? cart[0].base.rtc : "—";
 
-      // NCCI & DOS Alerts
+      // NCCI & Frequency Alerts
       const hasOCT = cartProcedures.some(p => p.checked && (p.cpt === '92133' || p.cpt === '92134'));
       const hasPhoto = cartProcedures.some(p => p.checked && p.cpt === '92250');
       document.getElementById("ncciAlert").classList.toggle("hidden", !(hasOCT && hasPhoto));
@@ -704,7 +900,9 @@
         const today = new Date();
         const diffMonths = (today.getFullYear() - lastDate.getFullYear()) * 12 + (today.getMonth() - lastDate.getMonth());
         document.getElementById("dosAlert").classList.toggle("hidden", diffMonths >= 6);
-      } else document.getElementById("dosAlert").classList.add("hidden");
+      } else {
+        document.getElementById("dosAlert").classList.add("hidden");
+      }
 
       generateMacro();
     }
@@ -712,28 +910,36 @@
     function generateMacro() {
       const ehrOut = document.getElementById("ehrOutput");
       if (cart.length === 0) {
-        ehrOut.innerText = "Add conditions to cart to generate macro.";
+        ehrOut.innerText = "Add conditions to cart to generate EHR macro.";
         return;
       }
 
-      let text = `=========================================\nEHR AUDIT-DEFENSE & SUPERBILL MACRO\n=========================================\n\nASSESSMENT & PLAN:\n`;
+      let text = `=======================================================\n`;
+      text += `OPHTHALMIC ENCOUNTER SUMMARY & SUPERBILL EXPORT\n`;
+      text += `=======================================================\n\n`;
+      text += `ASSESSMENT & DIAGNOSTIC POINTERS:\n`;
+      
       cart.forEach((c, idx) => {
         let fullIcd = c.base.icd;
         if (c.base.cat === "Glaucoma" && fullIcd.startsWith("H40.1")) fullIcd = `${fullIcd.slice(0,6)}${c.lat}${c.stage}`;
         else if (["Glaucoma", "Retina", "Cornea & OSD"].includes(c.base.cat)) fullIcd = `${fullIcd}.${c.lat}`;
-        text += `${idx + 1}. ${fullIcd} - ${c.base.n} ${c.isPrimary ? '[PRIMARY]' : ''}\n   - RTC: ${c.base.rtc}\n`;
+        text += `Line ${idx + 1}: ${fullIcd} - ${c.base.n} ${c.isPrimary ? '[PRIMARY]' : ''}\n   Plan / Recall: ${c.base.rtc}\n`;
       });
 
       const exam = getExamFeeAndCode();
-      let mdmText = examLevel === 'stable' ? "Low complexity, 1 stable chronic illness." : examLevel === 'moderate' ? "Moderate complexity, 1 progressing illness or Rx management." : "High complexity, severe exacerbation/threat to vision.";
-      text += `\nLEVEL OF SERVICE:\n- CPT: ${exam.c} (${mdmText})\n`;
+      let mdmText = examLevel === 'stable' ? "Low complexity MDM (1 stable chronic illness)." : examLevel === 'moderate' ? "Moderate complexity MDM (1 chronic progressing illness OR Rx drug management)." : "High complexity MDM (Severe threat to vision or organ function).";
+      text += `\nLEVEL OF SERVICE EVALUATION:\n- CPT: ${exam.c}\n  Rationale: ${mdmText}\n`;
 
       const checkedProcs = cartProcedures.filter(p => p.checked);
       if (checkedProcs.length > 0) {
-        text += `\nPROCEDURES & INTERPRETATION:\n`;
+        text += `\nPROCEDURES & INTERPRETATION & REPORT (I&R):\n`;
         checkedProcs.forEach(p => {
-          let ptIcd = cart[p.pointer].base.icd;
-          text += `- CPT ${p.cpt} (${p.name})\n  * Pointer: Line ${p.pointer + 1} (${ptIcd})\n  * I&R: Performed for medical necessity tracking. Results reviewed. Continue management.\n`;
+          const ptCondition = cart[p.pointer] ? cart[p.pointer] : cart[0];
+          let ptIcd = ptCondition ? ptCondition.base.icd : "Line 1";
+          text += `- CPT ${p.cpt} (${p.name})\n`;
+          text += `  * ICD Pointer: Line ${(p.pointer || 0) + 1} (${ptIcd})\n`;
+          text += `  * Technical & Professional Components: Both performed in-office.\n`;
+          text += `  * Interpretation & Report (I&R): Reliability good. Comparative structural analysis confirms disease status. Findings discussed with patient. Management plan continued.\n`;
         });
       }
       ehrOut.innerText = text;
@@ -746,8 +952,9 @@
       setTimeout(() => btn.innerText = "Copy Note & Superbill", 2000);
     }
 
-    // Initialize
+    // Initial load
     filterDiagnoses();
+    loadDbCondition();
   </script>
 </body>
 </html>
