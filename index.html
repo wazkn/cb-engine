@@ -120,7 +120,24 @@
             <p id="dbPitfall" class="text-xs text-red-900 dark:text-red-200 leading-relaxed font-medium"></p>
           </div>
         </div>
+        <!-- Min vs Max Annual Revenue Strategies -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900 rounded-2xl p-4 shadow-sm">
+            <div class="flex justify-between items-center mb-1.5">
+              <span class="text-[10px] font-bold text-rose-800 dark:text-rose-300 uppercase tracking-wider">📉 Minimum Pathway (1-Yr)</span>
+              <span id="dbMinRev" class="text-sm font-extrabold text-rose-700 dark:text-rose-400">$0.00</span>
+            </div>
+            <p id="dbMinDesc" class="text-xs text-rose-900 dark:text-rose-200 font-medium leading-relaxed"></p>
+          </div>
 
+          <div class="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900 rounded-2xl p-4 shadow-sm">
+            <div class="flex justify-between items-center mb-1.5">
+              <span class="text-[10px] font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider">📈 Maximum Pathway (1-Yr)</span>
+              <span id="dbMaxRev" class="text-sm font-extrabold text-emerald-700 dark:text-emerald-400">$0.00</span>
+            </div>
+            <p id="dbMaxDesc" class="text-xs text-emerald-900 dark:text-emerald-200 font-medium leading-relaxed"></p>
+          </div>
+        </div>
         <!-- Eligible Procedures & Full CPT I&R Requirements -->
         <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
           <h3 class="text-xs font-bold uppercase tracking-wider mb-3 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">Full Procedural CPT Codes & Documentation Mandates</h3>
@@ -456,7 +473,38 @@
 
     // 2. MASTER 155+ CONDITIONS DATABASE
   // Your app logic here (make sure to delete the old hardcoded const DB_RAW = [...];)
+// Helper to generate Pearl, Pitfall, and EHR Macro Plan Notes
+    function getConditionDetails(c) {
+      if (!c) return { pearl: "Align E/M level with documented MDM complexity.", pitfall: "Check NCCI edits.", note: "Observation." };
+      
+      let pearl = "Align E/M level with documented MDM complexity.";
+      let pitfall = "Routine diagnoses billed to medical plans without -GY will cause immediate denials.";
+      let note = `Patient evaluated for ${c.n}. Condition is stable on current medical regimen. Continue current observation/management.`;
 
+      if (c.c === "Glaucoma") {
+        pearl = "Stagger OCT (92133) and VF (92083) across alternating recall visits to optimize allowable frequency and prevent NCCI unbundling flags.";
+        pitfall = "Billing 92133 and 92250 on the same date of service without distinct pathology triggers an automated NCCI bundling denial.";
+        note = `Glaucoma surveillance. Biomicroscopy reveals open angles. Optic nerves evaluated via funduscopy. C/D ratio symmetry maintained. Target IOP achieved on current drops.`;
+      } else if (c.c === "Retina") {
+        pearl = "Fundus photography (92250) is inherently bilateral. Never append -RT/-LT or bill 2 units. Bill 99214 if managing progressive edema or exudation.";
+        pitfall = "Failing to document a distinct 4-part Interpretation & Report (I&R) for retinal OCTs will fail a CMS audit. 'Test normal' is an automatic recoupment.";
+        note = `Dilated fundus examination performed. Macula and peripheral retina evaluated. No active traction, breaks, or detachments noted. Educated on Amsler grid self-monitoring.`;
+      } else if (c.c === "Cornea & OSD") {
+        pearl = "For punctal occlusion (68761), document failure of conservative artificial tear therapy for at least 3 months to substantiate medical necessity.";
+        pitfall = "Append Modifier -25 to E/M code only when a significant, separately identifiable evaluation was performed prior to the minor surgical procedure.";
+        note = `Cornea evaluated with high-magnification biomicroscopy and fluorescein. Tear break-up time (TBUT) and corneal staining scored. Lid margins and expressibility documented.`;
+      } else if (c.c === "Neuro") {
+        pearl = "Prioritize E/M codes (99214/99215) over eye codes. Neuro-ophthalmic crises fulfill moderate-to-high risk under MDM guidelines.";
+        pitfall = "A pupil-involving cranial nerve palsy requires immediate emergent neuro-imaging referral. Do not delay for elective visual field testing.";
+        note = `Neuro-ophthalmic evaluation. Extraocular motilities, cranial nerves II-VI, and pupillary reflexes (RAPD) assessed. Visual fields confronted.`;
+      } else if (c.c === "Peds") {
+        pearl = "Refraction (92015) is statutorily non-covered by Medicare Part B. Bill directly to patient or secondary vision carrier with modifier -GY.";
+        pitfall = "Cycloplegic refractions are mandatory for accommodative esotropia and amblyopia. Do not bill manifest refractions alone.";
+        note = `Binocular sensorimotor workup. Distance and near prism cover test recorded. Stereopsis and convergence evaluated. Wet cycloplegic retinoscopy performed.`;
+      }
+
+      return { pearl, pitfall, note };
+    }
     // STATE MANAGEMENT
     let cart = [];
     let cartProcedures = [];
@@ -541,60 +589,61 @@
     }
 
     function selDb(icd) {
-      activeCond = filteredList.find(c => c.i === icd) || DB_RAW.find(c => c.i === icd);
-      if(!activeCond) return;
+      activeCond = (filteredList && filteredList.find(c => c.i === icd)) || (typeof DB_RAW !== 'undefined' && DB_RAW.find(c => c.i === icd));
+      if (!activeCond) return;
 
-      // 1. Header Metadata
+      // Header Labels
       const dbIcd = document.getElementById("dbIcd");
       const dbName = document.getElementById("dbName");
       const dbCat = document.getElementById("dbCat");
       const dbRtc = document.getElementById("dbRtc");
       const dbSnomed = document.getElementById("dbSnomed");
 
-      if(dbIcd) dbIcd.innerText = activeCond.i || "";
-      if(dbName) dbName.innerText = activeCond.n || "";
-      if(dbCat) dbCat.innerText = activeCond.c || "";
-      if(dbRtc) dbRtc.innerText = activeCond.r || "PRN";
-      if(dbSnomed) dbSnomed.innerText = activeCond.s ? `SNOMED: ${activeCond.s}` : "SNOMED: Map Pending";
-      
-      // 2. Clinical Pearls & Pitfalls
+      if (dbIcd) dbIcd.innerText = activeCond.i || "";
+      if (dbName) dbName.innerText = activeCond.n || "";
+      if (dbCat) dbCat.innerText = activeCond.c || "";
+      if (dbRtc) dbRtc.innerText = activeCond.r || "PRN";
+      if (dbSnomed) dbSnomed.innerText = activeCond.s ? `SNOMED: ${activeCond.s}` : "SNOMED: Map Pending";
+
+      // Pearls and Pitfalls
       let details = getConditionDetails(activeCond);
       const dbPearl = document.getElementById("dbPearl");
       const dbPitfall = document.getElementById("dbPitfall");
-      if(dbPearl) dbPearl.innerText = details.pearl;
-      if(dbPitfall) dbPitfall.innerText = details.pitfall;
+      if (dbPearl) dbPearl.innerText = details.pearl;
+      if (dbPitfall) dbPitfall.innerText = details.pitfall;
 
-      // 3. Min vs Max Revenue Strategy Cards
+      // Populate Min vs Max Revenue Strategy Cards
       const minRevEl = document.getElementById("dbMinRev");
       const minDescEl = document.getElementById("dbMinDesc");
       const maxRevEl = document.getElementById("dbMaxRev");
       const maxDescEl = document.getElementById("dbMaxDesc");
 
       if (activeCond.min) {
-        if(minRevEl) minRevEl.innerText = `$${Number(activeCond.min.f).toFixed(2)}`;
-        if(minDescEl) minDescEl.innerText = activeCond.min.d;
+        if (minRevEl) minRevEl.innerText = `$${Number(activeCond.min.f).toFixed(2)}`;
+        if (minDescEl) minDescEl.innerText = activeCond.min.d;
       } else {
-        if(minRevEl) minRevEl.innerText = "$259.00";
-        if(minDescEl) minDescEl.innerText = "Standard minimal recall observation and routine coding pathway.";
+        if (minRevEl) minRevEl.innerText = "--";
+        if (minDescEl) minDescEl.innerText = "Standard minimal recall observation.";
       }
 
       if (activeCond.max) {
-        if(maxRevEl) maxRevEl.innerText = `$${Number(activeCond.max.f).toFixed(2)}`;
-        if(maxDescEl) maxDescEl.innerText = activeCond.max.d;
+        if (maxRevEl) maxRevEl.innerText = `$${Number(activeCond.max.f).toFixed(2)}`;
+        if (maxDescEl) maxDescEl.innerText = activeCond.max.d;
       } else {
-        if(maxRevEl) maxRevEl.innerText = "$703.60";
-        if(maxDescEl) maxDescEl.innerText = "Maximized compliant disease management pathway with active diagnostic testing and MDM leveling.";
+        if (maxRevEl) maxRevEl.innerText = "--";
+        if (maxDescEl) maxDescEl.innerText = "Active clinical disease management pathway.";
       }
-
-      // 4. Eligible Procedures & Documentation Mandates
+      
+      // Procedures List
       const pEl = document.getElementById("dbProcs");
       if (pEl) {
-        pEl.innerHTML = (activeCond.p && activeCond.p.length > 0) ? "" : '<p class="text-xs text-slate-400 italic">No specific specialized procedures indicated for routine presentation.</p>';
-        
-        if (activeCond.p && activeCond.p.length > 0) {
+        if (!activeCond.p || activeCond.p.length === 0) {
+          pEl.innerHTML = '<p class="text-xs text-slate-400 italic">No specific specialized procedures indicated for routine presentation.</p>';
+        } else {
+          pEl.innerHTML = "";
           activeCond.p.forEach(cptKey => {
-            let cpt = CPT_DICT[cptKey] || { n: "Diagnostic Procedure", f: 0, g: 0, ir: "I&R documentation required.", m: [] };
-            let feeNum = Number(cpt.f) || 0;
+            let cpt = (typeof CPT_DICT !== 'undefined' && CPT_DICT[cptKey]) ? CPT_DICT[cptKey] : { n: "Diagnostic Procedure", f: 0, g: 0, ir: "I&R documentation required.", m: [] };
+            let fee = Number(cpt.f) || 0;
             pEl.innerHTML += `
               <div class="p-3.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900/50 flex flex-col gap-1.5">
                 <div class="flex items-center justify-between">
@@ -603,7 +652,7 @@
                     <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 ml-1.5">${cpt.n}</span>
                     ${cpt.g > 0 ? `<span class="text-[9px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-bold ml-2">${cpt.g}-Day Global</span>` : ''}
                   </div>
-                  <span class="text-xs font-mono font-bold text-emerald-600">+$${feeNum.toFixed(2)}</span>
+                  <span class="text-xs font-mono font-bold text-emerald-600">+$${fee.toFixed(2)}</span>
                 </div>
                 <p class="text-[11px] text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700 pt-1.5"><span class="font-bold text-red-500">I&R Rule:</span> ${cpt.ir}</p>
                 ${(cpt.m && cpt.m.length > 0) ? `<div class="text-[10px] text-blue-600 dark:text-blue-400 font-bold">Applicable Modifiers: ${cpt.m.join(", ")}</div>` : ''}
@@ -612,7 +661,7 @@
           });
         }
       }
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
 
     function addToCart(c) {
