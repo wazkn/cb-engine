@@ -544,37 +544,73 @@
       activeCond = filteredList.find(c => c.i === icd) || DB_RAW.find(c => c.i === icd);
       if(!activeCond) return;
 
-      document.getElementById("dbIcd").innerText = activeCond.i;
-      document.getElementById("dbName").innerText = activeCond.n;
-      document.getElementById("dbCat").innerText = activeCond.c;
-      document.getElementById("dbRtc").innerText = activeCond.r;
-      document.getElementById("dbSnomed").innerText = activeCond.s ? `SNOMED: ${activeCond.s}` : "SNOMED: Map Pending";
-      
-      let details = getConditionDetails(activeCond);
-      document.getElementById("dbPearl").innerText = details.pearl;
-      document.getElementById("dbPitfall").innerText = details.pitfall;
+      // 1. Header Metadata
+      const dbIcd = document.getElementById("dbIcd");
+      const dbName = document.getElementById("dbName");
+      const dbCat = document.getElementById("dbCat");
+      const dbRtc = document.getElementById("dbRtc");
+      const dbSnomed = document.getElementById("dbSnomed");
 
-      const pEl = document.getElementById("dbProcs");
-      pEl.innerHTML = (activeCond.p && activeCond.p.length) ? "" : '<p class="text-xs text-slate-400 italic">No specific specialized procedures indicated for routine presentation.</p>';
+      if(dbIcd) dbIcd.innerText = activeCond.i || "";
+      if(dbName) dbName.innerText = activeCond.n || "";
+      if(dbCat) dbCat.innerText = activeCond.c || "";
+      if(dbRtc) dbRtc.innerText = activeCond.r || "PRN";
+      if(dbSnomed) dbSnomed.innerText = activeCond.s ? `SNOMED: ${activeCond.s}` : "SNOMED: Map Pending";
       
-      if (activeCond.p && activeCond.p.length) {
-        activeCond.p.forEach(cptKey => {
-          let cpt = CPT_DICT[cptKey] || { n: "Diagnostic Procedure", f: 0, g: 0, ir: "I&R documentation required.", m: [] };
-          pEl.innerHTML += `
-            <div class="p-3.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900/50 flex flex-col gap-1.5">
-              <div class="flex items-center justify-between">
-                <div>
-                  <span class="font-mono text-sm font-bold text-slate-900 dark:text-white">${cptKey}</span> 
-                  <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 ml-1.5">${cpt.n}</span>
-                  ${cpt.g > 0 ? `<span class="text-[9px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-bold ml-2">${cpt.g}-Day Global</span>` : ''}
+      // 2. Clinical Pearls & Pitfalls
+      let details = getConditionDetails(activeCond);
+      const dbPearl = document.getElementById("dbPearl");
+      const dbPitfall = document.getElementById("dbPitfall");
+      if(dbPearl) dbPearl.innerText = details.pearl;
+      if(dbPitfall) dbPitfall.innerText = details.pitfall;
+
+      // 3. Min vs Max Revenue Strategy Cards
+      const minRevEl = document.getElementById("dbMinRev");
+      const minDescEl = document.getElementById("dbMinDesc");
+      const maxRevEl = document.getElementById("dbMaxRev");
+      const maxDescEl = document.getElementById("dbMaxDesc");
+
+      if (activeCond.min) {
+        if(minRevEl) minRevEl.innerText = `$${Number(activeCond.min.f).toFixed(2)}`;
+        if(minDescEl) minDescEl.innerText = activeCond.min.d;
+      } else {
+        if(minRevEl) minRevEl.innerText = "$259.00";
+        if(minDescEl) minDescEl.innerText = "Standard minimal recall observation and routine coding pathway.";
+      }
+
+      if (activeCond.max) {
+        if(maxRevEl) maxRevEl.innerText = `$${Number(activeCond.max.f).toFixed(2)}`;
+        if(maxDescEl) maxDescEl.innerText = activeCond.max.d;
+      } else {
+        if(maxRevEl) maxRevEl.innerText = "$703.60";
+        if(maxDescEl) maxDescEl.innerText = "Maximized compliant disease management pathway with active diagnostic testing and MDM leveling.";
+      }
+
+      // 4. Eligible Procedures & Documentation Mandates
+      const pEl = document.getElementById("dbProcs");
+      if (pEl) {
+        pEl.innerHTML = (activeCond.p && activeCond.p.length > 0) ? "" : '<p class="text-xs text-slate-400 italic">No specific specialized procedures indicated for routine presentation.</p>';
+        
+        if (activeCond.p && activeCond.p.length > 0) {
+          activeCond.p.forEach(cptKey => {
+            let cpt = CPT_DICT[cptKey] || { n: "Diagnostic Procedure", f: 0, g: 0, ir: "I&R documentation required.", m: [] };
+            let feeNum = Number(cpt.f) || 0;
+            pEl.innerHTML += `
+              <div class="p-3.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900/50 flex flex-col gap-1.5">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <span class="font-mono text-sm font-bold text-slate-900 dark:text-white">${cptKey}</span> 
+                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 ml-1.5">${cpt.n}</span>
+                    ${cpt.g > 0 ? `<span class="text-[9px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-bold ml-2">${cpt.g}-Day Global</span>` : ''}
+                  </div>
+                  <span class="text-xs font-mono font-bold text-emerald-600">+$${feeNum.toFixed(2)}</span>
                 </div>
-                <span class="text-xs font-mono font-bold text-emerald-600">+$${cpt.f.toFixed(2)}</span>
+                <p class="text-[11px] text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700 pt-1.5"><span class="font-bold text-red-500">I&R Rule:</span> ${cpt.ir}</p>
+                ${(cpt.m && cpt.m.length > 0) ? `<div class="text-[10px] text-blue-600 dark:text-blue-400 font-bold">Applicable Modifiers: ${cpt.m.join(", ")}</div>` : ''}
               </div>
-              <p class="text-[11px] text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700 pt-1.5"><span class="font-bold text-red-500">I&R Rule:</span> ${cpt.ir}</p>
-              ${(cpt.m && cpt.m.length > 0) ? `<div class="text-[10px] text-blue-600 dark:text-blue-400 font-bold">Applicable Modifiers: ${cpt.m.join(", ")}</div>` : ''}
-            </div>
-          `;
-        });
+            `;
+          });
+        }
       }
       lucide.createIcons();
     }
