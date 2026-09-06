@@ -365,31 +365,74 @@
         </div>
 
         <!-- Section 2: Clinical Modifier Guide with Vignettes -->
-        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-4">
-          <h3 class="text-sm font-bold uppercase dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">2. Clinical Ophthalmic Modifiers: Clinical Vignettes</h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs dark:text-slate-300">
-            <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl border border-slate-200 dark:border-slate-600">
-              <span class="font-bold font-mono text-sm text-blue-600 dark:text-blue-400">-25 (Significant, Separate E/M)</span>
-              <p class="mt-1"><strong>Vignette:</strong> Patient presents for scheduled glaucoma follow-up. During the slit lamp exam, a foreign body with rust ring is noted in the right cornea. The doctor performs an exam and removes the FB.</p>
-              <p class="mt-1 font-mono text-[11px] text-slate-600 dark:text-slate-300 font-bold">Billing: 99214-25, 65222-RT.</p>
-            </div>
-            <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl border border-slate-200 dark:border-slate-600">
-              <span class="font-bold font-mono text-sm text-purple-600 dark:text-purple-400">-59 / -XU (Distinct Procedural Service)</span>
-              <p class="mt-1"><strong>Vignette:</strong> Patient with dry AMD has an OCT macula performed. During dilation, a suspicious pigmented choroidal nevus is found in the far periphery, prompting fundus photography.</p>
-              <p class="mt-1 font-mono text-[11px] text-slate-600 dark:text-slate-300 font-bold">Billing: 92134 (Pointer to H35.31), 92250-59 (Pointer to H31.10).</p>
-            </div>
-            <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl border border-slate-200 dark:border-slate-600">
-              <span class="font-bold font-mono text-sm text-teal-600 dark:text-teal-400">-55 (Post-Operative Co-Management)</span>
-              <p class="mt-1"><strong>Vignette:</strong> Cataract surgeon performs uncomplicated phaco with IOL (66984). Care is transferred to the OD on post-op day 1 for the remainder of the 90-day global period.</p>
-              <p class="mt-1 font-mono text-[11px] text-slate-600 dark:text-slate-300 font-bold">Billing: 66984-55-RT (Box 19 notes: Transfer date 10/02/2026 to 12/31/2026).</p>
-            </div>
-            <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl border border-slate-200 dark:border-slate-600">
-              <span class="font-bold font-mono text-sm text-amber-600 dark:text-amber-400">-E1 to -E4 (Lid Modifiers on 68761)</span>
-              <p class="mt-1"><strong>Vignette:</strong> Patient with dry eye fails artificial tears and topical cyclosporine. Silicone punctal plugs are inserted into both lower puncta.</p>
-              <p class="mt-1 font-mono text-[11px] text-slate-600 dark:text-slate-300 font-bold">Billing: Line 1: 68761-E2 (Lower Right), Line 2: 68761-E4-51 (Lower Left).</p>
-            </div>
-          </div>
-        </div>
+        <div class="overflow-x-auto">
+  <table class="w-full text-left text-xs border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+    <thead class="bg-slate-100 dark:bg-slate-700/50 text-slate-700 dark:text-slate-200 font-bold uppercase text-[10px]">
+      <tr>
+        <th class="p-3">Modifier</th>
+        <th class="p-3">Plain-English Translation</th>
+        <th class="p-3">Clinic Vignette & Coding Example</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100 dark:divide-slate-700 dark:text-slate-300">
+      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+        <td class="p-3 font-mono font-bold text-blue-600 dark:text-blue-400">-RT / -LT</td>
+        <td class="p-3">Identifies Right Eye (-RT) or Left Eye (-LT).</td>
+        <td class="p-3">Corneal foreign body removal right eye: <span class="font-mono font-semibold">65222-RT</span>.</td>
+      </tr>
+      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+        <td class="p-3 font-mono font-bold text-blue-600 dark:text-blue-400">-E1 to -E4</td>
+        <td class="p-3">Specific eyelids: E1 (Upper Left), E2 (Lower Left), E3 (Upper Right), E4 (Lower Right).</td>
+        <td class="p-3">Plugs placed in lower lids: <span class="font-mono font-semibold">68761-E4</span>, <span class="font-mono font-semibold">68761-E2-51</span>.</td>
+      </tr>
+      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+        <td class="p-3 font-mono font-bold text-amber-600 dark:text-amber-400">-24</td>
+        <td class="p-3">Exam during a post-op period for a totally unrelated condition.</td>
+        <td class="p-3">In 90-day post-op for right cataract, presents for left bacterial conjunctivitis: <span class="font-mono font-semibold">99213-24-LT</span>.</td>
+      </tr>
+      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+        <td class="p-3 font-mono font-bold text-amber-600 dark:text-amber-400">-25</td>
+        <td class="p-3">Full separate exam on the same day an in-office minor procedure is decided upon.</td>
+        <td class="p-3">Routine glaucoma check discovers acute corneal foreign body: <span class="font-mono font-semibold">99214-25</span> + <span class="font-mono font-semibold">65222-RT</span>.</td>
+      </tr>
+      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+        <td class="p-3 font-mono font-bold text-purple-600 dark:text-purple-400">-26 / -TC</td>
+        <td class="p-3">-26 = Doctor's interpretation & report. -TC = Facility/equipment cost.</td>
+        <td class="p-3">Interpreting an ultrasound performed in a hospital surgical center: <span class="font-mono font-semibold">76512-26</span>.</td>
+      </tr>
+      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+        <td class="p-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">-50</td>
+        <td class="p-3">Bilateral surgical procedure billed on a single line (pays 150%).</td>
+        <td class="p-3">SLT laser performed on both eyes same day: <span class="font-mono font-semibold">65855-50</span> (1 unit).</td>
+      </tr>
+      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+        <td class="p-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">-52</td>
+        <td class="p-3">Reduced service when an inherently bilateral test is performed on only one eye.</td>
+        <td class="p-3">Pachymetry performed on a monocular patient's only eye: <span class="font-mono font-semibold">76514-52</span>.</td>
+      </tr>
+      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+        <td class="p-3 font-mono font-bold text-teal-600 dark:text-teal-400">-55</td>
+        <td class="p-3">Post-op surgical co-management (OD manages follow-up after MD surgery).</td>
+        <td class="p-3">Assuming day-1 post-op care for cataract extraction: <span class="font-mono font-semibold">66984-55-RT</span> (collects 20% of fee).</td>
+      </tr>
+      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+        <td class="p-3 font-mono font-bold text-rose-600 dark:text-rose-400">-59 / -XU</td>
+        <td class="p-3">Unbundles normally grouped tests when performed for distinct conditions.</td>
+        <td class="p-3">OCT macula for AMD + Fundus photo for peripheral nevus: <span class="font-mono font-semibold">92134</span> + <span class="font-mono font-semibold">92250-59</span>.</td>
+      </tr>
+      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+        <td class="p-3 font-mono font-bold text-emerald-600 dark:text-emerald-400">-79</td>
+        <td class="p-3">Unrelated surgical procedure performed during the post-op global window of an earlier surgery.</td>
+        <td class="p-3">During 90-day post-op period of right cataract, patient requires epilation of trichiasis left eye: <span class="font-mono font-semibold">67820-79-E2</span>.</td>
+      </tr>
+      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+        <td class="p-3 font-mono font-bold text-cyan-600 dark:text-cyan-400">-93 / -95</td>
+        <td class="p-3">-93 = Audio-only telemedicine. -95 = Synchronous real-time audio and video telehealth.</td>
+        <td class="p-3">Live video telehealth follow-up for anterior surface monitoring: <span class="font-mono font-semibold">99213-95</span>.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
         <!-- Section 3: In-Depth Rules for Top 10 Medical & Vision Plans -->
         <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-4">
@@ -539,14 +582,14 @@
       "92250": { n: "Fundus Photo", w: 0.55, pe: 1.00, mp: 0.05, g: 0, type: "imaging", lcd: ["E11.3","H35.3","H31","H33"], ir: "I&R: Detailed report of pathology photographed and baseline comparison.", m: ["-59", "-XU"] },
       "92020": { n: "Gonioscopy", w: 0.46, pe: 0.35, mp: 0.02, g: 0, type: "other", lcd: ["H40","Q15","H20"], ir: "I&R: Grade all 4 quadrants (Spaeth/Shaffer). Document PAS, NVA.", m: [] },
       "65855": { n: "Laser Trabeculoplasty", w: 3.50, pe: 3.70, mp: 0.15, g: 10, type: "surgery", lcd: ["H40"], ir: "Op Note: Consent, shots, power (mJ), degrees treated, post-op IOP.", m: ["-RT", "-LT", "-50", "-55"] },
-      "66761": { n: "LPI", w: 4.50, pe: 4.80, mp: 0.20, g: 10, type: "surgery", lcd: ["H40.2","H40.03"], ir: "Op Note: Location, energy, patency confirmed, post-op IOP check.", m: ["-RT", "-LT", "-50", "-55"] },
-      "68761": { n: "Punctal Plug", w: 1.50, pe: 1.90, mp: 0.08, g: 10, type: "surgery", lcd: ["H04.1","H04.2"], ir: "Chart Note: Document failure of conservative artificial tears.", m: ["-E1", "-E2", "-E3", "-E4", "-51"] },
-      "65222": { n: "Corneal FB Removal", w: 1.10, pe: 0.90, mp: 0.04, g: 0, type: "surgery", lcd: ["T15"], ir: "Op Note: Document depth, rust ring status, Seidel test.", m: ["-RT", "-LT"] },
+      "65855": { n: "Laser Trabeculoplasty", w: 3.50, pe: 3.70, mp: 0.15, g: 10, type: "surgery", lcd: ["H40"], ir: "Consent, spots, power, post-IOP.", m: ["-RT", "-LT", "-50", "-55", "-79"] },
+      "68761": { n: "Punctal Plug", w: 1.50, pe: 1.90, mp: 0.08, g: 10, type: "surgery", lcd: ["H04.1","H04.2"], ir: "Document tear drop failure.", m: ["-E1", "-E2", "-E3", "-E4", "-51", "-79"] },
+      "65222": { n: "Corneal FB Removal", w: 1.10, pe: 0.90, mp: 0.04, g: 0, type: "surgery", lcd: ["T15"], ir: "Document depth, rust ring, Seidel.", m: ["-RT", "-LT", "-79"] },
       "92071": { n: "Bandage Contact Lens", w: 0.60, pe: 0.50, mp: 0.03, g: 0, type: "other", lcd: ["S05","H18.8","H16"], ir: "Chart Note: Therapeutic indication, lens parameters.", m: ["-RT", "-LT"] },
       "92072": { n: "Keratoconus CL Fit", w: 2.20, pe: 2.60, mp: 0.10, g: 0, type: "other", lcd: ["H18.6"], ir: "Chart Note: Lens design, topographical progression.", m: ["-RT", "-LT"] },
       "65435": { n: "Epithelial Debridement", w: 2.00, pe: 2.20, mp: 0.10, g: 0, type: "surgery", lcd: ["H18.8","B00.5","H16.1"], ir: "Op Note: Slit lamp debridement of loose epithelium.", m: ["-RT", "-LT"] },
-      "76514": { n: "Pachymetry", w: 0.20, pe: 0.15, mp: 0.01, g: 0, type: "imaging", lcd: ["H40","H18.5","H18.6"], ir: "I&R: Central corneal thickness (CCT) in microns.", m: [] },
-      "76512": { n: "B-Scan Ultrasound", w: 1.05, pe: 1.25, mp: 0.06, g: 0, type: "imaging", lcd: ["H33","H43","H31","H40.6"], ir: "I&R: Acoustic evaluation of vitreous, retina, choroid.", m: ["-RT", "-LT", "-26", "-TC"] },
+      "76514": { n: "Pachymetry", w: 0.20, pe: 0.15, mp: 0.01, g: 0, type: "imaging", lcd: ["H40","H18.5","H18.6"], ir: "CCT in microns.", m: ["-52", "-26", "-TC"] },
+      "76512": { n: "B-Scan Ultrasound", w: 1.05, pe: 1.25, mp: 0.06, g: 0, type: "imaging", lcd: ["H33","H43","H31"], ir: "Acoustic evaluation report.", m: ["-RT", "-LT", "-26", "-TC", "-52"] },
       "92228": { n: "Ext. Ophthalmoscopy", w: 0.40, pe: 0.50, mp: 0.02, g: 0, type: "other", lcd: ["H33","E11.35","H35.0"], ir: "Mandatory: Detailed physical color drawing of retinal breaks in record.", m: ["-RT", "-LT"] },
       "92060": { n: "Sensorimotor Exam", w: 0.85, pe: 1.05, mp: 0.05, g: 0, type: "other", lcd: ["H53","H50","H51","H49"], ir: "I&R: Prism alternate cover test at distance/near, stereopsis.", m: [] },
       "92015": { n: "Refraction", w: 0.50, pe: 0.65, mp: 0.03, g: 0, type: "other", lcd: [], ir: "Chart Note: Manifest/cycloplegic refraction. Statutorily non-covered.", m: ["-GY"] },
@@ -1032,6 +1075,15 @@
     }
 
     function generateMacro() {
+      // Inside generateMacro() function:
+let checkedProcs = cartProcedures.filter(p => p.chk);
+let hasMinorSurg = checkedProcs.some(p => { let c = CPT_DICT[p.c]; return c && c.type === "surgery"; });
+
+let emMods = [];
+if (hasMinorSurg) emMods.push("-25");
+if (setting === "02") emMods.push("-95"); // Audio/video telehealth
+
+let emModString = emMods.length > 0 ? " " + emMods.join(" ") : "";
       const ehr = document.getElementById("ehrOutput");
       if (!cart.length) {
         ehr.innerText = "Add conditions to cart to compile encounter.";
