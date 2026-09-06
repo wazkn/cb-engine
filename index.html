@@ -120,6 +120,7 @@
             <p id="dbPitfall" class="text-xs text-red-900 dark:text-red-200 leading-relaxed font-medium"></p>
           </div>
         </div>
+
         <!-- Min vs Max Annual Revenue Strategies -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900 rounded-2xl p-4 shadow-sm">
@@ -138,6 +139,15 @@
             <p id="dbMaxDesc" class="text-xs text-emerald-900 dark:text-emerald-200 font-medium leading-relaxed"></p>
           </div>
         </div>
+
+        <!-- Dynamic Visual Pathway Timeline -->
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
+          <h3 class="text-xs font-bold uppercase tracking-wider mb-3 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">12-Month Clinical Pathway Timeline</h3>
+          <div id="dbTimeline" class="flex flex-col md:flex-row gap-3">
+             <!-- Javascript auto-populates -->
+          </div>
+        </div>
+
         <!-- Eligible Procedures & Full CPT I&R Requirements -->
         <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
           <h3 class="text-xs font-bold uppercase tracking-wider mb-3 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">Full Procedural CPT Codes & Documentation Mandates</h3>
@@ -203,7 +213,7 @@
         <!-- Payer Policy Status Bar -->
         <div id="payerAlertBox" class="p-3 rounded-xl border text-xs font-medium flex items-center gap-2.5 bg-blue-50 border-blue-200 text-blue-900 dark:bg-blue-950/40 dark:border-blue-800 dark:text-blue-300">
           <i data-lucide="shield-check" class="w-4 h-4 shrink-0 text-blue-600"></i>
-          <span id="payerPolicyText">Medicare Part B: LCD L33751 enforced. G2211 complexity add-on supported.</span>
+          <span id="payerPolicyText">Medicare Part B: LCD L33751 enforced. Active RVU pricing & MPPR reductions applied.</span>
         </div>
 
         <!-- E/M Leveler & Revenue Engine -->
@@ -212,16 +222,43 @@
           <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
             <div>
               <div class="flex justify-between items-center mb-2.5">
-                <h3 class="text-xs font-bold uppercase dark:text-white">E/M vs. Eye Code Decision</h3>
+                <h3 class="text-xs font-bold uppercase dark:text-white">E/M Level (MDM Calculator) vs Eye Code</h3>
                 <div class="flex gap-2">
                   <label class="text-[10px] font-bold cursor-pointer flex items-center gap-1 dark:text-white"><input type="radio" name="codeType" value="99" checked onchange="updateCart()"> 99XXX</label>
                   <label class="text-[10px] font-bold cursor-pointer flex items-center gap-1 dark:text-white"><input type="radio" name="codeType" value="92" onchange="updateCart()"> 92XXX</label>
                 </div>
               </div>
+
+              <!-- New: Active MDM Scoring Engine -->
+              <div class="mb-3 p-3 bg-slate-50 dark:bg-slate-700/30 rounded-xl border border-slate-200 dark:border-slate-600">
+                <div class="flex justify-between items-center mb-2">
+                  <h4 class="text-[10px] font-bold uppercase text-slate-500">Active MDM Calculator (2-of-3 Rule)</h4>
+                  <span id="mdmBadge" class="text-[9px] bg-blue-600 text-white px-1.5 py-0.5 rounded font-bold uppercase">Moderate MDM</span>
+                </div>
+                <div class="grid grid-cols-1 gap-2 text-xs">
+                  <select id="mdmProb" onchange="updateCart()" class="border border-slate-300 rounded p-1 dark:bg-slate-800 dark:border-slate-600 outline-none text-slate-700 dark:text-slate-200">
+                    <option value="1">1. Problems: Minimal / 1 Stable</option>
+                    <option value="2" selected>2. Problems: 1 Exacerbated / 2+ Stable</option>
+                    <option value="3">3. Problems: Acute Threat to Vision</option>
+                  </select>
+                  <select id="mdmData" onchange="updateCart()" class="border border-slate-300 rounded p-1 dark:bg-slate-800 dark:border-slate-600 outline-none text-slate-700 dark:text-slate-200">
+                    <option value="1">1. Data: Minimal (0-1 Tests)</option>
+                    <option value="2" selected>2. Data: Mod (Ind. Interp / 3+ Tests)</option>
+                    <option value="3">3. Data: Extensive Review</option>
+                  </select>
+                  <select id="mdmRisk" onchange="updateCart()" class="border border-slate-300 rounded p-1 dark:bg-slate-800 dark:border-slate-600 outline-none text-slate-700 dark:text-slate-200">
+                    <option value="1">1. Risk: Low (OTC, Rest)</option>
+                    <option value="2" selected>2. Risk: Mod (Rx Mgmt, Minor Surg)</option>
+                    <option value="3">3. Risk: High (ER Ref, Major Surg)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Kept original buttons for overrides / Eye Code selection -->
               <div class="flex flex-col gap-2">
-                <button onclick="setEmLevel('stable')" id="btnEmStable" class="p-2 border rounded-xl text-left text-xs font-bold dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700 transition">Stable / Low Complexity (99213 / 92012)</button>
-                <button onclick="setEmLevel('mod')" id="btnEmMod" class="p-2 border rounded-xl text-left text-xs font-bold bg-blue-50 border-blue-500 text-blue-700 dark:bg-blue-900/30 transition">Moderate MDM / Rx Mgmt (99214 / 92014)</button>
-                <button onclick="setEmLevel('high')" id="btnEmHigh" class="p-2 border rounded-xl text-left text-xs font-bold dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700 transition">High MDM / Acute Threat (99215)</button>
+                <button onclick="setEmLevel('stable')" id="btnEmStable" class="p-2 border rounded-xl text-left text-xs font-bold dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700 transition">Manual Override: Stable / Low (99213 / 92012)</button>
+                <button onclick="setEmLevel('mod')" id="btnEmMod" class="p-2 border rounded-xl text-left text-xs font-bold bg-blue-50 border-blue-500 text-blue-700 dark:bg-blue-900/30 transition">Manual Override: Mod MDM / Rx (99214 / 92014)</button>
+                <button onclick="setEmLevel('high')" id="btnEmHigh" class="p-2 border rounded-xl text-left text-xs font-bold dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700 transition">Manual Override: High MDM / Acute (99215)</button>
               </div>
             </div>
 
@@ -242,16 +279,16 @@
           <!-- Total Allowable & Reimbursement Projection -->
           <div class="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-2xl p-5 flex flex-col justify-between">
             <div>
-              <span class="text-[10px] font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider block">Estimated Total Allowable</span>
+              <span class="text-[10px] font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider block">Est. CMS RVU Allowable (MAC Adjusted)</span>
               <div id="totalCartRevenue" class="text-4xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1">$0.00</div>
             </div>
             <div class="border-t border-emerald-200/60 dark:border-emerald-800/60 pt-3 space-y-1">
               <div class="flex justify-between text-xs font-bold text-slate-600 dark:text-slate-300">
                 <span>E/M Base Service:</span>
-                <span id="emCodeDisplay" class="text-slate-900 dark:text-white">99214 ($132.00)</span>
+                <span id="emCodeDisplay" class="text-slate-900 dark:text-white">99214 ($0.00)</span>
               </div>
               <div class="flex justify-between text-xs font-bold text-slate-600 dark:text-slate-300">
-                <span>Diagnostic & Procedures:</span>
+                <span>Diagnostic & Procedures (MPPR Applied):</span>
                 <span id="procTotalDisplay" class="text-slate-900 dark:text-white">$0.00</span>
               </div>
               <div class="flex justify-between text-xs font-bold text-slate-600 dark:text-slate-300">
@@ -431,6 +468,37 @@
           </div>
         </div>
 
+        <!-- NEW: Section 4: Algorithmic Logic & Revenue Math -->
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-4">
+          <h3 class="text-sm font-bold uppercase dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">4. Ultimate Algorithms: MAC GPCI, MPPR, NCCI & LCD Logic</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs dark:text-slate-300">
+            <div class="bg-slate-50 dark:bg-slate-700/40 p-3.5 rounded-xl border border-slate-200 dark:border-slate-600">
+              <span class="font-bold text-emerald-700 dark:text-emerald-400 block mb-1">Live CMS RVU Formula</span>
+              <p>Reimbursement is dynamically calculated via Relative Value Units and localized by MAC Geographic Practice Cost Indices (GPCI).</p>
+              <p class="font-mono text-[10px] mt-1 p-1 bg-white dark:bg-slate-800 border rounded">Total = ((Work RVU × wGPCI) + (PE RVU × peGPCI) + (MP RVU × mpGPCI)) × CF</p>
+            </div>
+            <div class="bg-slate-50 dark:bg-slate-700/40 p-3.5 rounded-xl border border-slate-200 dark:border-slate-600">
+              <span class="font-bold text-rose-700 dark:text-rose-400 block mb-1">MPPR Deductions (Multi-Procedure)</span>
+              <ul class="list-disc pl-4 space-y-1">
+                <li><strong>Surgical:</strong> Primary surgery pays 100%. Secondary minor surgeries (e.g. 2nd punctal plug) are cut by 50%.</li>
+                <li><strong>Imaging:</strong> TC reduction applies. Primary imaging pays 100%. Subsequent imaging TC reduced by 50% (effectively ~20% of global fee).</li>
+              </ul>
+            </div>
+            <div class="bg-slate-50 dark:bg-slate-700/40 p-3.5 rounded-xl border border-slate-200 dark:border-slate-600">
+              <span class="font-bold text-blue-700 dark:text-blue-400 block mb-1">NCCI PTP Validator</span>
+              <p>The engine actively screens the cart for National Correct Coding Initiative procedure-to-procedure edits.</p>
+              <ul class="list-disc pl-4 space-y-1 mt-1">
+                <li><strong>Indicator 0 (Strict Bundle):</strong> Codes cannot be billed together (e.g. serial VFs).</li>
+                <li><strong>Indicator 1:</strong> Allowed ONLY with anatomical distinction modifiers (-59, -XU).</li>
+              </ul>
+            </div>
+            <div class="bg-slate-50 dark:bg-slate-700/40 p-3.5 rounded-xl border border-slate-200 dark:border-slate-600">
+              <span class="font-bold text-amber-700 dark:text-amber-400 block mb-1">LCD Medical Necessity Matrix</span>
+              <p>Checks ICD-10 pointers against typical MAC Local Coverage Determinations. If you perform an OCT (92134) but point it to Blepharitis (H01.00), the engine will flag a Medical Necessity Gap and mandate an ABN (CMS-R-131).</p>
+            </div>
+          </div>
+        </div>
+
       </div>
 
     </section>
@@ -440,88 +508,92 @@
     // Theme toggle
     function toggleDarkMode() { document.documentElement.classList.toggle('dark'); }
 
-    // 1. MASTER CPT DICTIONARY (With RVUs, Global Periods, Modifiers & I&R Rules)
-    const CPT_DICT = {
-      "92133": { n: "OCT Optic Nerve (RNFL / GCC)", f: 42, g: 0, ir: "I&R: Document reliability, RNFL thickness vs baseline, and clinical action. Bilateral.", m: ["-59", "-XU"] },
-      "92134": { n: "OCT Retina (Macular Scanning)", f: 42, g: 0, ir: "I&R: Document subretinal/intraretinal fluid, central subfield thickness, comparison to prior. Bilateral.", m: ["-59", "-XU"] },
-      "92083": { n: "Visual Field, Threshold (Humphrey 24-2/10-2)", f: 65, g: 0, ir: "I&R: Document FP/FN reliability (<20%), mean deviation (MD), and progression. Bilateral.", m: ["-59"] },
-      "92250": { n: "Fundus Photography (Bilateral)", f: 54, g: 0, ir: "I&R: Detailed report of pathology photographed and baseline comparison. Inherently bilateral.", m: ["-59", "-XU"] },
-      "92020": { n: "Gonioscopy (Bilateral)", f: 28, g: 0, ir: "I&R: Grade all 4 quadrants (Spaeth/Shaffer). Document PAS, NVA, or pigmentation.", m: [] },
-      "65855": { n: "Laser Trabeculoplasty (SLT)", f: 245, g: 10, ir: "Op Note: Consent, shots, power (mJ), degrees treated (180/360), post-op IOP check.", m: ["-RT", "-LT", "-50", "-55"] },
-      "66761": { n: "Laser Peripheral Iridotomy (LPI)", f: 320, g: 10, ir: "Op Note: Location, energy, patency confirmed, post-op IOP check.", m: ["-RT", "-LT", "-50", "-55"] },
-      "68761": { n: "Punctal Occlusion by Plug", f: 115, g: 10, ir: "Chart Note: Document failure of conservative artificial tears. Must append lid modifiers.", m: ["-E1", "-E2", "-E3", "-E4", "-51"] },
-      "65222": { n: "Corneal Foreign Body Removal", f: 68, g: 0, ir: "Op Note: Document depth, rust ring status, and negative Seidel test post-procedure.", m: ["-RT", "-LT"] },
-      "92071": { n: "Bandage Contact Lens Fitting", f: 38, g: 0, ir: "Chart Note: Therapeutic indication (pain, epithelial healing), lens parameters.", m: ["-RT", "-LT"] },
-      "92072": { n: "Keratoconus Contact Lens Fit", f: 165, g: 0, ir: "Chart Note: Lens design, topographical progression, medical necessity parameters.", m: ["-RT", "-LT"] },
-      "65435": { n: "Corneal Epithelial Debridement", f: 145, g: 0, ir: "Op Note: Slit lamp debridement of loose epithelium, dendrites, or filaments.", m: ["-RT", "-LT"] },
-      "76514": { n: "Corneal Pachymetry", f: 12, g: 0, ir: "I&R: Central corneal thickness (CCT) in microns. Billed once per lifetime.", m: [] },
-      "76512": { n: "B-Scan Diagnostic Ultrasound", f: 78, g: 0, ir: "I&R: Acoustic evaluation of vitreous, retina, and choroid when media is opaque.", m: ["-RT", "-LT", "-26", "-TC"] },
-      "92228": { n: "Extended Ophthalmoscopy w/ Drawing", f: 32, g: 0, ir: "Mandatory: Detailed physical color drawing of retinal breaks/detachment in record.", m: ["-RT", "-LT"] },
-      "92060": { n: "Sensorimotor Exam w/ Measurements", f: 65, g: 0, ir: "I&R: Prism alternate cover test at distance/near, stereopsis, ocular motility.", m: [] },
-      "92015": { n: "Determination of Refractive State", f: 40, g: 0, ir: "Chart Note: Manifest/cycloplegic refraction. Statutorily non-covered by Medicare.", m: ["-GY"] },
-      "65778": { n: "Amniotic Membrane Placement (Prokera)", f: 310, g: 10, ir: "Op Note: Placement of biologic dressing, centration, symptom relief. Prior auth often required.", m: ["-RT", "-LT"] },
-      "11900": { n: "Intralesional Injection (Chalazion)", f: 75, g: 0, ir: "Op Note: Medication (Kenalog), dose, injection site.", m: ["-E1", "-E2", "-E3", "-E4"] },
-      "66821": { n: "YAG Laser Capsulotomy", f: 285, g: 90, ir: "Op Note: Clearing visual axis of PCO, energy, shots, post-op IOP check. 90-day global.", m: ["-RT", "-LT", "-55"] },
-      "92065": { n: "Orthoptic Vision Therapy Training", f: 95, g: 0, ir: "Therapy Note: Document specific fusional vergence / accommodative therapy performed.", m: [] },
-      "65205": { n: "Conjunctival FB Removal", f: 45, g: 0, ir: "Op Note: Location of foreign body/concretion, topical anesthetic, removal technique.", m: ["-RT", "-LT"] },
-      "68840": { n: "Probing of Lacrimal Canaliculi", f: 95, g: 10, ir: "Op Note: Dilation of punctum, patency of irrigation, resistance encountered.", m: ["-E1", "-E2", "-E3", "-E4"] },
-      "67820": { n: "Epilation by Forceps (Trichiasis)", f: 48, g: 0, ir: "Op Note: Epilation of misdirected cilia. Billed per encounter, not per lash.", m: ["-E1", "-E2", "-E3", "-E4"] },
-      "97530": { n: "Therapeutic Activities (Low Vision Rehab)", f: 35, g: 0, ir: "Rehab Note: Direct contact training on low vision optical devices (15-minute increments).", m: [] },
-      "92285": { n: "External Ocular Photography", f: 24, g: 0, ir: "I&R: Photography of anterior segment lesion to objectively track size/progression.", m: ["-59"] },
-      "G2211": { n: "Visit Complexity Add-on (Longitudinal Care)", f: 16.40, g: 0, ir: "CMS Add-on: For continuing focal point of longitudinal care for chronic condition. No Mod -25 allowed.", m: [] }
+    // ==========================================
+    // 1. MAC GPCI & RVU TABLES
+    // ==========================================
+    const MAC_GPCI = {
+      "NGS": { w: 1.082, pe: 1.156, mp: 1.420, cf: 33.40 },
+      "Novitas": { w: 1.000, pe: 0.985, mp: 0.890, cf: 33.40 },
+      "Noridian": { w: 1.045, pe: 1.182, mp: 0.720, cf: 33.40 },
+      "WPS": { w: 1.020, pe: 1.040, mp: 1.110, cf: 33.40 }
     };
 
-    // 2. MASTER 155+ CONDITIONS DATABASE
-  // Your app logic here (make sure to delete the old hardcoded const DB_RAW = [...];)
-// Helper to generate Pearl, Pitfall, and EHR Macro Plan Notes
-    function getConditionDetails(c) {
-      if (!c) return { pearl: "Align E/M level with documented MDM complexity.", pitfall: "Check NCCI edits.", note: "Observation." };
-      
-      let pearl = "Align E/M level with documented MDM complexity.";
-      let pitfall = "Routine diagnoses billed to medical plans without -GY will cause immediate denials.";
-      let note = `Patient evaluated for ${c.n}. Condition is stable on current medical regimen. Continue current observation/management.`;
+    const EM_RVUS = {
+      "99213": { w: 0.97, pe: 1.05, mp: 0.07 },
+      "99214": { w: 1.92, pe: 1.43, mp: 0.10 },
+      "99215": { w: 2.80, pe: 2.05, mp: 0.14 },
+      "99203": { w: 1.60, pe: 1.50, mp: 0.11 },
+      "99204": { w: 2.60, pe: 2.00, mp: 0.17 },
+      "99205": { w: 3.50, pe: 2.60, mp: 0.22 },
+      "92012": { w: 0.88, pe: 0.95, mp: 0.04 },
+      "92014": { w: 1.42, pe: 1.52, mp: 0.06 },
+      "92002": { w: 0.88, pe: 1.00, mp: 0.04 },
+      "92004": { w: 1.82, pe: 1.95, mp: 0.08 }
+    };
 
-      if (c.c === "Glaucoma") {
-        pearl = "Stagger OCT (92133) and VF (92083) across alternating recall visits to optimize allowable frequency and prevent NCCI unbundling flags.";
-        pitfall = "Billing 92133 and 92250 on the same date of service without distinct pathology triggers an automated NCCI bundling denial.";
-        note = `Glaucoma surveillance. Biomicroscopy reveals open angles. Optic nerves evaluated via funduscopy. C/D ratio symmetry maintained. Target IOP achieved on current drops.`;
-      } else if (c.c === "Retina") {
-        pearl = "Fundus photography (92250) is inherently bilateral. Never append -RT/-LT or bill 2 units. Bill 99214 if managing progressive edema or exudation.";
-        pitfall = "Failing to document a distinct 4-part Interpretation & Report (I&R) for retinal OCTs will fail a CMS audit. 'Test normal' is an automatic recoupment.";
-        note = `Dilated fundus examination performed. Macula and peripheral retina evaluated. No active traction, breaks, or detachments noted. Educated on Amsler grid self-monitoring.`;
-      } else if (c.c === "Cornea & OSD") {
-        pearl = "For punctal occlusion (68761), document failure of conservative artificial tear therapy for at least 3 months to substantiate medical necessity.";
-        pitfall = "Append Modifier -25 to E/M code only when a significant, separately identifiable evaluation was performed prior to the minor surgical procedure.";
-        note = `Cornea evaluated with high-magnification biomicroscopy and fluorescein. Tear break-up time (TBUT) and corneal staining scored. Lid margins and expressibility documented.`;
-      } else if (c.c === "Neuro") {
-        pearl = "Prioritize E/M codes (99214/99215) over eye codes. Neuro-ophthalmic crises fulfill moderate-to-high risk under MDM guidelines.";
-        pitfall = "A pupil-involving cranial nerve palsy requires immediate emergent neuro-imaging referral. Do not delay for elective visual field testing.";
-        note = `Neuro-ophthalmic evaluation. Extraocular motilities, cranial nerves II-VI, and pupillary reflexes (RAPD) assessed. Visual fields confronted.`;
-      } else if (c.c === "Peds") {
-        pearl = "Refraction (92015) is statutorily non-covered by Medicare Part B. Bill directly to patient or secondary vision carrier with modifier -GY.";
-        pitfall = "Cycloplegic refractions are mandatory for accommodative esotropia and amblyopia. Do not bill manifest refractions alone.";
-        note = `Binocular sensorimotor workup. Distance and near prism cover test recorded. Stereopsis and convergence evaluated. Wet cycloplegic retinoscopy performed.`;
-      }
+    // Includes RVUs (w, pe, mp), Procedure Type (imaging/surgery), and LCD Covered ICD prefixes
+    const CPT_DICT = {
+      "92133": { n: "OCT Optic Nerve", w: 0.45, pe: 0.78, mp: 0.02, g: 0, type: "imaging", lcd: ["H40","H42","H47","Q15"], ir: "I&R: Document reliability, RNFL thickness vs baseline, and clinical action.", m: ["-59", "-XU"] },
+      "92134": { n: "OCT Retina", w: 0.45, pe: 0.78, mp: 0.02, g: 0, type: "imaging", lcd: ["E11.3","H35.3","H34","H35.8","Z79.89"], ir: "I&R: Document subretinal/intraretinal fluid, central subfield thickness.", m: ["-59", "-XU"] },
+      "92083": { n: "Visual Field 24-2", w: 0.85, pe: 1.05, mp: 0.05, g: 0, type: "imaging", lcd: ["H40","H47","H53","Z79.89","H35.5"], ir: "I&R: Document FP/FN reliability, mean deviation (MD).", m: ["-59"] },
+      "92250": { n: "Fundus Photo", w: 0.55, pe: 1.00, mp: 0.05, g: 0, type: "imaging", lcd: ["E11.3","H35.3","H31","H33"], ir: "I&R: Detailed report of pathology photographed and baseline comparison.", m: ["-59", "-XU"] },
+      "92020": { n: "Gonioscopy", w: 0.46, pe: 0.35, mp: 0.02, g: 0, type: "other", lcd: ["H40","Q15","H20"], ir: "I&R: Grade all 4 quadrants (Spaeth/Shaffer). Document PAS, NVA.", m: [] },
+      "65855": { n: "Laser Trabeculoplasty", w: 3.50, pe: 3.70, mp: 0.15, g: 10, type: "surgery", lcd: ["H40"], ir: "Op Note: Consent, shots, power (mJ), degrees treated, post-op IOP.", m: ["-RT", "-LT", "-50", "-55"] },
+      "66761": { n: "LPI", w: 4.50, pe: 4.80, mp: 0.20, g: 10, type: "surgery", lcd: ["H40.2","H40.03"], ir: "Op Note: Location, energy, patency confirmed, post-op IOP check.", m: ["-RT", "-LT", "-50", "-55"] },
+      "68761": { n: "Punctal Plug", w: 1.50, pe: 1.90, mp: 0.08, g: 10, type: "surgery", lcd: ["H04.1","H04.2"], ir: "Chart Note: Document failure of conservative artificial tears.", m: ["-E1", "-E2", "-E3", "-E4", "-51"] },
+      "65222": { n: "Corneal FB Removal", w: 1.10, pe: 0.90, mp: 0.04, g: 0, type: "surgery", lcd: ["T15"], ir: "Op Note: Document depth, rust ring status, Seidel test.", m: ["-RT", "-LT"] },
+      "92071": { n: "Bandage Contact Lens", w: 0.60, pe: 0.50, mp: 0.03, g: 0, type: "other", lcd: ["S05","H18.8","H16"], ir: "Chart Note: Therapeutic indication, lens parameters.", m: ["-RT", "-LT"] },
+      "92072": { n: "Keratoconus CL Fit", w: 2.20, pe: 2.60, mp: 0.10, g: 0, type: "other", lcd: ["H18.6"], ir: "Chart Note: Lens design, topographical progression.", m: ["-RT", "-LT"] },
+      "65435": { n: "Epithelial Debridement", w: 2.00, pe: 2.20, mp: 0.10, g: 0, type: "surgery", lcd: ["H18.8","B00.5","H16.1"], ir: "Op Note: Slit lamp debridement of loose epithelium.", m: ["-RT", "-LT"] },
+      "76514": { n: "Pachymetry", w: 0.20, pe: 0.15, mp: 0.01, g: 0, type: "imaging", lcd: ["H40","H18.5","H18.6"], ir: "I&R: Central corneal thickness (CCT) in microns.", m: [] },
+      "76512": { n: "B-Scan Ultrasound", w: 1.05, pe: 1.25, mp: 0.06, g: 0, type: "imaging", lcd: ["H33","H43","H31","H40.6"], ir: "I&R: Acoustic evaluation of vitreous, retina, choroid.", m: ["-RT", "-LT", "-26", "-TC"] },
+      "92228": { n: "Ext. Ophthalmoscopy", w: 0.40, pe: 0.50, mp: 0.02, g: 0, type: "other", lcd: ["H33","E11.35","H35.0"], ir: "Mandatory: Detailed physical color drawing of retinal breaks in record.", m: ["-RT", "-LT"] },
+      "92060": { n: "Sensorimotor Exam", w: 0.85, pe: 1.05, mp: 0.05, g: 0, type: "other", lcd: ["H53","H50","H51","H49"], ir: "I&R: Prism alternate cover test at distance/near, stereopsis.", m: [] },
+      "92015": { n: "Refraction", w: 0.50, pe: 0.65, mp: 0.03, g: 0, type: "other", lcd: [], ir: "Chart Note: Manifest/cycloplegic refraction. Statutorily non-covered.", m: ["-GY"] },
+      "65778": { n: "Amniotic Membrane", w: 3.80, pe: 5.20, mp: 0.20, g: 10, type: "surgery", lcd: ["H04.1","S05","H18.1"], ir: "Op Note: Placement of biologic dressing, centration.", m: ["-RT", "-LT"] },
+      "11900": { n: "Intralesional Inj.", w: 1.00, pe: 1.20, mp: 0.05, g: 0, type: "surgery", lcd: ["H00.1"], ir: "Op Note: Medication (Kenalog), dose, injection site.", m: ["-E1", "-E2", "-E3", "-E4"] },
+      "66821": { n: "YAG Capsulotomy", w: 4.00, pe: 4.30, mp: 0.18, g: 90, type: "surgery", lcd: ["H26.4"], ir: "Op Note: Clearing visual axis of PCO, energy, shots, post-op IOP check.", m: ["-RT", "-LT", "-55"] },
+      "92065": { n: "Vision Therapy", w: 1.10, pe: 1.60, mp: 0.08, g: 0, type: "other", lcd: ["H51.1","H53.0"], ir: "Therapy Note: Specific fusional vergence / accommodative therapy.", m: [] },
+      "65205": { n: "Conjunctival FB", w: 0.70, pe: 0.60, mp: 0.03, g: 0, type: "surgery", lcd: ["H11.2","T15"], ir: "Op Note: Location of FB, removal technique.", m: ["-RT", "-LT"] },
+      "68840": { n: "Probing Lacrimal", w: 1.20, pe: 1.50, mp: 0.06, g: 10, type: "surgery", lcd: ["H04.2"], ir: "Op Note: Dilation of punctum, patency, resistance.", m: ["-E1", "-E2", "-E3", "-E4"] },
+      "67820": { n: "Epilation Forceps", w: 0.60, pe: 0.80, mp: 0.03, g: 0, type: "surgery", lcd: ["H02.05"], ir: "Op Note: Epilation of misdirected cilia.", m: ["-E1", "-E2", "-E3", "-E4"] },
+      "97530": { n: "Therapeutic Activities", w: 0.45, pe: 0.55, mp: 0.02, g: 0, type: "other", lcd: ["H54.8"], ir: "Rehab Note: Low vision optical devices training.", m: [] },
+      "92285": { n: "External Photography", w: 0.30, pe: 0.40, mp: 0.01, g: 0, type: "imaging", lcd: ["H02","H11","H15","H16","H18"], ir: "I&R: Photography of anterior segment lesion.", m: ["-59"] },
+      "G2211": { n: "Visit Complexity Add-on", w: 0.33, pe: 0.15, mp: 0.01, g: 0, type: "other", lcd: ["H40","E11","H04.1","H35"], ir: "CMS Add-on: Longitudinal care for chronic condition.", m: [] }
+    };
 
-      return { pearl, pitfall, note };
-    }
-    // STATE MANAGEMENT
+    const NCCI_EDITS = [
+      { p: "92133", s: "92250", ind: 1, msg: "OCT ONH + Photos: Unbundle allowed ONLY with -59/-XU for distinct pathology." },
+      { p: "92134", s: "92250", ind: 1, msg: "OCT Retina + Photos: Bundled. Requires separate anatomic lesions for unbundling." },
+      { p: "92083", s: "92081", ind: 0, msg: "Strict Bundle: Serial fields cannot be billed together under any circumstance." },
+      { p: "92083", s: "92082", ind: 0, msg: "Strict Bundle: Serial fields cannot be billed together under any circumstance." },
+      { p: "65222", s: "92071", ind: 1, msg: "Corneal FB + BCL: Append -59 to 92071 if placed for distinct trauma." },
+      { p: "92133", s: "92134", ind: 0, msg: "Strict Bundle: Cannot bill OCT Optic Nerve and OCT Retina on same date." }
+    ];
+
+    // ==========================================
+    // 2. STATE MANAGEMENT & UI LOGIC
+    // ==========================================
     let cart = [];
     let cartProcedures = [];
-    let filteredList = [...DB_RAW];
-    let activeCond = DB_RAW[0];
-    let ptStatus = 'est'; // 'est' or 'new'
+    let filteredList = [...(typeof DB_RAW !== 'undefined' ? DB_RAW : [])];
+    let activeCond = filteredList[0];
+    let ptStatus = 'est'; 
     let emLevel = 'mod';  // 'stable', 'mod', 'high'
 
+    // Manual MDM/EyeCode Toggle overrides
     function setPtStatus(status) {
       ptStatus = status;
       document.getElementById('btnPtEst').className = status === 'est' ? 'px-2.5 py-1 rounded-md bg-white dark:bg-slate-800 shadow-sm text-blue-600 dark:text-blue-400' : 'px-2.5 py-1 rounded-md text-slate-600 dark:text-slate-300';
       document.getElementById('btnPtNew').className = status === 'new' ? 'px-2.5 py-1 rounded-md bg-white dark:bg-slate-800 shadow-sm text-blue-600 dark:text-blue-400' : 'px-2.5 py-1 rounded-md text-slate-600 dark:text-slate-300';
       updateCart();
     }
-
     function setEmLevel(lvl) {
       emLevel = lvl;
+      // Sync MDM dropdowns so the UI matches the button click
+      if(lvl === 'stable') { document.getElementById('mdmProb').value="1"; document.getElementById('mdmData').value="1"; document.getElementById('mdmRisk').value="1"; }
+      if(lvl === 'mod') { document.getElementById('mdmProb').value="2"; document.getElementById('mdmData').value="2"; document.getElementById('mdmRisk').value="2"; }
+      if(lvl === 'high') { document.getElementById('mdmProb').value="3"; document.getElementById('mdmData').value="3"; document.getElementById('mdmRisk').value="3"; }
       updateCart();
     }
 
@@ -552,12 +624,11 @@
 
     function filterDb() {
       const q = (document.getElementById("searchInput").value || "").toLowerCase().trim();
-      const cat = (document.getElementById("categoryFilter").value || "all").toLowerCase().trim();
+      const cat = (document.getElementById("categoryFilter").value || "all");
 
-      filteredList = DB_RAW.filter(c => {
+      filteredList = (typeof DB_RAW !== 'undefined' ? DB_RAW : []).filter(c => {
         const matchesQuery = !q || c.i.toLowerCase().includes(q) || c.n.toLowerCase().includes(q);
-        const condCat = (c.c || "").toLowerCase();
-        const matchesCategory = (cat === 'all') || condCat.includes(cat) || cat.includes(condCat);
+        const matchesCategory = (cat === 'all') || (c.c === cat);
         return matchesQuery && matchesCategory;
       });
       renderDb();
@@ -584,7 +655,7 @@
       });
       
       if (!activeCond || !filteredList.find(c => c.i === activeCond.i)) {
-        selDb(filteredList[0].i);
+        if(filteredList[0]) selDb(filteredList[0].i);
       }
     }
 
@@ -605,12 +676,11 @@
       if (dbRtc) dbRtc.innerText = activeCond.r || "PRN";
       if (dbSnomed) dbSnomed.innerText = activeCond.s ? `SNOMED: ${activeCond.s}` : "SNOMED: Map Pending";
 
-      // Pearls and Pitfalls
-      let details = getConditionDetails(activeCond);
+      // Pearls and Pitfalls (Fallback to dynamic generic if explicit record misses)
       const dbPearl = document.getElementById("dbPearl");
       const dbPitfall = document.getElementById("dbPitfall");
-      if (dbPearl) dbPearl.innerText = details.pearl;
-      if (dbPitfall) dbPitfall.innerText = details.pitfall;
+      if (dbPearl) dbPearl.innerText = activeCond.pearl || "Align E/M level with documented MDM complexity.";
+      if (dbPitfall) dbPitfall.innerText = activeCond.pitfall || "Verify Local Coverage Determinations for documentation rules.";
 
       // Populate Min vs Max Revenue Strategy Cards
       const minRevEl = document.getElementById("dbMinRev");
@@ -633,6 +703,51 @@
         if (maxRevEl) maxRevEl.innerText = "--";
         if (maxDescEl) maxDescEl.innerText = "Active clinical disease management pathway.";
       }
+
+      // Dynamic Visual Pathway Timeline
+      const tlEl = document.getElementById("dbTimeline");
+      if(tlEl) {
+        let isAcute = activeCond.r.includes("STAT") || activeCond.r.includes("Day") || activeCond.r.includes("Wk");
+        if(isAcute) {
+            tlEl.innerHTML = `
+              <div class="flex-1 bg-rose-50 dark:bg-rose-900/20 p-3 rounded-lg border border-rose-200 dark:border-rose-800">
+                <div class="text-[10px] font-bold text-rose-800 dark:text-rose-300 uppercase mb-1">Day 0 (Acute)</div>
+                <div class="text-xs dark:text-slate-300">Level 5 Encounter + STAT Tests / Surgical Referral</div>
+              </div>
+              <div class="flex-1 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+                <div class="text-[10px] font-bold text-slate-500 uppercase mb-1">Day 1-3</div>
+                <div class="text-xs dark:text-slate-300">Initial resolution & compliance check</div>
+              </div>
+              <div class="flex-1 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+                <div class="text-[10px] font-bold text-slate-500 uppercase mb-1">Week 1-2</div>
+                <div class="text-xs dark:text-slate-300">Tapering regimen evaluation</div>
+              </div>
+              <div class="flex-1 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div class="text-[10px] font-bold text-blue-800 dark:text-blue-300 uppercase mb-1">Month 1</div>
+                <div class="text-xs dark:text-slate-300">Clearance / Return to baseline</div>
+              </div>
+            `;
+        } else {
+            tlEl.innerHTML = `
+              <div class="flex-1 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div class="text-[10px] font-bold text-blue-800 dark:text-blue-300 uppercase mb-1">Month 0</div>
+                <div class="text-xs dark:text-slate-300">Baseline Eval + Structural Imaging/Topography</div>
+              </div>
+              <div class="flex-1 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+                <div class="text-[10px] font-bold text-slate-500 uppercase mb-1">Month 3-4</div>
+                <div class="text-xs dark:text-slate-300">Functional Testing & Progress Review</div>
+              </div>
+              <div class="flex-1 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div class="text-[10px] font-bold text-blue-800 dark:text-blue-300 uppercase mb-1">Month 6-8</div>
+                <div class="text-xs dark:text-slate-300">LCD Compliant Repeat Structural Surveillance</div>
+              </div>
+              <div class="flex-1 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+                <div class="text-[10px] font-bold text-slate-500 uppercase mb-1">Month 10-12</div>
+                <div class="text-xs dark:text-slate-300">Annual Review & Functional Surveillance</div>
+              </div>
+            `;
+        }
+      }
       
       // Procedures List
       const pEl = document.getElementById("dbProcs");
@@ -642,8 +757,8 @@
         } else {
           pEl.innerHTML = "";
           activeCond.p.forEach(cptKey => {
-            let cpt = (typeof CPT_DICT !== 'undefined' && CPT_DICT[cptKey]) ? CPT_DICT[cptKey] : { n: "Diagnostic Procedure", f: 0, g: 0, ir: "I&R documentation required.", m: [] };
-            let fee = Number(cpt.f) || 0;
+            let cpt = (typeof CPT_DICT !== 'undefined' && CPT_DICT[cptKey]) ? CPT_DICT[cptKey] : { n: "Diagnostic Procedure", w:0, pe:0, mp:0, g: 0, ir: "I&R documentation required.", m: [] };
+            let approxFee = ((cpt.w * 1.082) + (cpt.pe * 1.156) + (cpt.mp * 1.420)) * 33.40; // Approx using NGS
             pEl.innerHTML += `
               <div class="p-3.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900/50 flex flex-col gap-1.5">
                 <div class="flex items-center justify-between">
@@ -652,7 +767,7 @@
                     <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 ml-1.5">${cpt.n}</span>
                     ${cpt.g > 0 ? `<span class="text-[9px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-bold ml-2">${cpt.g}-Day Global</span>` : ''}
                   </div>
-                  <span class="text-xs font-mono font-bold text-emerald-600">+$${fee.toFixed(2)}</span>
+                  <span class="text-xs font-mono font-bold text-emerald-600">+~$${approxFee.toFixed(2)}</span>
                 </div>
                 <p class="text-[11px] text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700 pt-1.5"><span class="font-bold text-red-500">I&R Rule:</span> ${cpt.ir}</p>
                 ${(cpt.m && cpt.m.length > 0) ? `<div class="text-[10px] text-blue-600 dark:text-blue-400 font-bold">Applicable Modifiers: ${cpt.m.join(", ")}</div>` : ''}
@@ -739,14 +854,13 @@
                 </div>
               </div>
             </div>
-            <span class="text-xs font-mono font-bold text-emerald-600">+$${cptInfo.f.toFixed(2)}</span>
           </div>
         `;
       });
 
       calcTotals();
       generateMacro();
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
 
     function chkP(i, v) { cartProcedures[i].chk = v; calcTotals(); generateMacro(); }
@@ -755,62 +869,69 @@
       else { cartProcedures[i].mods = cartProcedures[i].mods.filter(x=>x!==m); }
       calcTotals(); generateMacro();
     }
-    function updateProcPtr(i, v) { cartProcedures[i].ptr = parseInt(v); generateMacro(); }
+    function updateProcPtr(i, v) { cartProcedures[i].ptr = parseInt(v); calcTotals(); generateMacro(); }
 
     function calcTotals() {
-      // Highlight active E/M button
-      ['btnEmStable','btnEmMod','btnEmHigh'].forEach(id => document.getElementById(id).classList.remove('bg-blue-50','border-blue-500','text-blue-700','dark:bg-blue-900/30'));
-      if(emLevel==='stable') document.getElementById('btnEmStable').classList.add('bg-blue-50','border-blue-500','text-blue-700','dark:bg-blue-900/30');
-      if(emLevel==='mod') document.getElementById('btnEmMod').classList.add('bg-blue-50','border-blue-500','text-blue-700','dark:bg-blue-900/30');
-      if(emLevel==='high') document.getElementById('btnEmHigh').classList.add('bg-blue-50','border-blue-500','text-blue-700','dark:bg-blue-900/30');
-
       const medPayer = document.getElementById("medPayerSelect").value;
       const visPayer = document.getElementById("visPayerSelect").value;
       const setting = document.getElementById("settingSelect").value;
       const mac = document.getElementById("macSelect").value;
       const codeType = document.querySelector('input[name="codeType"]:checked').value;
 
-      // Update Payer Alert Box
-      const pText = document.getElementById("payerPolicyText");
-      if(medPayer === "uhc") pText.innerText = "UnitedHealthcare Medical: Prior auth required for amniotic membrane (65778). Refraction (92015) non-covered.";
-      else if(medPayer === "aetna") pText.innerText = "Aetna Medical: Document conservative failure (3 mos drops) for punctal plugs (68761). Telehealth requires -95.";
-      else if(medPayer === "medicaid") pText.innerText = "State Medicaid: Adult routine exams restricted to 1x every 24 months. Medical exams covered for pathology.";
-      else if(medPayer === "bcbs") pText.innerText = "Blue Cross Blue Shield: Reimburses comprehensive eye codes (92014) at high commercial rate. Bilateral surgery requires -50.";
-      else pText.innerText = `Medicare Part B (${mac} MAC): LCD active. 2026 CF = $33.40. G2211 complexity add-on eligible.`;
+      let gpci = MAC_GPCI[mac] || MAC_GPCI["NGS"];
+      let alerts = [];
 
-      // Multipliers
-      let pM = (["bcbs","uhc","aetna","cigna","humana"].includes(medPayer)) ? 1.20 : 1.0;
-      let sA = setting === "22" ? 0.70 : 1.0; // Professional component / Facility split
+      // 1. ACTIVE MDM SCORING ALGORITHM (2 of 3 Rule)
+      let probLvl = parseInt(document.getElementById('mdmProb').value);
+      let dataLvl = parseInt(document.getElementById('mdmData').value);
+      let riskLvl = parseInt(document.getElementById('mdmRisk').value);
+      let sortedMDM = [probLvl, dataLvl, riskLvl].sort((a,b) => a-b);
+      let finalMDM = sortedMDM[1]; // Median is the qualifying score
 
-      // Determine Base E/M CPT & Fee
-      let eC = "";
-      let baseFee = 0;
+      let calcEmLevel = 'mod';
+      if(finalMDM === 3) calcEmLevel = 'high';
+      else if(finalMDM === 2) calcEmLevel = 'mod';
+      else calcEmLevel = 'stable';
+      
+      // Update UI Badge
+      let badge = document.getElementById('mdmBadge');
+      if(finalMDM === 3) { badge.innerText = "High MDM"; badge.className = "text-[9px] bg-rose-600 text-white px-1.5 py-0.5 rounded font-bold uppercase"; }
+      else if(finalMDM === 2) { badge.innerText = "Moderate MDM"; badge.className = "text-[9px] bg-blue-600 text-white px-1.5 py-0.5 rounded font-bold uppercase"; }
+      else { badge.innerText = "Low / Straighforward MDM"; badge.className = "text-[9px] bg-slate-600 text-white px-1.5 py-0.5 rounded font-bold uppercase"; }
+
+      // If user is overriding with a button, let the emLevel variable rule, otherwise sync it
       if (codeType === '99') {
-        if(ptStatus === 'new') {
-          eC = emLevel === 'stable' ? '99203' : emLevel === 'mod' ? '99204' : '99205';
-          baseFee = emLevel === 'stable' ? 115 : emLevel === 'mod' ? 172 : 225;
-        } else {
-          eC = emLevel === 'stable' ? '99213' : emLevel === 'mod' ? '99214' : '99215';
-          baseFee = emLevel === 'stable' ? 92 : emLevel === 'mod' ? 132 : 184;
-        }
-      } else {
-        if(ptStatus === 'new') {
-          eC = emLevel === 'stable' ? '92002' : '92004';
-          baseFee = emLevel === 'stable' ? 95 : 155;
-        } else {
-          eC = emLevel === 'stable' ? '92012' : '92014';
-          baseFee = emLevel === 'stable' ? 90 : 130;
-        }
+        emLevel = calcEmLevel;
       }
 
-      let eTotal = baseFee * pM * sA;
+      ['btnEmStable','btnEmMod','btnEmHigh'].forEach(id => document.getElementById(id).classList.remove('bg-blue-50','border-blue-500','text-blue-700','dark:bg-blue-900/30'));
+      if(emLevel==='stable') document.getElementById('btnEmStable').classList.add('bg-blue-50','border-blue-500','text-blue-700','dark:bg-blue-900/30');
+      if(emLevel==='mod') document.getElementById('btnEmMod').classList.add('bg-blue-50','border-blue-500','text-blue-700','dark:bg-blue-900/30');
+      if(emLevel==='high') document.getElementById('btnEmHigh').classList.add('bg-blue-50','border-blue-500','text-blue-700','dark:bg-blue-900/30');
+
+      let pM = (["bcbs","uhc","aetna","cigna","humana"].includes(medPayer)) ? 1.20 : 1.0;
+      let sA = setting === "22" ? 0.70 : 1.0; 
+
+      // Calculate E/M Code Base via RVU
+      let eC = "";
+      if (codeType === '99') {
+        if(ptStatus === 'new') eC = emLevel === 'stable' ? '99203' : emLevel === 'mod' ? '99204' : '99205';
+        else eC = emLevel === 'stable' ? '99213' : emLevel === 'mod' ? '99214' : '99215';
+      } else {
+        if(ptStatus === 'new') eC = emLevel === 'stable' ? '92002' : '92004';
+        else eC = emLevel === 'stable' ? '92012' : '92014';
+      }
+      
+      let emRvu = EM_RVUS[eC] || { w:0, pe:0, mp:0 };
+      let eTotal = ((emRvu.w * gpci.w) + (emRvu.pe * gpci.pe) + (emRvu.mp * gpci.mp)) * gpci.cf * pM * sA;
       document.getElementById("emCodeDisplay").innerText = `${eC} ($${eTotal.toFixed(2)})`;
 
-      // Check if minor surgical procedure is billed to prompt -25
       let checkedProcs = cartProcedures.filter(p => p.chk);
-      let hasMinorSurg = checkedProcs.some(p => ["65222","68761","65435","65778","11900"].includes(p.c));
+      let hasMinorSurg = checkedProcs.some(p => { let c = CPT_DICT[p.c]; return c && c.type === "surgery"; });
 
-      // G2211 Rule: Cannot be billed with Modifier -25 on same E/M
+      if (hasMinorSurg) alerts.push("⚠️ Smart Modifier: Minor surgical procedure performed. Append Modifier -25 to E/M code.");
+      if (setting === "02") alerts.push("ℹ️ Telehealth: Append Modifier -95 to E/M code for audio/video encounter.");
+
       const gToggle = document.getElementById("g2211Toggle");
       const gWarn = document.getElementById("g2211Warning");
       let g2211Fee = 0;
@@ -819,43 +940,84 @@
           gWarn.classList.remove("hidden");
         } else {
           gWarn.classList.add("hidden");
-          g2211Fee = 16.40 * pM;
+          let gRvu = CPT_DICT["G2211"];
+          g2211Fee = ((gRvu.w * gpci.w) + (gRvu.pe * gpci.pe) + (gRvu.mp * gpci.mp)) * gpci.cf * pM;
         }
       } else {
         gWarn.classList.add("hidden");
       }
 
-      // Procedures Total
+      // MPPR, LCD, & NCCI Validator Logic
       let pTotal = 0;
-      let alerts = [];
-
-      // Smart Modifier Prompts
-      if (hasMinorSurg) {
-        alerts.push("⚠️ Smart Modifier: Minor surgical procedure performed. Append Modifier -25 to E/M code.");
-      }
-
-      let checkedCpts = checkedProcs.map(p => p.c);
-      if (checkedCpts.includes('92133') && checkedCpts.includes('92250')) {
-        alerts.push("⚠️ NCCI Edit: 92133 (OCT) + 92250 (Photo) bundled. Append -59 or -XU only if evaluating separate anatomical sites.");
-      }
-
-      if (setting === "02") {
-        alerts.push("ℹ️ Telehealth: Append Modifier -95 to E/M code for audio/video encounter.");
-      }
-
-      // Coordination of Benefits Check
-      if (visPayer !== "none" && checkedCpts.includes('92015')) {
-        alerts.push(`ℹ️ Split Claim Active: Refraction (92015) routed to ${document.getElementById("visPayerSelect").selectedOptions[0].text}. Medical testing routed to Medical carrier.`);
-      }
+      let imgProcs = [];
+      let surgProcs = [];
+      let otherProcs = [];
+      let checkedCpts = [];
 
       checkedProcs.forEach(p => {
-        let cInfo = CPT_DICT[p.c] || { f: 0 };
-        let f = cInfo.f * pM * sA;
-        if(p.mods && p.mods.includes("-55")) f = f * 0.20; // Co-management split
-        let eMods = (p.mods || []).filter(m => m.startsWith("-E"));
-        if(eMods.length) { f = f * eMods.length; if(eMods.length > 1) f = f * 0.75; } // Multi-plug reduction
-        pTotal += f;
+        let cInfo = CPT_DICT[p.c];
+        if(!cInfo) return;
+        checkedCpts.push(p.c);
+        
+        let fee = ((cInfo.w * gpci.w) + (cInfo.pe * gpci.pe) + (cInfo.mp * gpci.mp)) * gpci.cf * pM * sA;
+        if(p.mods && p.mods.includes("-55")) fee = fee * 0.20; 
+        
+        // LCD Check
+        let ptrIcd = cart[p.ptr] ? cart[p.ptr].c.i : "";
+        if(cInfo.lcd && cInfo.lcd.length > 0) {
+           let isCovered = cInfo.lcd.some(prefix => ptrIcd.startsWith(prefix));
+           if(!isCovered) {
+              alerts.push(`🛑 LCD Gap: ${ptrIcd} is not explicitly covered for ${p.c}. Check MAC LCD & generate ABN (-GA).`);
+           }
+        }
+
+        let procObj = { ...p, baseFee: fee, cInfo: cInfo };
+        if(cInfo.type === "imaging") imgProcs.push(procObj);
+        else if(cInfo.type === "surgery") surgProcs.push(procObj);
+        else otherProcs.push(procObj);
       });
+
+      // NCCI PTP Cross-Reference
+      NCCI_EDITS.forEach(edit => {
+         if(checkedCpts.includes(edit.p) && checkedCpts.includes(edit.s)) {
+            if(edit.ind === 0) {
+                alerts.push(`🛑 STRICT BUNDLE (NCCI 0): ${edit.p} and ${edit.s} cannot be billed together. Claim will reject.`);
+            } else {
+                alerts.push(`⚠️ NCCI Edit (Indicator 1): ${edit.p} + ${edit.s}. ${edit.msg}`);
+            }
+         }
+      });
+
+      if (visPayer !== "none" && checkedCpts.includes('92015')) {
+        alerts.push(`ℹ️ Split Claim Active: Refraction (92015) routed to ${document.getElementById("visPayerSelect").selectedOptions[0].text}.`);
+      }
+
+      // Apply MPPR Reductions
+      imgProcs.sort((a,b) => b.baseFee - a.baseFee);
+      surgProcs.sort((a,b) => b.baseFee - a.baseFee);
+
+      imgProcs.forEach((p, idx) => {
+         let finalFee = p.baseFee;
+         if(idx > 0 && setting !== "22") { 
+             finalFee = p.baseFee * 0.80; // 50% TC reduction effectively cuts ~20% off Global
+             if(alerts.length < 6) alerts.push(`ℹ️ MPPR Applied: Multiple imaging. TC reduction applied to ${p.c}.`);
+         }
+         pTotal += finalFee;
+      });
+
+      surgProcs.forEach((p, idx) => {
+         let finalFee = p.baseFee;
+         let eMods = (p.mods || []).filter(m => m.startsWith("-E"));
+         if(eMods.length) finalFee = finalFee * eMods.length;
+         
+         if(idx > 0 || eMods.length > 1) {
+             finalFee = finalFee * 0.50; // 50% reduction for secondary surgery
+             if(alerts.length < 6) alerts.push(`ℹ️ MPPR Applied: Secondary minor surgery (50% cut to ${p.c}).`);
+         }
+         pTotal += finalFee;
+      });
+
+      otherProcs.forEach(p => pTotal += p.baseFee);
 
       document.getElementById("procTotalDisplay").innerText = `$${pTotal.toFixed(2)}`;
       let grandTotal = eTotal + g2211Fee + pTotal;
@@ -863,7 +1025,10 @@
       document.getElementById("patientOopDisplay").innerText = `$${(grandTotal * 0.20).toFixed(2)}`;
 
       const alertsBox = document.getElementById("alertBox");
-      alertsBox.innerHTML = alerts.map(a => `<div class="text-[10px] bg-amber-100 dark:bg-amber-950/40 text-amber-900 dark:text-amber-300 p-2 rounded-lg font-bold border border-amber-200 dark:border-amber-800">${a}</div>`).join("");
+      alertsBox.innerHTML = alerts.map(a => {
+          let color = a.includes("🛑") ? "bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800" : "bg-amber-100 text-amber-900 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800";
+          return `<div class="text-[10px] p-2 rounded-lg font-bold border ${color}">${a}</div>`;
+      }).join("");
     }
 
     function generateMacro() {
@@ -886,7 +1051,7 @@
       }
 
       let checkedProcs = cartProcedures.filter(p => p.chk);
-      let hasMinorSurg = checkedProcs.some(p => ["65222","68761","65435","65778","11900"].includes(p.c));
+      let hasMinorSurg = checkedProcs.some(p => { let c = CPT_DICT[p.c]; return c && c.type === "surgery"; });
       let emMod = hasMinorSurg ? "-25" : (setting === "02" ? "-95" : "");
 
       let t = `=======================================================\n`;
@@ -902,7 +1067,6 @@
         if(x.c.c === 'Glaucoma' && fullIcd.startsWith("H40.1")) fullIcd = `${fullIcd.slice(0,6)}${x.l}${x.st}`;
         else if(["Glaucoma","Retina","Cornea & OSD"].includes(x.c.c)) fullIcd = `${fullIcd}.${x.l}`;
         t += `Line ${i+1}: ${fullIcd} - ${x.c.n} ${x.isP ? '[PRIMARY POINTER]' : ''}\n`;
-        t += `  Clinical Note: ${getConditionDetails(x.c).note}\n`;
         t += `  Follow-up Cadence: ${x.c.r}\n\n`;
       });
 
