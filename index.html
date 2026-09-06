@@ -143,9 +143,7 @@
         <!-- Dynamic Visual Pathway Timeline -->
         <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm">
           <h3 class="text-xs font-bold uppercase tracking-wider mb-3 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">12-Month Clinical Pathway Timeline</h3>
-          <div id="dbTimeline" class="flex flex-col md:flex-row gap-3">
-             <!-- Javascript auto-populates -->
-          </div>
+          <div id="dbTimeline" class="flex flex-col md:flex-row gap-3"></div>
         </div>
 
         <!-- Eligible Procedures & Full CPT I&R Requirements -->
@@ -229,7 +227,7 @@
                 </div>
               </div>
 
-              <!-- New: Active MDM Scoring Engine -->
+              <!-- Active MDM Scoring Engine -->
               <div class="mb-3 p-3 bg-slate-50 dark:bg-slate-700/30 rounded-xl border border-slate-200 dark:border-slate-600">
                 <div class="flex justify-between items-center mb-2">
                   <h4 class="text-[10px] font-bold uppercase text-slate-500">Active MDM Calculator (2-of-3 Rule)</h4>
@@ -254,7 +252,6 @@
                 </div>
               </div>
 
-              <!-- Kept original buttons for overrides / Eye Code selection -->
               <div class="flex flex-col gap-2">
                 <button onclick="setEmLevel('stable')" id="btnEmStable" class="p-2 border rounded-xl text-left text-xs font-bold dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700 transition">Manual Override: Stable / Low (99213 / 92012)</button>
                 <button onclick="setEmLevel('mod')" id="btnEmMod" class="p-2 border rounded-xl text-left text-xs font-bold bg-blue-50 border-blue-500 text-blue-700 dark:bg-blue-900/30 transition">Manual Override: Mod MDM / Rx (99214 / 92014)</button>
@@ -364,7 +361,6 @@
           </div>
         </div>
 
-        <!-- Section 2: Clinical Modifier Guide with Vignettes -->
         <!-- Section 2: Clinical Modifier Guide with Vignettes -->
         <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-4">
           <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-2">
@@ -539,7 +535,7 @@
           </div>
         </div>
 
-        <!-- NEW: Section 4: Algorithmic Logic & Revenue Math -->
+        <!-- Section 4: Algorithmic Logic & Revenue Math -->
         <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-4">
           <h3 class="text-sm font-bold uppercase dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">4. Ultimate Algorithms: MAC GPCI, MPPR, NCCI & LCD Logic</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs dark:text-slate-300">
@@ -574,6 +570,7 @@
 
     </section>
   </main>
+  
   <script src="database.js"></script>
   <script>
     // Theme toggle
@@ -602,15 +599,15 @@
       "92004": { w: 1.82, pe: 1.95, mp: 0.08 }
     };
 
-    // Includes RVUs (w, pe, mp), Procedure Type (imaging/surgery), and LCD Covered ICD prefixes
+    // Clean CPT Dictionary with unique keys and modifier lists
     const CPT_DICT = {
       "92133": { n: "OCT Optic Nerve", w: 0.45, pe: 0.78, mp: 0.02, g: 0, type: "imaging", lcd: ["H40","H42","H47","Q15"], ir: "I&R: Document reliability, RNFL thickness vs baseline, and clinical action.", m: ["-59", "-XU"] },
       "92134": { n: "OCT Retina", w: 0.45, pe: 0.78, mp: 0.02, g: 0, type: "imaging", lcd: ["E11.3","H35.3","H34","H35.8","Z79.89"], ir: "I&R: Document subretinal/intraretinal fluid, central subfield thickness.", m: ["-59", "-XU"] },
       "92083": { n: "Visual Field 24-2", w: 0.85, pe: 1.05, mp: 0.05, g: 0, type: "imaging", lcd: ["H40","H47","H53","Z79.89","H35.5"], ir: "I&R: Document FP/FN reliability, mean deviation (MD).", m: ["-59"] },
       "92250": { n: "Fundus Photo", w: 0.55, pe: 1.00, mp: 0.05, g: 0, type: "imaging", lcd: ["E11.3","H35.3","H31","H33"], ir: "I&R: Detailed report of pathology photographed and baseline comparison.", m: ["-59", "-XU"] },
       "92020": { n: "Gonioscopy", w: 0.46, pe: 0.35, mp: 0.02, g: 0, type: "other", lcd: ["H40","Q15","H20"], ir: "I&R: Grade all 4 quadrants (Spaeth/Shaffer). Document PAS, NVA.", m: [] },
-      "65855": { n: "Laser Trabeculoplasty", w: 3.50, pe: 3.70, mp: 0.15, g: 10, type: "surgery", lcd: ["H40"], ir: "Op Note: Consent, shots, power (mJ), degrees treated, post-op IOP.", m: ["-RT", "-LT", "-50", "-55"] },
       "65855": { n: "Laser Trabeculoplasty", w: 3.50, pe: 3.70, mp: 0.15, g: 10, type: "surgery", lcd: ["H40"], ir: "Consent, spots, power, post-IOP.", m: ["-RT", "-LT", "-50", "-55", "-79"] },
+      "66761": { n: "LPI", w: 4.50, pe: 4.80, mp: 0.20, g: 10, type: "surgery", lcd: ["H40.2","H40.03"], ir: "Op Note: Location, energy, patency confirmed, post-op IOP check.", m: ["-RT", "-LT", "-50", "-55"] },
       "68761": { n: "Punctal Plug", w: 1.50, pe: 1.90, mp: 0.08, g: 10, type: "surgery", lcd: ["H04.1","H04.2"], ir: "Document tear drop failure.", m: ["-E1", "-E2", "-E3", "-E4", "-51", "-79"] },
       "65222": { n: "Corneal FB Removal", w: 1.10, pe: 0.90, mp: 0.04, g: 0, type: "surgery", lcd: ["T15"], ir: "Document depth, rust ring, Seidel.", m: ["-RT", "-LT", "-79"] },
       "92071": { n: "Bandage Contact Lens", w: 0.60, pe: 0.50, mp: 0.03, g: 0, type: "other", lcd: ["S05","H18.8","H16"], ir: "Chart Note: Therapeutic indication, lens parameters.", m: ["-RT", "-LT"] },
@@ -647,21 +644,20 @@
     // ==========================================
     let cart = [];
     let cartProcedures = [];
-    let filteredList = [...(typeof DB_RAW !== 'undefined' ? DB_RAW : [])];
-    let activeCond = filteredList[0];
+    let filteredList = [];
+    let activeCond = null;
     let ptStatus = 'est'; 
-    let emLevel = 'mod';  // 'stable', 'mod', 'high'
+    let emLevel = 'mod';
 
-    // Manual MDM/EyeCode Toggle overrides
     function setPtStatus(status) {
       ptStatus = status;
       document.getElementById('btnPtEst').className = status === 'est' ? 'px-2.5 py-1 rounded-md bg-white dark:bg-slate-800 shadow-sm text-blue-600 dark:text-blue-400' : 'px-2.5 py-1 rounded-md text-slate-600 dark:text-slate-300';
       document.getElementById('btnPtNew').className = status === 'new' ? 'px-2.5 py-1 rounded-md bg-white dark:bg-slate-800 shadow-sm text-blue-600 dark:text-blue-400' : 'px-2.5 py-1 rounded-md text-slate-600 dark:text-slate-300';
       updateCart();
     }
+
     function setEmLevel(lvl) {
       emLevel = lvl;
-      // Sync MDM dropdowns so the UI matches the button click
       if(lvl === 'stable') { document.getElementById('mdmProb').value="1"; document.getElementById('mdmData').value="1"; document.getElementById('mdmRisk').value="1"; }
       if(lvl === 'mod') { document.getElementById('mdmProb').value="2"; document.getElementById('mdmData').value="2"; document.getElementById('mdmRisk').value="2"; }
       if(lvl === 'high') { document.getElementById('mdmProb').value="3"; document.getElementById('mdmData').value="3"; document.getElementById('mdmRisk').value="3"; }
@@ -696,8 +692,9 @@
     function filterDb() {
       const q = (document.getElementById("searchInput").value || "").toLowerCase().trim();
       const cat = (document.getElementById("categoryFilter").value || "all");
+      const sourceData = (typeof DB_RAW !== 'undefined' && Array.isArray(DB_RAW)) ? DB_RAW : [];
 
-      filteredList = (typeof DB_RAW !== 'undefined' ? DB_RAW : []).filter(c => {
+      filteredList = sourceData.filter(c => {
         const matchesQuery = !q || c.i.toLowerCase().includes(q) || c.n.toLowerCase().includes(q);
         const matchesCategory = (cat === 'all') || (c.c === cat);
         return matchesQuery && matchesCategory;
@@ -731,10 +728,10 @@
     }
 
     function selDb(icd) {
-      activeCond = (filteredList && filteredList.find(c => c.i === icd)) || (typeof DB_RAW !== 'undefined' && DB_RAW.find(c => c.i === icd));
+      const sourceData = (typeof DB_RAW !== 'undefined' && Array.isArray(DB_RAW)) ? DB_RAW : [];
+      activeCond = (filteredList && filteredList.find(c => c.i === icd)) || sourceData.find(c => c.i === icd);
       if (!activeCond) return;
 
-      // Header Labels
       const dbIcd = document.getElementById("dbIcd");
       const dbName = document.getElementById("dbName");
       const dbCat = document.getElementById("dbCat");
@@ -747,13 +744,11 @@
       if (dbRtc) dbRtc.innerText = activeCond.r || "PRN";
       if (dbSnomed) dbSnomed.innerText = activeCond.s ? `SNOMED: ${activeCond.s}` : "SNOMED: Map Pending";
 
-      // Pearls and Pitfalls (Fallback to dynamic generic if explicit record misses)
       const dbPearl = document.getElementById("dbPearl");
       const dbPitfall = document.getElementById("dbPitfall");
       if (dbPearl) dbPearl.innerText = activeCond.pearl || "Align E/M level with documented MDM complexity.";
       if (dbPitfall) dbPitfall.innerText = activeCond.pitfall || "Verify Local Coverage Determinations for documentation rules.";
 
-      // Populate Min vs Max Revenue Strategy Cards
       const minRevEl = document.getElementById("dbMinRev");
       const minDescEl = document.getElementById("dbMinDesc");
       const maxRevEl = document.getElementById("dbMaxRev");
@@ -775,7 +770,6 @@
         if (maxDescEl) maxDescEl.innerText = "Active clinical disease management pathway.";
       }
 
-      // Dynamic Visual Pathway Timeline
       const tlEl = document.getElementById("dbTimeline");
       if(tlEl) {
         let isAcute = activeCond.r.includes("STAT") || activeCond.r.includes("Day") || activeCond.r.includes("Wk");
@@ -820,7 +814,6 @@
         }
       }
       
-      // Procedures List
       const pEl = document.getElementById("dbProcs");
       if (pEl) {
         if (!activeCond.p || activeCond.p.length === 0) {
@@ -829,7 +822,7 @@
           pEl.innerHTML = "";
           activeCond.p.forEach(cptKey => {
             let cpt = (typeof CPT_DICT !== 'undefined' && CPT_DICT[cptKey]) ? CPT_DICT[cptKey] : { n: "Diagnostic Procedure", w:0, pe:0, mp:0, g: 0, ir: "I&R documentation required.", m: [] };
-            let approxFee = ((cpt.w * 1.082) + (cpt.pe * 1.156) + (cpt.mp * 1.420)) * 33.40; // Approx using NGS
+            let approxFee = ((cpt.w * 1.082) + (cpt.pe * 1.156) + (cpt.mp * 1.420)) * 33.40;
             pEl.innerHTML += `
               <div class="p-3.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900/50 flex flex-col gap-1.5">
                 <div class="flex items-center justify-between">
@@ -851,13 +844,31 @@
     }
 
     function addToCart(c) {
+      if(!c) return;
       if(!cart.find(x => x.c.i === c.i)) cart.push({c:c, l:"3", st: (c.c==='Glaucoma'?'2':''), isP:cart.length===0});
       switchTab('cart');
     }
-    function rmCart(i) { cart.splice(i,1); if(cart.length && !cart.find(c=>c.isP)) cart[0].isP=true; updateCart(); }
-    function setPri(i) { cart.forEach((c,x)=>c.isP=(x===i)); updateCart(); }
-    function setLat(i,v) { cart[i].l=v; updateCart(); }
-    function setStg(i,v) { cart[i].st=v; updateCart(); }
+
+    function rmCart(i) { 
+      cart.splice(i,1); 
+      if(cart.length && !cart.find(c=>c.isP)) cart[0].isP=true; 
+      updateCart(); 
+    }
+    
+    function setPri(i) { 
+      cart.forEach((c,x)=>c.isP=(x===i)); 
+      updateCart(); 
+    }
+    
+    function setLat(i,v) { 
+      cart[i].l=v; 
+      updateCart(); 
+    }
+    
+    function setStg(i,v) { 
+      cart[i].st=v; 
+      updateCart(); 
+    }
 
     function updateCart() {
       document.getElementById("cartBadge").innerText = cart.length;
@@ -892,7 +903,6 @@
         `;
       });
 
-      // Synchronize procedures
       let tempProcs = [];
       cart.forEach((x, i) => {
         if (x.c.p && Array.isArray(x.c.p)) {
@@ -934,13 +944,24 @@
       if (window.lucide) lucide.createIcons();
     }
 
-    function chkP(i, v) { cartProcedures[i].chk = v; calcTotals(); generateMacro(); }
+    function chkP(i, v) { 
+      cartProcedures[i].chk = v; 
+      calcTotals(); 
+      generateMacro(); 
+    }
+    
     function mod(el, m, i) { 
       if(el.checked) { if(!cartProcedures[i].mods.includes(m)) cartProcedures[i].mods.push(m); }
       else { cartProcedures[i].mods = cartProcedures[i].mods.filter(x=>x!==m); }
-      calcTotals(); generateMacro();
+      calcTotals(); 
+      generateMacro(); 
     }
-    function updateProcPtr(i, v) { cartProcedures[i].ptr = parseInt(v); calcTotals(); generateMacro(); }
+    
+    function updateProcPtr(i, v) { 
+      cartProcedures[i].ptr = parseInt(v); 
+      calcTotals(); 
+      generateMacro(); 
+    }
 
     function calcTotals() {
       const medPayer = document.getElementById("medPayerSelect").value;
@@ -952,38 +973,39 @@
       let gpci = MAC_GPCI[mac] || MAC_GPCI["NGS"];
       let alerts = [];
 
-      // 1. ACTIVE MDM SCORING ALGORITHM (2 of 3 Rule)
       let probLvl = parseInt(document.getElementById('mdmProb').value);
       let dataLvl = parseInt(document.getElementById('mdmData').value);
       let riskLvl = parseInt(document.getElementById('mdmRisk').value);
       let sortedMDM = [probLvl, dataLvl, riskLvl].sort((a,b) => a-b);
-      let finalMDM = sortedMDM[1]; // Median is the qualifying score
+      let finalMDM = sortedMDM[1];
 
       let calcEmLevel = 'mod';
       if(finalMDM === 3) calcEmLevel = 'high';
       else if(finalMDM === 2) calcEmLevel = 'mod';
       else calcEmLevel = 'stable';
       
-      // Update UI Badge
       let badge = document.getElementById('mdmBadge');
-      if(finalMDM === 3) { badge.innerText = "High MDM"; badge.className = "text-[9px] bg-rose-600 text-white px-1.5 py-0.5 rounded font-bold uppercase"; }
-      else if(finalMDM === 2) { badge.innerText = "Moderate MDM"; badge.className = "text-[9px] bg-blue-600 text-white px-1.5 py-0.5 rounded font-bold uppercase"; }
-      else { badge.innerText = "Low / Straighforward MDM"; badge.className = "text-[9px] bg-slate-600 text-white px-1.5 py-0.5 rounded font-bold uppercase"; }
+      if(badge) {
+        if(finalMDM === 3) { badge.innerText = "High MDM"; badge.className = "text-[9px] bg-rose-600 text-white px-1.5 py-0.5 rounded font-bold uppercase"; }
+        else if(finalMDM === 2) { badge.innerText = "Moderate MDM"; badge.className = "text-[9px] bg-blue-600 text-white px-1.5 py-0.5 rounded font-bold uppercase"; }
+        else { badge.innerText = "Low / Straightforward MDM"; badge.className = "text-[9px] bg-slate-600 text-white px-1.5 py-0.5 rounded font-bold uppercase"; }
+      }
 
-      // If user is overriding with a button, let the emLevel variable rule, otherwise sync it
       if (codeType === '99') {
         emLevel = calcEmLevel;
       }
 
-      ['btnEmStable','btnEmMod','btnEmHigh'].forEach(id => document.getElementById(id).classList.remove('bg-blue-50','border-blue-500','text-blue-700','dark:bg-blue-900/30'));
-      if(emLevel==='stable') document.getElementById('btnEmStable').classList.add('bg-blue-50','border-blue-500','text-blue-700','dark:bg-blue-900/30');
-      if(emLevel==='mod') document.getElementById('btnEmMod').classList.add('bg-blue-50','border-blue-500','text-blue-700','dark:bg-blue-900/30');
-      if(emLevel==='high') document.getElementById('btnEmHigh').classList.add('bg-blue-50','border-blue-500','text-blue-700','dark:bg-blue-900/30');
+      ['btnEmStable','btnEmMod','btnEmHigh'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.classList.remove('bg-blue-50','border-blue-500','text-blue-700','dark:bg-blue-900/30');
+      });
+      if(emLevel==='stable' && document.getElementById('btnEmStable')) document.getElementById('btnEmStable').classList.add('bg-blue-50','border-blue-500','text-blue-700','dark:bg-blue-900/30');
+      if(emLevel==='mod' && document.getElementById('btnEmMod')) document.getElementById('btnEmMod').classList.add('bg-blue-50','border-blue-500','text-blue-700','dark:bg-blue-900/30');
+      if(emLevel==='high' && document.getElementById('btnEmHigh')) document.getElementById('btnEmHigh').classList.add('bg-blue-50','border-blue-500','text-blue-700','dark:bg-blue-900/30');
 
       let pM = (["bcbs","uhc","aetna","cigna","humana"].includes(medPayer)) ? 1.20 : 1.0;
       let sA = setting === "22" ? 0.70 : 1.0; 
 
-      // Calculate E/M Code Base via RVU
       let eC = "";
       if (codeType === '99') {
         if(ptStatus === 'new') eC = emLevel === 'stable' ? '99203' : emLevel === 'mod' ? '99204' : '99205';
@@ -1018,7 +1040,6 @@
         gWarn.classList.add("hidden");
       }
 
-      // MPPR, LCD, & NCCI Validator Logic
       let pTotal = 0;
       let imgProcs = [];
       let surgProcs = [];
@@ -1033,7 +1054,6 @@
         let fee = ((cInfo.w * gpci.w) + (cInfo.pe * gpci.pe) + (cInfo.mp * gpci.mp)) * gpci.cf * pM * sA;
         if(p.mods && p.mods.includes("-55")) fee = fee * 0.20; 
         
-        // LCD Check
         let ptrIcd = cart[p.ptr] ? cart[p.ptr].c.i : "";
         if(cInfo.lcd && cInfo.lcd.length > 0) {
            let isCovered = cInfo.lcd.some(prefix => ptrIcd.startsWith(prefix));
@@ -1048,7 +1068,6 @@
         else otherProcs.push(procObj);
       });
 
-      // NCCI PTP Cross-Reference
       NCCI_EDITS.forEach(edit => {
          if(checkedCpts.includes(edit.p) && checkedCpts.includes(edit.s)) {
             if(edit.ind === 0) {
@@ -1063,14 +1082,13 @@
         alerts.push(`ℹ️ Split Claim Active: Refraction (92015) routed to ${document.getElementById("visPayerSelect").selectedOptions[0].text}.`);
       }
 
-      // Apply MPPR Reductions
       imgProcs.sort((a,b) => b.baseFee - a.baseFee);
       surgProcs.sort((a,b) => b.baseFee - a.baseFee);
 
       imgProcs.forEach((p, idx) => {
          let finalFee = p.baseFee;
          if(idx > 0 && setting !== "22") { 
-             finalFee = p.baseFee * 0.80; // 50% TC reduction effectively cuts ~20% off Global
+             finalFee = p.baseFee * 0.80;
              if(alerts.length < 6) alerts.push(`ℹ️ MPPR Applied: Multiple imaging. TC reduction applied to ${p.c}.`);
          }
          pTotal += finalFee;
@@ -1082,7 +1100,7 @@
          if(eMods.length) finalFee = finalFee * eMods.length;
          
          if(idx > 0 || eMods.length > 1) {
-             finalFee = finalFee * 0.50; // 50% reduction for secondary surgery
+             finalFee = finalFee * 0.50;
              if(alerts.length < 6) alerts.push(`ℹ️ MPPR Applied: Secondary minor surgery (50% cut to ${p.c}).`);
          }
          pTotal += finalFee;
@@ -1103,16 +1121,8 @@
     }
 
     function generateMacro() {
-      // Inside generateMacro() function:
-let checkedProcs = cartProcedures.filter(p => p.chk);
-let hasMinorSurg = checkedProcs.some(p => { let c = CPT_DICT[p.c]; return c && c.type === "surgery"; });
-
-let emMods = [];
-if (hasMinorSurg) emMods.push("-25");
-if (setting === "02") emMods.push("-95"); // Audio/video telehealth
-
-let emModString = emMods.length > 0 ? " " + emMods.join(" ") : "";
       const ehr = document.getElementById("ehrOutput");
+      if (!ehr) return;
       if (!cart.length) {
         ehr.innerText = "Add conditions to cart to compile encounter.";
         return;
@@ -1132,7 +1142,11 @@ let emModString = emMods.length > 0 ? " " + emMods.join(" ") : "";
 
       let checkedProcs = cartProcedures.filter(p => p.chk);
       let hasMinorSurg = checkedProcs.some(p => { let c = CPT_DICT[p.c]; return c && c.type === "surgery"; });
-      let emMod = hasMinorSurg ? "-25" : (setting === "02" ? "-95" : "");
+
+      let emMods = [];
+      if (hasMinorSurg) emMods.push("-25");
+      if (setting === "02") emMods.push("-95");
+      let emModString = emMods.length > 0 ? " " + emMods.join(" ") : "";
 
       let t = `=======================================================\n`;
       t += `OPTOMETRIC ENCOUNTER SUMMARY & SPLIT SUPERBILL EXPORT\n`;
@@ -1151,7 +1165,7 @@ let emModString = emMods.length > 0 ? " " + emMods.join(" ") : "";
       });
 
       t += `CLAIM 1: SUBMISSION TO MEDICAL PAYER (${medPayer})\n`;
-      t += `- Service: CPT ${eC}${emMod ? ' ' + emMod : ''}\n`;
+      t += `- Service: CPT ${eC}${emModString}\n`;
       if (document.getElementById("g2211Toggle").checked && !hasMinorSurg) {
         t += `- Add-on: HCPCS G2211 (Longitudinal Care Complexity)\n`;
       }
@@ -1176,6 +1190,7 @@ let emModString = emMods.length > 0 ? " " + emMods.join(" ") : "";
 
     function copyMacro() {
       const ehr = document.getElementById("ehrOutput");
+      if (!ehr) return;
       navigator.clipboard.writeText(ehr.innerText);
       alert("Chart macro and split superbill copied to clipboard!");
     }
