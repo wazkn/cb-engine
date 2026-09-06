@@ -365,74 +365,102 @@
         </div>
 
         <!-- Section 2: Clinical Modifier Guide with Vignettes -->
-        <div class="overflow-x-auto">
-  <table class="w-full text-left text-xs border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
-    <thead class="bg-slate-100 dark:bg-slate-700/50 text-slate-700 dark:text-slate-200 font-bold uppercase text-[10px]">
-      <tr>
-        <th class="p-3">Modifier</th>
-        <th class="p-3">Plain-English Translation</th>
-        <th class="p-3">Clinic Vignette & Coding Example</th>
-      </tr>
-    </thead>
-    <tbody class="divide-y divide-slate-100 dark:divide-slate-700 dark:text-slate-300">
-      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-        <td class="p-3 font-mono font-bold text-blue-600 dark:text-blue-400">-RT / -LT</td>
-        <td class="p-3">Identifies Right Eye (-RT) or Left Eye (-LT).</td>
-        <td class="p-3">Corneal foreign body removal right eye: <span class="font-mono font-semibold">65222-RT</span>.</td>
-      </tr>
-      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-        <td class="p-3 font-mono font-bold text-blue-600 dark:text-blue-400">-E1 to -E4</td>
-        <td class="p-3">Specific eyelids: E1 (Upper Left), E2 (Lower Left), E3 (Upper Right), E4 (Lower Right).</td>
-        <td class="p-3">Plugs placed in lower lids: <span class="font-mono font-semibold">68761-E4</span>, <span class="font-mono font-semibold">68761-E2-51</span>.</td>
-      </tr>
-      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-        <td class="p-3 font-mono font-bold text-amber-600 dark:text-amber-400">-24</td>
-        <td class="p-3">Exam during a post-op period for a totally unrelated condition.</td>
-        <td class="p-3">In 90-day post-op for right cataract, presents for left bacterial conjunctivitis: <span class="font-mono font-semibold">99213-24-LT</span>.</td>
-      </tr>
-      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-        <td class="p-3 font-mono font-bold text-amber-600 dark:text-amber-400">-25</td>
-        <td class="p-3">Full separate exam on the same day an in-office minor procedure is decided upon.</td>
-        <td class="p-3">Routine glaucoma check discovers acute corneal foreign body: <span class="font-mono font-semibold">99214-25</span> + <span class="font-mono font-semibold">65222-RT</span>.</td>
-      </tr>
-      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-        <td class="p-3 font-mono font-bold text-purple-600 dark:text-purple-400">-26 / -TC</td>
-        <td class="p-3">-26 = Doctor's interpretation & report. -TC = Facility/equipment cost.</td>
-        <td class="p-3">Interpreting an ultrasound performed in a hospital surgical center: <span class="font-mono font-semibold">76512-26</span>.</td>
-      </tr>
-      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-        <td class="p-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">-50</td>
-        <td class="p-3">Bilateral surgical procedure billed on a single line (pays 150%).</td>
-        <td class="p-3">SLT laser performed on both eyes same day: <span class="font-mono font-semibold">65855-50</span> (1 unit).</td>
-      </tr>
-      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-        <td class="p-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">-52</td>
-        <td class="p-3">Reduced service when an inherently bilateral test is performed on only one eye.</td>
-        <td class="p-3">Pachymetry performed on a monocular patient's only eye: <span class="font-mono font-semibold">76514-52</span>.</td>
-      </tr>
-      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-        <td class="p-3 font-mono font-bold text-teal-600 dark:text-teal-400">-55</td>
-        <td class="p-3">Post-op surgical co-management (OD manages follow-up after MD surgery).</td>
-        <td class="p-3">Assuming day-1 post-op care for cataract extraction: <span class="font-mono font-semibold">66984-55-RT</span> (collects 20% of fee).</td>
-      </tr>
-      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-        <td class="p-3 font-mono font-bold text-rose-600 dark:text-rose-400">-59 / -XU</td>
-        <td class="p-3">Unbundles normally grouped tests when performed for distinct conditions.</td>
-        <td class="p-3">OCT macula for AMD + Fundus photo for peripheral nevus: <span class="font-mono font-semibold">92134</span> + <span class="font-mono font-semibold">92250-59</span>.</td>
-      </tr>
-      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-        <td class="p-3 font-mono font-bold text-emerald-600 dark:text-emerald-400">-79</td>
-        <td class="p-3">Unrelated surgical procedure performed during the post-op global window of an earlier surgery.</td>
-        <td class="p-3">During 90-day post-op period of right cataract, patient requires epilation of trichiasis left eye: <span class="font-mono font-semibold">67820-79-E2</span>.</td>
-      </tr>
-      <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-        <td class="p-3 font-mono font-bold text-cyan-600 dark:text-cyan-400">-93 / -95</td>
-        <td class="p-3">-93 = Audio-only telemedicine. -95 = Synchronous real-time audio and video telehealth.</td>
-        <td class="p-3">Live video telehealth follow-up for anterior surface monitoring: <span class="font-mono font-semibold">99213-95</span>.</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+        <!-- Section 2: Clinical Modifier Guide with Vignettes -->
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-4">
+          <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-2">
+            <h3 class="text-sm font-bold uppercase dark:text-white">2. Complete Clinical Ophthalmic Modifiers & Practical Rules</h3>
+            <span class="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 font-bold px-2 py-0.5 rounded">All 18 Anatomical & Billing Modifiers</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+              <thead class="bg-slate-100 dark:bg-slate-700/60 text-slate-700 dark:text-slate-200 font-bold uppercase text-[10px]">
+                <tr>
+                  <th class="p-3">Modifier</th>
+                  <th class="p-3">Plain-English Rule</th>
+                  <th class="p-3">Clinical Vignette & Superbill Example</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 dark:divide-slate-700 dark:text-slate-300">
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                  <td class="p-3 font-mono font-bold text-blue-600 dark:text-blue-400 whitespace-nowrap">-RT / -OD</td>
+                  <td class="p-3">Right eye anatomical designation.</td>
+                  <td class="p-3">Corneal foreign body removal right eye: <span class="font-mono font-bold text-slate-900 dark:text-white">65222-RT</span>.</td>
+                </tr>
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                  <td class="p-3 font-mono font-bold text-blue-600 dark:text-blue-400 whitespace-nowrap">-LT / -OS</td>
+                  <td class="p-3">Left eye anatomical designation.</td>
+                  <td class="p-3">Bandage contact lens fitting left eye for abrasion: <span class="font-mono font-bold text-slate-900 dark:text-white">92071-LT</span>.</td>
+                </tr>
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                  <td class="p-3 font-mono font-bold text-blue-600 dark:text-blue-400 whitespace-nowrap">OU</td>
+                  <td class="p-3">Both eyes treated or tested (inherent on most bilateral codes).</td>
+                  <td class="p-3">Fundus photography (92250) is inherently bilateral; do not bill two units or split by eye.</td>
+                </tr>
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                  <td class="p-3 font-mono font-bold text-indigo-600 dark:text-indigo-400 whitespace-nowrap">-E1 to -E4</td>
+                  <td class="p-3">Specifies exact eyelid: <br>• <strong>E1</strong>: Upper Left<br>• <strong>E2</strong>: Lower Left<br>• <strong>E3</strong>: Upper Right<br>• <strong>E4</strong>: Lower Right</td>
+                  <td class="p-3">Silicone punctal plugs inserted in both lower puncta:<br>Line 1: <span class="font-mono font-bold text-slate-900 dark:text-white">68761-E4</span><br>Line 2: <span class="font-mono font-bold text-slate-900 dark:text-white">68761-E2-51</span>.</td>
+                </tr>
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                  <td class="p-3 font-mono font-bold text-amber-600 dark:text-amber-400 whitespace-nowrap">-24</td>
+                  <td class="p-3">Unrelated E/M exam during a postoperative global period.</td>
+                  <td class="p-3">Patient in 90-day post-op period for right cataract returns with acute viral conjunctivitis in the left eye: <span class="font-mono font-bold text-slate-900 dark:text-white">99213-24-LT</span>.</td>
+                </tr>
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                  <td class="p-3 font-mono font-bold text-amber-600 dark:text-amber-400 whitespace-nowrap">-25</td>
+                  <td class="p-3">Significant, separately identifiable E/M service on the same date as a minor procedure (0 or 10-day global).</td>
+                  <td class="p-3">Glaucoma follow-up where slit lamp exam discovers an acute foreign body with rust ring: <span class="font-mono font-bold text-slate-900 dark:text-white">99214-25</span> + <span class="font-mono font-bold text-slate-900 dark:text-white">65222-RT</span>.</td>
+                </tr>
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                  <td class="p-3 font-mono font-bold text-purple-600 dark:text-purple-400 whitespace-nowrap">-26</td>
+                  <td class="p-3">Professional component only (interpreting and writing report when equipment belongs to facility).</td>
+                  <td class="p-3">Interpreting a B-Scan diagnostic ultrasound taken at an ASC or hospital facility: <span class="font-mono font-bold text-slate-900 dark:text-white">76512-26</span>.</td>
+                </tr>
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                  <td class="p-3 font-mono font-bold text-purple-600 dark:text-purple-400 whitespace-nowrap">-TC</td>
+                  <td class="p-3">Technical component only (facility owns the equipment and technician performs test).</td>
+                  <td class="p-3">Ambulatory center billing for equipment usage on B-Scan: <span class="font-mono font-bold text-slate-900 dark:text-white">76512-TC</span>.</td>
+                </tr>
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                  <td class="p-3 font-mono font-bold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">-50</td>
+                  <td class="p-3">Bilateral surgical procedure billed on a single line (reimburses 150% of single allowable).</td>
+                  <td class="p-3">Selective Laser Trabeculoplasty (SLT) performed on both eyes on the same date: <span class="font-mono font-bold text-slate-900 dark:text-white">65855-50</span> (1 unit).</td>
+                </tr>
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                  <td class="p-3 font-mono font-bold text-slate-600 dark:text-slate-400 whitespace-nowrap">-52</td>
+                  <td class="p-3">Reduced service (used when an inherently bilateral test is performed on only one eye).</td>
+                  <td class="p-3">Diagnostic testing performed on a monocular patient's remaining functioning eye: <span class="font-mono font-bold text-slate-900 dark:text-white">76514-52</span>.</td>
+                </tr>
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                  <td class="p-3 font-mono font-bold text-teal-600 dark:text-teal-400 whitespace-nowrap">-55</td>
+                  <td class="p-3">Postoperative management only (co-management transfer from surgeon to optometrist).</td>
+                  <td class="p-3">Assuming day-1 post-op care for cataract surgery through Day 90: <span class="font-mono font-bold text-slate-900 dark:text-white">66984-55-RT</span> (OD receives 20% of global allowable; record transfer dates in Box 19).</td>
+                </tr>
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                  <td class="p-3 font-mono font-bold text-rose-600 dark:text-rose-400 whitespace-nowrap">-59 / -XU</td>
+                  <td class="p-3">Distinct procedural service (unbundles paired procedures when performed for separate lesions or sites).</td>
+                  <td class="p-3">OCT macula performed for dry AMD, plus fundus photos taken for an unrelated peripheral choroidal nevus: <span class="font-mono font-bold text-slate-900 dark:text-white">92134</span> (Pointer to H35.31) + <span class="font-mono font-bold text-slate-900 dark:text-white">92250-59</span> (Pointer to H31.10).</td>
+                </tr>
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                  <td class="p-3 font-mono font-bold text-rose-600 dark:text-rose-400 whitespace-nowrap">-79</td>
+                  <td class="p-3">Unrelated procedure by same doctor during the post-operative global period.</td>
+                  <td class="p-3">Patient in 90-day post-op period for cataract surgery requires in-office epilation of misdirected lashes on the opposite eye: <span class="font-mono font-bold text-slate-900 dark:text-white">67820-79-E2</span>.</td>
+                </tr>
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                  <td class="p-3 font-mono font-bold text-cyan-600 dark:text-cyan-400 whitespace-nowrap">-93</td>
+                  <td class="p-3">Synchronous telemedicine via telephone (audio-only interactive system).</td>
+                  <td class="p-3">Audio-only medical management discussion during an acute flare when video is unavailable: <span class="font-mono font-bold text-slate-900 dark:text-white">99213-93</span>.</td>
+                </tr>
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                  <td class="p-3 font-mono font-bold text-cyan-600 dark:text-cyan-400 whitespace-nowrap">-95</td>
+                  <td class="p-3">Synchronous telemedicine via interactive real-time audio and video telecommunications.</td>
+                  <td class="p-3">Virtual telehealth consultation evaluating anterior segment red eye triage: <span class="font-mono font-bold text-slate-900 dark:text-white">99213-95</span>.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
         <!-- Section 3: In-Depth Rules for Top 10 Medical & Vision Plans -->
         <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm space-y-4">
